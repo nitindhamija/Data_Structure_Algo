@@ -56,29 +56,6 @@ public class AVLTree {
         return x;
     }
 
-    // private String getTab(int i) {
-    // String tab = "";
-    // switch (i) {
-    // case 4:
-    // tab = "\t\t\t\t";
-    // break;
-    // case 3:
-    // tab = "\t\t\t";
-    // break;
-    // case 2:
-    // tab = "\t\t";
-    // break;
-    // case 1:
-    // tab = "\t";
-    // break;
-    // default:
-    // System.out.println("height is too large");
-
-    // }
-    // return tab;
-
-    // }
-
     // A utility function to print preorder traversal
     // of the tree.
     // The function also prints height of every node
@@ -234,38 +211,6 @@ public class AVLTree {
         }
         return root;
     }
-
-    // void printNode(TreeNode node, int level) {
-    // // String str = "";
-    // int floor = node.height;
-    // // int edgeLines = (int) Math.pow(2, (Math.max(floor - 1, 0)));
-    // int firstSpaces = (int) Math.pow(2, (floor)) - 1;
-    // int betweenSpaces = (int) Math.pow(2, (floor + 1)) + 1;
-
-    // printWhiteSpaces(firstSpaces);
-    // System.out.print(node.data);
-    // printWhiteSpaces(betweenSpaces);
-
-    // // for (int i = 0; i < edgeLines; i++) {
-    // // for (int j = 0; j < firstSpaces - i - 1; j++)
-    // // System.out.print(" ");
-    // System.out.println("\n");
-    // printWhiteSpaces(firstSpaces - 1);
-    // if (node.left != null)
-    // System.out.print("/");
-    // int edgeBetweenSpace = (int) Math.pow(2, (level));
-    // printWhiteSpaces(edgeBetweenSpace);
-    // if (node.right != null)
-    // System.out.print("\\");
-    // System.out.println("\n");
-    // // }
-    // }
-
-    // void printWhiteSpaces(int count) {
-    // for (int i = 0; i < count; i++) {
-    // System.out.print(" ");
-    // }
-    // }
 
     void levelOrderTraversal(TreeNode node) {
         System.out.println("level order traversal of tree");
