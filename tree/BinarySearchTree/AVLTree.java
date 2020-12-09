@@ -1,5 +1,8 @@
 package tree.BinarySearchTree;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import commons.tree.TreeNode;
 
 public class AVLTree {
@@ -136,6 +139,155 @@ public class AVLTree {
         return root;
     }
 
+    private TreeNode findInorderSuccessor(TreeNode node) {
+        while (node.left.left != null) {
+            node = node.left;
+        }
+
+        return node;
+    }
+
+    /*
+     * Binary search tree deletion ALGO first find the node to be deleted by
+     * checking if element is part of left or right subtree then once you find it
+     * then problem is divided in to 3 parts below 1.) node to be deleted is leaf
+     * node i.e no child,2. ) node to be deleted is having one child(left or right),
+     * 3.)node to be deleted is having two children(left and right both) The current
+     * node must be one of the ancestors of the deleted node. Update the height of
+     * the current node.Get the balance factor (left subtree height – right subtree
+     * height) of the current node. If balance factor is greater than 1, then the
+     * current node is unbalanced and we are either in Left Left case or Left Right
+     * case. To check whether it is Left Left case or Left Right case, get the
+     * balance factor of left subtree. If balance factor of the left subtree is
+     * greater than or equal to 0, then it is Left Left case, else Left Right case.
+     * If balance factor is less than -1, then the current node is unbalanced and we
+     * are either in Right Right case or Right Left case. To check whether it is
+     * Right Right case or Right Left case, get the balance factor of right subtree.
+     * If the balance factor of the right subtree is smaller than or equal to 0,
+     * then it is Right Right case, else Right Left case
+     */
+    private TreeNode delete(TreeNode root, int key) {
+        if (root == null)
+            return null;
+
+        if (root.data > key) // node is in left subtree
+            root.left = delete(root.left, key);
+        else if (root.data < key) // node is in right subtree
+            root.right = delete(root.right, key);
+        else if (root.data == key) // node is found
+            root = deleteNode(root, key);
+
+        // If the tree had only one node then return
+        if (root == null)
+            return root;
+
+        // STEP 2: UPDATE HEIGHT OF THE CURRENT NODE
+        root.height = max(height(root.left), height(root.right)) + 1;
+
+        // STEP 3: GET THE BALANCE FACTOR OF THIS NODE (to check whether
+        // this node became unbalanced)
+        int balance = getBalance(root);
+        // If this node becomes unbalanced, then there are 4 cases
+        // Left Left Case
+        if (balance > 1 && getBalance(root.left) >= 0)
+            return rightRotate(root);
+        // Left Right Case
+        if (balance > 1 && getBalance(root.left) < 0) {
+            root.left = leftRotate(root.left);
+            return rightRotate(root);
+        }
+
+        // right right case
+        if (balance < -1 && getBalance(root.right) <= 0)
+            return leftRotate(root);
+        // right left case
+        if (balance < -1 && getBalance(root.right) > 0) {
+            root.right = rightRotate(root.right);
+            return leftRotate(root);
+        }
+
+        return root;
+    }
+
+    /*
+     * delete node based on no of children they are having 1.) node to be deleted is
+     * leaf node i.e no child then simply return null 2.) node to be deleted is
+     * having one child(left or right) then set child data to root and assign null
+     * to root's left or right 3.)node to be deleted is having two children(left and
+     * right both) in that case find inorder successor of node to replace root's
+     * value with it
+     * 
+     */
+    private TreeNode deleteNode(TreeNode root, int key) {
+        if (root.data == key && root.left != null && root.right != null) {
+            TreeNode node = findInorderSuccessor(root.right);// find parent of inorder successor
+            root.data = node.left.data; // replace root value with inorder successor's value
+            node.left = null; // remove inorder successor from the tree
+        } else if (root.data == key && root.left != null) {
+            root.data = root.left.data; // replace root value with it's left child value
+            root.left = null; // remove left child from the tree
+        } else if (root.data == key && root.right != null) {
+            root.data = root.right.data; // replace root value with it's right child value
+            root.right = null; // remove right child from the tree
+        } else {
+            return null; // simply return null in case node is having no children i.e leaf node
+        }
+        return root;
+    }
+
+    // void printNode(TreeNode node, int level) {
+    // // String str = "";
+    // int floor = node.height;
+    // // int edgeLines = (int) Math.pow(2, (Math.max(floor - 1, 0)));
+    // int firstSpaces = (int) Math.pow(2, (floor)) - 1;
+    // int betweenSpaces = (int) Math.pow(2, (floor + 1)) + 1;
+
+    // printWhiteSpaces(firstSpaces);
+    // System.out.print(node.data);
+    // printWhiteSpaces(betweenSpaces);
+
+    // // for (int i = 0; i < edgeLines; i++) {
+    // // for (int j = 0; j < firstSpaces - i - 1; j++)
+    // // System.out.print(" ");
+    // System.out.println("\n");
+    // printWhiteSpaces(firstSpaces - 1);
+    // if (node.left != null)
+    // System.out.print("/");
+    // int edgeBetweenSpace = (int) Math.pow(2, (level));
+    // printWhiteSpaces(edgeBetweenSpace);
+    // if (node.right != null)
+    // System.out.print("\\");
+    // System.out.println("\n");
+    // // }
+    // }
+
+    // void printWhiteSpaces(int count) {
+    // for (int i = 0; i < count; i++) {
+    // System.out.print(" ");
+    // }
+    // }
+
+    void levelOrderTraversal(TreeNode node) {
+        System.out.println("level order traversal of tree");
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(node);
+        int level = node.height;
+        while (!q.isEmpty()) {
+            TreeNode temp = q.poll();
+
+            if (temp != null) {
+                System.out.println("level -> " + (level - temp.height) + " " + temp.data);
+                if (node.left != null)
+                    q.add(temp.left);
+                if (node.right != null)
+                    q.add(temp.right);
+
+            }
+
+        }
+
+    }
+
     public static void main(String[] args) {
         AVLTree avl = new AVLTree();
         avl.root = avl.insert(avl.root, 10);
@@ -147,7 +299,13 @@ public class AVLTree {
 
         System.out.println("Preorder traversal of constructed tree is : ");
         avl.preOrder(avl.root);
-
+        avl.levelOrderTraversal(avl.root);
+        avl.root = avl.delete(avl.root, 25);
+        avl.levelOrderTraversal(avl.root);
+        avl.root = avl.delete(avl.root, 20);
+        avl.levelOrderTraversal(avl.root);
+        avl.root = avl.delete(avl.root, 10);
+        avl.levelOrderTraversal(avl.root);
         // since avl tree is balance BST so it's worst case time complexity is O(h)=
         // O(log(n))
 
