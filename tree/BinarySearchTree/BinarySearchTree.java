@@ -92,16 +92,16 @@ public class BinarySearchTree {
         root = insert(root, 43);
         root = insert(root, 49);
         root = insert(root, 31);
-        CreateBinaryTree tree = new CreateBinaryTree();
-        tree.inorder(root);
-        System.out.println("\n" + root.data);
+        // CreateBinaryTree tree = new CreateBinaryTree();
+        CreateBinaryTree.inorder(root);
+        System.out.println("\n root " + root.data);
         delete(root, 5); // delete leaf node
-        tree.inorder(root);
-        System.out.println("\n" + root.data);
+        CreateBinaryTree.inorder(root);
+        System.out.println("\n root " + root.data);
         delete(root, 8); // delete node having 1 child
-        tree.inorder(root);
-        System.out.println("\n" + root.data);
+        CreateBinaryTree.inorder(root);
+        System.out.println("\n root " + root.data);
         delete(root, 19); // delete node having 2 children
-        tree.inorder(root);
+        CreateBinaryTree.inorder(root);
     }
 }

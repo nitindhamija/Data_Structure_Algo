@@ -49,9 +49,11 @@ public class CreateBinaryTreeFromInPrePostOrder {
 
         if (end == start)
             return node;
-        int rootIndex = 0;
 
-        for (int i = 0; i < in.length; i++) {
+        int rootIndex = 0;
+        int length = in.length;
+
+        for (int i = 0; i < length; i++) {
             if (node.data == in[i]) {
                 {
                     rootIndex = i;
@@ -66,10 +68,10 @@ public class CreateBinaryTreeFromInPrePostOrder {
     }
 
     /*
-     * ideal way to implement Binary tree from inorder preorder ALGO-> root is taken
-     * from postorder(LEFT-RIGHT-ROOT) in right to left order and then inorder is
-     * traversed left to right to fine the index of the root node to determine left
-     * and right child of the node and then same function is called with
+     * ideal way to implement Binary tree from inorder postorder ALGO-> root is
+     * taken from postorder(LEFT-RIGHT-ROOT) in right to left order and then inorder
+     * is traversed left to right to fine the index of the root node to determine
+     * left and right child of the node and then same function is called with
      * start,rootIndex-1 for left child and rootIndex+1,end for right child
      */
     public static TreeNode createInOrderPostOrder(int start, int end, int[] in, int[] post) {
@@ -90,7 +92,9 @@ public class CreateBinaryTreeFromInPrePostOrder {
                 }
             }
         }
-
+        // here order is imp as we are traversing the post order from right to left and
+        // so right tree has to be constructed first that's why right child is
+        // calculated first and the left
         node.right = createInOrderPostOrder(rootIndex + 1, end, in, post);
         node.left = createInOrderPostOrder(start, rootIndex - 1, in, post);
 
@@ -102,9 +106,10 @@ public class CreateBinaryTreeFromInPrePostOrder {
      * we can't construct unique binary tree from only preorder and postorder, we
      * can only implement Full Binary tree from preorder postorder ALGO-> root is
      * taken from preorder(ROOT-LEFT-RIGHT) in left to right order and then
-     * postorder is traversed left to right to fine the index of the root node to
-     * determine left and right child of the node and then same function is called
-     * with start,rootIndex-1 for left child and rootIndex+1,end for right child
+     * postorder is traversed left to right to fine the index of the next element
+     * from preorder to determine left and right child of the node and then same
+     * function is called with start,rootIndex for left child and rootIndex+1,end -
+     * 1 for right child
      */
     public static TreeNode createPreOrderPostOrder(int start, int end, int[] post, int[] pre) {
         if (preIndex >= pre.length || start > end)

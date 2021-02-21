@@ -18,7 +18,7 @@ public class CreateBinaryTree {
         this.root.right.right = new TreeNode(7);
     }
 
-    private void InsertAtLevelOrder(TreeNode node, int key) {
+    private static void InsertAtLevelOrder(TreeNode node, int key) {
         if (node == null) {
             node = new TreeNode(key);
             return;
@@ -46,7 +46,7 @@ public class CreateBinaryTree {
 
     }
 
-    public void inorder(TreeNode root) {
+    public static void inorder(TreeNode root) {
         if (root == null) {
             return;
         }
@@ -56,7 +56,7 @@ public class CreateBinaryTree {
 
     }
 
-    public void preorder(TreeNode root) {
+    public static void preorder(TreeNode root) {
         if (root == null) {
             return;
         }
@@ -66,7 +66,7 @@ public class CreateBinaryTree {
 
     }
 
-    public void postorder(TreeNode root) {
+    public static void postorder(TreeNode root) {
         if (root == null) {
             return;
         }
@@ -79,15 +79,15 @@ public class CreateBinaryTree {
     public static void main(String[] args) {
         CreateBinaryTree tree = new CreateBinaryTree();
         System.out.println("inorder traversal");
-        tree.inorder(tree.root);
+        CreateBinaryTree.inorder(tree.root);
         System.out.println("\npre-order traversal");
-        tree.preorder(tree.root);
+        CreateBinaryTree.preorder(tree.root);
         System.out.println("\npost-order traversal");
-        tree.postorder(tree.root);
+        CreateBinaryTree.postorder(tree.root);
         System.out.println("\ninserting an element at level order");
-        tree.InsertAtLevelOrder(tree.root, 8);
+        CreateBinaryTree.InsertAtLevelOrder(tree.root, 8);
         System.out.println("\nbinary tree after insertion->inoreder traversal");
-        tree.inorder(tree.root);
+        CreateBinaryTree.inorder(tree.root);
 
     }
 }
