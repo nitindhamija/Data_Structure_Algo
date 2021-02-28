@@ -111,46 +111,6 @@ public class SplayTree {
 
     }
 
-    // public void splay(STreeNode node) {
-    // // STreeNode p = node.parent;
-    // // if parent node is null then only root node is there so no need to splay
-    // while (node.parent != null) {
-    // // check if parent of node is root then only one rotation either left or
-    // right
-    // // is required
-    // if (node.parent == this.root && node == this.root.left) {
-    // rightRotate(node.parent);
-    // } else if (node.parent == this.root && node == this.root.right) {
-    // leftRotate(node.parent);
-    // } // zig zig rotations i.e 2 right rotations needed to make node as root
-    // else if (node == node.parent.left && node.parent == node.parent.parent.left)
-    // {
-    // rightRotate(node.parent.parent);
-    // rightRotate(node.parent);
-    // } // zag zag rotations i.e 2 left rotations needed
-    // else if (node == node.parent.right && node.parent ==
-    // node.parent.parent.right) {
-    // leftRotate(node.parent.parent);
-    // leftRotate(node.parent);
-    // } // zig zag rotations i.e 1 right and 1 left rotations is required
-    // else if (node == node.parent.left && node.parent == node.parent.parent.right)
-    // {
-    // rightRotate(node.parent); // here call rotation on parent first
-    // leftRotate(node.parent); // here call rotation on grand parent but since
-    // earlier rotaion has changed
-    // // grandparent to parent of the node i.e node has moved upwards so
-    // node.parent
-    // // instead of node.parent.parent
-    // } // zag zig rotations i.e 1 left and 1 right rotations is required
-    // else {
-    // leftRotate(node.parent);
-    // rightRotate(node.parent);
-    // }
-
-    // }
-
-    // }
-
     public void insert(int key) {
         STreeNode node = new STreeNode(key);
         STreeNode y = null;
@@ -191,7 +151,7 @@ public class SplayTree {
         node = findNode(this.root, key);
         // splay is to be done on last accessed leaf node if key is not present
         if (node.data != key) {
-            System.out.println("key not present");
+            System.out.println("key not present ->" + key);
             splay(this.root, node);
             return;
         }
@@ -217,10 +177,13 @@ public class SplayTree {
                                                         // the max node in left subtree otherwise you can also use the
                                                         // logic while(node.right!=null) node=node.right; as this will
                                                         // also return the max node of left subtree
-            splay(leftSubtree, temp); // then splay left subtree around max node and make it root of the tree
-            temp.right = rightSubtree; // add right subtree as right child of the max node
-            if (rightSubtree != null)
+            splay(leftSubtree, temp); // then splay left subtree around max node
+            // add right subtree as right child of the max node
+            if (rightSubtree != null) {
+                temp.right = rightSubtree;
                 rightSubtree.parent = temp;
+            }
+            this.root = temp; // make max node as the root of the tree
         }
 
     }
@@ -316,6 +279,15 @@ public class SplayTree {
         sp.prettyPrint();
         sp.delete(16);
         sp.prettyPrint();
+        sp.delete(11); // case key is not present
+        sp.prettyPrint();
+        sp.delete(10);// case to delete root node
+        sp.prettyPrint();
+        sp.delete(17);// case to leaf node and where right subtree get's null
+        sp.prettyPrint();
+        sp.delete(7);// case left subtree is null
+        sp.prettyPrint();
+
     }
 
 }
