@@ -1,9 +1,15 @@
 package tree.BinaryTree;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.Stack;
+import java.util.Vector;
 
 import commons.tree.TreeNode;
+import jdk.nashorn.api.tree.Tree;
 
 public class CreateBinaryTree {
     TreeNode root;
@@ -46,6 +52,7 @@ public class CreateBinaryTree {
 
     }
 
+    // recursive approach to inorder traversal
     public static void inorder(TreeNode root) {
         if (root == null) {
             return;
@@ -53,6 +60,73 @@ public class CreateBinaryTree {
         inorder(root.left);
         System.out.print(" -> " + root.data);
         inorder(root.right);
+
+    }
+
+    // iterative approach to inorder traversal
+    public static void inorderIterative(TreeNode root) {
+        Stack<TreeNode> s1 = new Stack<TreeNode>();
+
+        if (root == null) {
+            return;
+        }
+        TreeNode temp = root;
+        // s1.push(root);
+        while (!s1.isEmpty() || temp != null) {
+            while (temp != null) {
+                s1.push(temp);
+                temp = temp.left;
+            }
+            temp = s1.pop();
+            System.out.print(temp.data + " -> ");
+            temp = temp.right;
+
+        }
+
+    }
+
+    // iterative approach to preorder traversal
+    public static void preorderIterative(TreeNode root) {
+        Stack<TreeNode> s1 = new Stack<TreeNode>();
+
+        if (root == null) {
+            return;
+        }
+
+        s1.push(root);
+        while (!s1.isEmpty()) {
+            TreeNode temp = s1.pop();
+            System.out.print(temp.data);
+            if (temp.right != null)
+                s1.push(temp.right);
+            if (temp.left != null)
+                s1.push(temp.left);
+
+        }
+
+    }
+
+    // iterative approach to postorder traversal
+    public static void postorderIterative(TreeNode root) {
+        Stack<TreeNode> s1 = new Stack<TreeNode>();
+        List<Integer> output = new ArrayList<Integer>();
+
+        if (root == null) {
+            return;
+        }
+
+        s1.push(root);
+        while (!s1.isEmpty()) {
+            TreeNode temp = s1.pop();
+            output.add(temp.data);
+            if (temp.left != null)
+                s1.push(temp.left);
+            if (temp.right != null)
+                s1.push(temp.right);
+
+        }
+        Collections.reverse(output);
+        System.out.println(output);
 
     }
 
@@ -80,6 +154,12 @@ public class CreateBinaryTree {
         CreateBinaryTree tree = new CreateBinaryTree();
         System.out.println("inorder traversal");
         CreateBinaryTree.inorder(tree.root);
+        System.out.println("\ninorder traversal iterative");
+        CreateBinaryTree.inorderIterative(tree.root);
+        System.out.println("\npreorder traversal iterative");
+        CreateBinaryTree.preorderIterative(tree.root);
+        System.out.println("\npostorder traversal iterative");
+        CreateBinaryTree.postorderIterative(tree.root);
         System.out.println("\npre-order traversal");
         CreateBinaryTree.preorder(tree.root);
         System.out.println("\npost-order traversal");
