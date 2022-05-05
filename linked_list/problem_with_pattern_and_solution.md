@@ -1,30 +1,32 @@
-# common linked list problem and their solution 
+# common linked list problem and their solution
 
- goal of these notes is to identify patterns and then map it to probmens
+goal of these notes is to identify patterns and then map it to probmens
 
 # to detect cycle/loop in linked list
+
 package DS_ALGO_PROG.linked_list;
 
-//  Definition for singly-linked list.
+// Definition for singly-linked list.
 class ListNode {
-    int val;
-    ListNode next;
+int val;
+ListNode next;
 
     ListNode(int x) {
         val = x;
         next = null;
     }
+
 }
 
 public class DetectCycle {
-    public boolean hasCycle(ListNode head) {
-        // if list has one or less nodes then no cycle can form
-        if (head == null || head.next == null) {
-            return false;
-        }
-        // at this point minimum 2 nodes are there
-        var ptr1 = head;
-        var ptr2 = head.next;
+public boolean hasCycle(ListNode head) {
+// if list has one or less nodes then no cycle can form
+if (head == null || head.next == null) {
+return false;
+}
+// at this point minimum 2 nodes are there
+var ptr1 = head;
+var ptr2 = head.next;
 
         // keep on speeding ptr with diff speed unless they point to same node or till
         // fast pointer reaches the end of list in case of no cycle
@@ -36,30 +38,33 @@ public class DetectCycle {
         return ptr1 == ptr2;
 
     }
+
 }
 
 # circular linked list applications
-/**
- * Advantages of Circular Linked Lists: 1) Any node can be a starting point. We
- * can traverse the whole list by starting from any point. We just need to stop
- * when the first visited node is visited again.
- * 
- * 2) Useful for implementation of queue. Unlike this implementation, we don’t
- * need to maintain two pointers for front and rear if we use circular linked
- * list. We can maintain a pointer to the last inserted node and front can
- * always be obtained as next of last.
- * 
- * 3) Circular lists are useful in applications to repeatedly go around the
- * list. For example, when multiple applications are running on a PC, it is
- * common for the operating system to put the running applications on a list and
- * then to cycle through them, giving each of them a slice of time to execute,
- * and then making them wait while the CPU is given to another application. It
- * is convenient for the operating system to use a circular list so that when it
- * reaches the end of the list it can cycle around to the front of the list.
- * 
- * 4) Circular Doubly Linked Lists are used for implementation of advanced data
- * structures like Fibonacci Heap.
- */
+
+/\*\*
+
+- Advantages of Circular Linked Lists: 1) Any node can be a starting point. We
+- can traverse the whole list by starting from any point. We just need to stop
+- when the first visited node is visited again.
+-
+- 2.  Useful for implementation of queue. Unlike this implementation, we don’t
+- need to maintain two pointers for front and rear if we use circular linked
+- list. We can maintain a pointer to the last inserted node and front can
+- always be obtained as next of last.
+-
+- 3.  Circular lists are useful in applications to repeatedly go around the
+- list. For example, when multiple applications are running on a PC, it is
+- common for the operating system to put the running applications on a list and
+- then to cycle through them, giving each of them a slice of time to execute,
+- and then making them wait while the CPU is given to another application. It
+- is convenient for the operating system to use a circular list so that when it
+- reaches the end of the list it can cycle around to the front of the list.
+-
+- 4.  Circular Doubly Linked Lists are used for implementation of advanced data
+- structures like Fibonacci Heap.
+  \*/
 
 // Insertion - same cases for deletion
 // A node can be added in three ways:
@@ -69,27 +74,29 @@ public class DetectCycle {
 // Insertion at the end of the list
 // Insertion in between the nodes
 
-
-
 # to detect loop and find first node of the loop (FLOYD cycle detetction algorithm)
-/**
- * Definition for singly-linked list. class ListNode { int val; ListNode next;
- * ListNode(int x) { val = x; next = null; } }
- */
+
+/\*\*
+
+- Definition for singly-linked list. class ListNode { int val; ListNode next;
+- ListNode(int x) { val = x; next = null; } }
+  \*/
 
 ## FLOYD cycle detetction algorithm
-/**
- * https://www.geeksforgeeks.org/find-first-node-of-loop-in-a-linked-list/ many
- * ways to detect loop and first node of the loop like hashset can keep track of
- * visited node and floyd algo and other way is to point next of visited node to
- * a temp node and this way time comp is O(n) but linked list is destroyed
- */
+
+/\*\*
+
+- https://www.geeksforgeeks.org/find-first-node-of-loop-in-a-linked-list/ many
+- ways to detect loop and first node of the loop like hashset can keep track of
+- visited node and floyd algo and other way is to point next of visited node to
+- a temp node and this way time comp is O(n) but linked list is destroyed
+  \*/
 
 public class FLoydCycleDetection {
-    public ListNode detectCycle(ListNode head) {
-        if (head == null || head.next == null) {
-            return null;
-        }
+public ListNode detectCycle(ListNode head) {
+if (head == null || head.next == null) {
+return null;
+}
 
         var ptr1 = head;
         var ptr2 = head;
@@ -119,11 +126,13 @@ public class FLoydCycleDetection {
         return null;
 
     }
+
 }
 
-#  to find intersection of two linked list 
+# to find intersection of two linked list
 
 ## using 2 pointer technique
+
 // https://www.geeksforgeeks.org/write-a-function-to-get-the-intersection-point-of-two-linked-lists/
 // // 2 pointer technique
 // Using Two pointers :
@@ -137,7 +146,6 @@ public class FLoydCycleDetection {
 // If at any node ptr1 meets ptr2, then it is the intersection node.
 // After second iteration if there is no intersection node it returns NULL.
 
-
 # Method 3(Using difference of node counts)
 
 // Get count of the nodes in the first list, let count be c1.
@@ -150,7 +158,7 @@ public class FLoydCycleDetection {
 // the nodes)
 
 public class Solution {
-    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
 
         if (headA == null || headB == null)
             return null;
@@ -180,7 +188,7 @@ public class Solution {
 
 }
 
-#  to delete nth node from the end of the linked list
+# to delete nth node from the end of the linked list
 
     // https://www.geeksforgeeks.org/delete-nth-node-from-the-end-of-the-given-linked-list/
     public ListNode removeNthFromEnd(ListNode head, int n) {
@@ -207,6 +215,7 @@ public class Solution {
     }
 
 # reverse linked list recursive sol O(n) time and O(n) space complexity due to
+
     // n stack calls
     ListNode reverse(ListNode head) {
         if (head == null || head.next == null)
@@ -240,6 +249,7 @@ public class Solution {
     }
 
 # using 2 pointers we are reversing each node link to prev step by step
+
     public ListNode reverseList(ListNode head) {
         /* iterative solution */
         ListNode newHead = null;
@@ -253,6 +263,7 @@ public class Solution {
     }
 
 # remove all matching nodes from linked list O(n)
+
     /**
      * Definition for singly-linked list. public class ListNode { int val; ListNode
      * next; ListNode() {} ListNode(int val) { this.val = val; } ListNode(int val,
@@ -309,6 +320,7 @@ public class Solution {
     }
 
 # to check for palindrome
+
     // 1. use stack method
     // 2.break the linked list in half and reverse the second half and compare it
     // with first and take care of odd case time complexity O(n) space complexity
@@ -363,40 +375,336 @@ public class Solution {
     }
 
 # Merge Two Sorted Lists
-/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
- * }
- */
-class Solution {
-    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
-        ListNode dummy= new ListNode(-1);
-        ListNode newList=dummy;
-        
-        while(list1!=null && list2!=null){
-            if(list1.val<=list2.val)
-            {
-                newList.next=list1;
-                list1=list1.next;
-            }
-            else
-            {
-                newList.next=list2;
-                list2=list2.next;
-            }
-            newList=newList.next;
-        }
-        if(list1!=null){
-                newList.next=list1;
-            }
-        if(list2!=null){
-                newList.next=list2;
-            }
-        return dummy.next;
-    }
+
+/\*\*
+
+- Definition for singly-linked list.
+- public class ListNode {
+-     int val;
+-     ListNode next;
+-     ListNode() {}
+-     ListNode(int val) { this.val = val; }
+-     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+- }
+  \*/
+  class Solution {
+  public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+  ListNode dummy= new ListNode(-1);
+  ListNode newList=dummy;
+  while(list1!=null && list2!=null){
+  if(list1.val<=list2.val)
+  {
+  newList.next=list1;
+  list1=list1.next;
+  }
+  else
+  {
+  newList.next=list2;
+  list2=list2.next;
+  }
+  newList=newList.next;
+  }
+  if(list1!=null){
+  newList.next=list1;
+  }
+  if(list2!=null){
+  newList.next=list2;
+  }
+  return dummy.next;
+  }
+  }
+
+# two sum problem
+
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+Constraints:
+
+The number of nodes in each linked list is in the range [1, 100].
+0 <= Node.val <= 9
+It is guaranteed that the list represents a number that does not have leading zeros.
+
+/\*\*
+
+- Definition for singly-linked list.
+- public class ListNode {
+-     int val;
+-     ListNode next;
+-     ListNode() {}
+-     ListNode(int val) { this.val = val; }
+-     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+- }
+  \*/
+  class Solution {
+  public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+  var h1=l1;
+  var h2=l2;
+  ListNode p1=null;
+  ListNode p2=null;
+  int c=0;
+  int carry=0;
+  while(l1!=null || l2!=null){
+
+              var sum = SumLinkedList(l1!=null?l1.val:0,l2!=null?l2.val:0,carry);
+              if(l1!=null)
+              {   l1.val=sum%10;
+                  p1=l1;
+                  l1=l1.next;
+                  c++;
+              }
+              if(l2!=null)
+              {   l2.val=sum%10;
+                  p2=l2;
+                  l2=l2.next;
+                  c--;
+              }
+              carry=sum/10;
+          }
+
+          if(c>=0 && carry>0)
+              p1.next=new ListNode(carry);
+          else if(c<0 && carry>0)
+              p2.next=new ListNode(carry);
+
+          return c>=0?h1:h2;
+      }
+
+      int SumLinkedList(int a, int b, int carry){
+          return (a+b+carry);
+      }
+
 }
+
+# flattening of a multilevel linked list
+
+- using recursion
+- using stack
+- this problem is similar to conversion of tree to linkedlist
+
+https://www.geeksforgeeks.org/flatten-a-multi-level-linked-list-set-2-depth-wise/
+
+## using recursion (DFS)
+
+/_
+// Definition for a Node.
+class Node {
+public int val;
+public Node prev;
+public Node next;
+public Node child;
+};
+_/
+
+class Solution {
+static Node last;
+public Node flatten(Node head) {
+if(head==null)
+return null;
+last=head;
+var next=head.next;
+
+        if(head.child!=null){
+            head.next=flatten(head.child);
+            if(head.next!=null)
+                head.next.prev=head;
+            head.child=null;
+        }
+        if(next!=null){
+            var prev=last;
+            prev.next=flatten(next);
+            if(prev.next!=null)
+                prev.next.prev=prev;
+        }
+        return head;
+    }
+
+}
+
+## using stack ( not good in terms of time and space complexity)
+
+    /*
+
+// Definition for a Node.
+class Node {
+public int val;
+public Node prev;
+public Node next;
+public Node child;
+};
+\*/
+
+class Solution {
+
+    public Node flatten(Node head) {
+
+        if(head==null)
+            return null;
+
+        Stack<Node> stack= new Stack<>();
+        Node pre=null;
+        stack.push(head);
+
+        while(!stack.isEmpty()){
+
+           var temp = stack.pop();
+
+            if(temp.next!=null)
+               stack.push(temp.next);
+
+            if(temp.child!=null)
+               stack.push(temp.child);
+
+            if(pre!=null){
+                pre.next=temp;
+                temp.prev=pre;
+                pre.child=null;
+            }
+
+            pre=temp;
+        }
+        return head;
+    }
+
+}
+
+# Copy List with Random Pointer
+
+## using extra space hashing
+
+https://www.geeksforgeeks.org/clone-linked-list-next-arbit-pointer-set-2/
+Time complexity : O(n)
+Auxiliary space : O(n)
+
+## optimal
+
+https://www.geeksforgeeks.org/clone-linked-list-next-random-pointer-o1-space/
+
+Time Complexity: O(n)
+Auxiliary Space: O(1)
+
+/\*
+// Definition for a Node.
+class Node {
+int val;
+Node next;
+Node random;
+
+    public Node(int val) {
+        this.val = val;
+        this.next = null;
+        this.random = null;
+    }
+
+}
+\*/
+
+class Solution {
+public Node copyRandomList(Node head) {
+
+        if(head==null)
+            return null;
+        var orig=head;
+
+        //interweaving part
+        while(orig!=null){
+            var next=orig.next;
+            orig.next= new Node(orig.val);
+            orig=orig.next;
+            orig.next=next;
+            orig=orig.next;
+        }
+        //reinit pointers to interweaved list
+          orig=head;
+
+        //assign random pointers of clone with correct node
+        while(orig!=null){
+
+            if(orig.next!=null)
+                orig.next.random=orig.random!=null?orig.random.next:orig.random;
+        // no NPE since orig.next will be clone list last node always
+            orig=orig.next.next;
+        }
+
+        //separating the list
+         var copy=head.next;
+
+         orig=head;
+         var clone=copy;
+
+        while(orig!=null){
+            var temp=clone.next;
+            orig.next=temp;
+            clone.next=temp!=null?temp.next:temp;
+            orig=orig.next;
+            clone=clone.next;
+        }
+        return copy;
+        }
+
+}
+
+# rotate a linked list by k places
+
+time complexity o(n) i.e 2n to be exact
+space complexity O(1)
+
+- if list is empty or has only 1 element or if list is to
+- if list has more than one node then get the length of the list
+- since for a list of n nodes, n rotation will have no effect and since k can be greater than n so we can simply avoid full cycle rotation i.e multiple of n from k and then value of remainder will decide how many rotation we actually have to perform.
+- now at this step we have k rotations to perform so first we will find the pivot node and it's previous node , pivot node is nothing but our new head node of rotated list and from value of k and n node we know that new head node will be n-k places away from the current head node so we will reach to that node and make it our new head node of the list
+
+- Definition for singly-linked list.
+- public class ListNode {
+-     int val;
+-     ListNode next;
+-     ListNode() {}
+-     ListNode(int val) { this.val = val; }
+-     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+- }
+
+  ```
+  class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+
+        if(head==null || head.next==null || k==0)
+            return head;
+
+        int n=0;
+        var curr=head;
+        while(curr!=null){
+            n++;
+            curr=curr.next;
+        }
+
+        k=k%n;
+
+        if(k==0)
+            return head;
+
+        curr=head;
+        ListNode pre=null;
+        int pivotIndex = n-k;
+        n=0;
+        while(n < pivotIndex ){
+            pre=curr;
+            curr=curr.next;
+            n++;
+        }
+
+        pre.next=null;
+  		var newHead=curr;
+
+        while(curr!=null && curr.next!=null){
+            curr=curr.next;
+        }
+  		curr.next=head;
+
+        return newHead;
+    }
+  }
+  ```
+
+```
+
+```
