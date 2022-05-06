@@ -27,7 +27,14 @@
   - [template 1](#template-1)
   - [template 2](#template-2)
 
-goal of these notes is to identify patterns and then map it to probmens
+  - [template 1](#template-1)
+  - [template 2](#template-2)
+
+  - [template 1](#template-1)
+  - [template 2](#template-2)
+
+- goal of these notes is to identify patterns and then map it to probmens
+- keep revisting these problems to keep it fresh in memory until it no longer needs revisiting and your brain permanently stores this in perm area
 
 # to detect cycle/loop in linked list
 
