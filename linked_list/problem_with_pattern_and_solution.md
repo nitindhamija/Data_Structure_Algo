@@ -670,36 +670,34 @@ space complexity O(1)
         if(head==null || head.next==null || k==0)
             return head;
 
-        int n=0;
+        int length=0;
         var curr=head;
         while(curr!=null){
-            n++;
+            length++;
             curr=curr.next;
         }
 
-        k=k%n;
-
+        k=k%length;
         if(k==0)
             return head;
 
         curr=head;
         ListNode pre=null;
-        int pivotIndex = n-k;
-        n=0;
-        while(n < pivotIndex ){
+        int pivotIndex = length-k;
+        int i=0;
+
+        while(i < pivotIndex ){
             pre=curr;
             curr=curr.next;
-            n++;
+            i++;
         }
 
         pre.next=null;
   		var newHead=curr;
-
         while(curr!=null && curr.next!=null){
             curr=curr.next;
         }
   		curr.next=head;
-
         return newHead;
     }
   }
@@ -707,4 +705,231 @@ space complexity O(1)
 
 ```
 
+```
+
+# stack and queues
+
+## implement a circular queue
+
+```
+class MyCircularQueue {
+int size;
+int head;
+int tail;
+int[] data;
+
+    public MyCircularQueue(int k) {
+        this.head=-1;
+        this.tail=-1;
+        this.size=k;
+        this.data = new int[k];
+    }
+
+    public boolean enQueue(int value) {
+        if(isFull())
+            return false;
+        if(head==-1)
+            head=(head + 1) % size;
+
+        tail=(tail + 1) % size;
+        data[tail]=value;
+        return true;
+    }
+
+    public boolean deQueue() {
+        if(isEmpty())
+            return false;
+        if(head==tail)
+        {
+            head=-1;
+            tail=-1;
+        }
+        else
+            head=(head + 1) % size;
+        return true;
+    }
+
+    public int Front() {
+        if(isEmpty())
+            return -1;
+        else return data[head];
+    }
+
+    public int Rear() {
+        if(isEmpty())
+            return -1;
+        else return data[tail];
+    }
+
+    public boolean isEmpty() {
+        if(this.head==-1)
+            return true;
+        else return false;
+    }
+
+    public boolean isFull() {
+        if((head==0 && tail==size-1) || (tail==head-1))
+            return true;
+        else return false;
+    }
+
+}
+
+/\*\*
+
+- Your MyCircularQueue object will be instantiated and called as such:
+- MyCircularQueue obj = new MyCircularQueue(k);
+- boolean param_1 = obj.enQueue(value);
+- boolean param_2 = obj.deQueue();
+- int param_3 = obj.Front();
+- int param_4 = obj.Rear();
+- boolean param_5 = obj.isEmpty();
+- boolean param_6 = obj.isFull();
+  \*/
+```
+
+## implementation with better isFull and isEmpty check
+
+```
+class MyCircularQueue {
+int size,head,tail;
+int[] data;
+
+    public MyCircularQueue(int k) {
+        this.head=-1;
+        this.tail=-1;
+        this.data = new int[k];
+    }
+
+    public boolean enQueue(int value) {
+        if(isFull())
+            return false;
+        if(head==-1)
+            head=(head + 1) % data.length;
+
+        tail=(tail + 1) % data.length;
+        data[tail]=value;
+        size++;
+        return true;
+    }
+
+    public boolean deQueue() {
+        if(isEmpty())
+            return false;
+        if(head==tail)
+        {
+            head=-1;
+            tail=-1;
+        }
+        else
+            head=(head + 1) % data.length;
+        size--;
+        return true;
+    }
+
+    public int Front() {
+        if(isEmpty())
+            return -1;
+        else return data[head];
+    }
+
+    public int Rear() {
+        if(isEmpty())
+            return -1;
+        else return data[tail];
+    }
+
+    public boolean isEmpty() {
+        return size==0;
+    }
+
+    public boolean isFull() {
+        return size==data.length;
+    }
+
+}
+
+/\*\*
+
+- Your MyCircularQueue object will be instantiated and called as such:
+- MyCircularQueue obj = new MyCircularQueue(k);
+- boolean param_1 = obj.enQueue(value);
+- boolean param_2 = obj.deQueue();
+- int param_3 = obj.Front();
+- int param_4 = obj.Rear();
+- boolean param_5 = obj.isEmpty();
+- boolean param_6 = obj.isFull();
+  \*/
+```
+
+# application of queue with BFS
+
+https://leetcode.com/explore/learn/card/queue-stack/231/practical-application-queue/1372/
+
+## template 1
+
+```
+/**
+ * Return the length of the shortest path between root and target node.
+ */
+int BFS(Node root, Node target) {
+    Queue<Node> queue;  // store all nodes which are waiting to be processed
+    int step = 0;       // number of steps neeeded from root to current node
+    // initialize
+    add root to queue;
+    // BFS
+    while (queue is not empty) {
+        // iterate the nodes which are already in the queue
+        int size = queue.size();
+        for (int i = 0; i < size; ++i) {
+            Node cur = the first node in queue;
+            return step if cur is target;
+            for (Node next : the neighbors of cur) {
+                add next to queue;
+            }
+            remove the first node from queue;
+        }
+        step = step + 1;
+    }
+    return -1;          // there is no path from root to target
+}
+```
+
+- As shown in the code, in each round, the nodes in the queue are the nodes which are waiting to be processed.
+- After each outer while loop, we are one step farther from the root node. The variable step indicates the distance from the root node and the current node we are visiting.
+
+## template 2
+
+Sometimes, it is important to make sure that we never visit a node twice. Otherwise, we might get stuck in an infinite loop, e.g. in graph with cycle. If so, we can add a hash set to the code above to solve this problem. Here is the pseudocode after modification:
+
+```
+/**
+ * Return the length of the shortest path between root and target node.
+ */
+int BFS(Node root, Node target) {
+    Queue<Node> queue;  // store all nodes which are waiting to be processed
+    Set<Node> visited;  // store all the nodes that we've visited
+    int step = 0;       // number of steps neeeded from root to current node
+    // initialize
+    add root to queue;
+    add root to visited;
+    // BFS
+    while (queue is not empty) {
+        // iterate the nodes which are already in the queue
+        int size = queue.size();
+        for (int i = 0; i < size; ++i) {
+            Node cur = the first node in queue;
+            return step if cur is target;
+            for (Node next : the neighbors of cur) {
+                if (next is not in visited) {
+                    add next to queue;
+                    add next to visited;
+                }
+            }
+            remove the first node from queue;
+        }
+        step = step + 1;
+    }
+    return -1;          // there is no path from root to target
+}
 ```
