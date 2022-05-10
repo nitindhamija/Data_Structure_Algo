@@ -26,6 +26,15 @@
 - [application of queue with BFS](#application-of-queue-with-bfs)
   - [template 1](#template-1)
   - [template 2](#template-2)
+- [first read about graph and connect component of a graph](#first-read-about-graph-and-connect-component-of-a-graph)
+  - [return no of island (a variable of connected component problem)](#return-no-of-island-a-variable-of-connected-component-problem)
+    - [using BFS](#using-bfs)
+    - [using DFS (flood filling technique)](#using-dfs-flood-filling-technique)
+- [open the lock (imp problem) (REVISE)](#open-the-lock-imp-problem-revise)
+  - [using BFS and single queue  time complexity around  300 ms](#using-bfs-and-single-queue--time-complexity-around--300-ms)
+  - [using bidirectional search](#using-bidirectional-search)
+    - [optimal solution time complexity less than 15 ms](#optimal-solution-time-complexity-less-than-15-ms)
+- [Perfect Squares](#perfect-squares)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -959,5 +968,240 @@ int BFS(Node root, Node target) {
         step = step + 1;
     }
     return -1;          // there is no path from root to target
+}
+```
+
+# first read about graph and connect component of a graph
+
+A connected component of an undirected graph is a subgraph in which every two vertices are connected to each other by a path(s), and which is connected to no other vertices outside the subgraph.
+
+## return no of island (a variable of connected component problem)
+
+### using BFS
+
+Time complexity O(m,n) m no of rows and n no of columns
+space complexity O(m,n) for extra visited flag 2d array
+
+```
+class Solution {
+      static class Cell{
+            int row,column;
+            Cell(int row,int column){
+                this.row=row;
+                this.column=column;
+            }
+        }
+
+      boolean isSafe(char[][] grid,int i, int j,boolean[][] visited){
+            return ((i>=0 && i<grid.length) && (j>=0 && j< grid[0].length) && !visited[i][j] && grid[i][j]=='1');
+        }
+    /*since adjacent nodes connected horizontly or vertically has be considered and not diagonoly in which case it would 8 neighboring nodes instead of 4 here.*/
+      void BFS(char[][] grid,int i, int j,boolean[][] visited){
+          //since adjacent nodes connected horizontly or vertically has be considered and not diagonoly in which case it would 8 neighboring nodes instead of 4 here.
+          int[] row = {-1,0,0,1};
+          int[] column = {0,-1,1,0};
+
+          Queue<Cell> q=new LinkedList<>();
+          q.add(new Cell(i,j));
+          visited[i][j] = true;
+
+          while(!q.isEmpty()){
+              int r=q.peek().row;
+              int c=q.peek().column;
+              q.remove();
+
+              for(int k=0;k<4;k++)
+              {
+                  if(isSafe(grid,r+row[k],c+column[k],visited)){
+                          visited[r+row[k]][c+column[k]]=true;
+                          q.add(new Cell(r+row[k],c+column[k]));
+                  }
+              }
+           }
+        }
+
+    public int numIslands(char[][] grid) {
+        int m=grid.length;
+        int n=grid[0].length;
+        boolean[][] visited = new boolean[m][n];
+        int count=0;
+        for(int i=0; i<m;i++){
+            for(int j=0;j<n;j++){
+
+                if(grid[i][j]=='1' && !visited[i][j]){
+                    BFS(grid,i,j,visited);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+}
+```
+
+### using DFS (flood filling technique)
+
+in this method instead of taking extra visited flag array to keep track of visited node we flood the nodes i.e visited cell
+
+```
+public class Solution {
+
+private int n;
+private int m;
+
+public int numIslands(char[][] grid) {
+    int count = 0;
+    n = grid.length;
+    if (n == 0) return 0;
+    m = grid[0].length;
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < m; j++)
+            if (grid[i][j] == '1') {
+                DFSMarking(grid, i, j);
+                ++count;
+            }
+    }
+    return count;
+}
+
+private void DFSMarking(char[][] grid, int i, int j) {
+    if (i < 0 || j < 0 || i >= n || j >= m || grid[i][j] != '1') return;
+    grid[i][j] = '0';
+    DFSMarking(grid, i + 1, j);
+    DFSMarking(grid, i - 1, j);
+    DFSMarking(grid, i, j + 1);
+    DFSMarking(grid, i, j - 1);
+}
+```
+# open the lock (imp problem) (REVISE)
+## using BFS and single queue  time complexity around  300 ms
+```
+class Solution {
+    public int openLock(String[] deadends, String target) {
+        Queue<String> q = new LinkedList<>();
+        Set<String> deads = new HashSet<>(Arrays.asList(deadends));
+        Set<String> visited = new HashSet<>();
+        q.offer("0000");
+        visited.add("0000");
+        int level = 0;
+        while(!q.isEmpty()) {
+            int size = q.size();
+            while(size > 0) {
+                String s = q.poll();
+                if(deads.contains(s)) {
+                    size --;
+                    continue;
+                }
+                if(s.equals(target)) return level;
+                StringBuilder sb = new StringBuilder(s);
+                for(int i = 0; i < 4; i ++) {
+                    char c = sb.charAt(i);
+                    String s1 = sb.substring(0, i) + (c == '9' ? 0 : c - '0' + 1) + sb.substring(i + 1);
+                    String s2 = sb.substring(0, i) + (c == '0' ? 9 : c - '0' - 1) + sb.substring(i + 1);
+                    if(!visited.contains(s1) && !deads.contains(s1)) {
+                        q.offer(s1);
+                        visited.add(s1);
+                    }
+                    if(!visited.contains(s2) && !deads.contains(s2)) {
+                        q.offer(s2);
+                        visited.add(s2);
+                    }
+                }
+                size --;
+            }
+            level ++;
+        }
+        return -1;
+    }
+}
+```
+## using bidirectional search
+using bi direction approach we can reduce the time complexity considerably refer link below to know more
+https://www.geeksforgeeks.org/bidirectional-search/
+
+### optimal solution time complexity less than 15 ms
+- since it is given that locks no will digit only we can parse the locks combination to int like '0000' -> 0 and '1234' -> 1234
+
+- we use 2 queues to keep track of visited nodes in forward dir i.e from source to destination and in backward direction i.e from dest to source. 
+
+- that way we reduce the problem in 2 subgraphs and hence reduce the complexity from b^d to b^d/2+b^d/2 where b is branch/depth levels of graph and and d is the distance between source and destination
+```
+class Solution {
+    public int openLock(String[] deadends, String target) {
+        
+        int[] pow10 = {1, 10, 100, 1000};
+        int[] visit = new int[10000]; // 0: not visited, 1: visited through forward direction, -1: visited through backward direction, 2: deadends
+        for(String dead: deadends) {
+            visit[Integer.parseInt(dead)] = 2;
+        }
+        int src = 0, dest = Integer.parseInt(target), steps = 0, dir = 1;
+        if(visit[src] == 2 || visit[dest] == 2) return -1;
+        if(src == dest) return 0;
+        Queue<Integer> forward = new LinkedList<>(), backward = new LinkedList<>();
+        forward.add(src);
+        visit[src] = 1;
+        backward.add(dest);
+        visit[dest] = -1;
+        while(!forward.isEmpty() && !backward.isEmpty()) {
+            if(forward.size() > backward.size()) {
+                Queue<Integer> tmp = forward; forward = backward; backward = tmp;
+                dir = -dir;
+            }
+            steps++;
+            int size = forward.size();
+            while(size-- > 0) {
+                int cur = forward.poll();
+                for(int p: pow10) {
+                    int d = (cur / p) % 10;
+                    for(int i = -1; i <= 1; i += 2) {
+                        int z = d + i;
+                        z = z == -1 ? 9 : (z == 10 ? 0 : z);
+                        int next = cur + (z - d) * p;
+                        if(visit[next] == -dir) return steps;
+                        if(visit[next] == 0) {
+                            forward.add(next);
+                            visit[next] = dir;
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+}
+```
+
+#  Perfect Squares
+Given an integer n, return the least number of perfect square numbers that sum to n.
+
+A perfect square is an integer that is the square of an integer; in other words, it is the product of some integer with itself. For example, 1, 4, 9, and 16 are perfect squares while 3 and 11 are not.
+
+```
+class Solution {
+    public int numSquares(int n) {
+        if(n==1)
+            return 1;
+        Queue<Integer> q= new LinkedList<>();
+        q.add(n);
+        Set<Integer> vis = new HashSet<>();
+        int steps=0;
+        while(!q.isEmpty()){
+            int size=q.size();
+            steps++;
+            while(size-- > 0){
+                int node=q.poll();
+                for(int i = 1; (i*i) <= node; i++){
+                    int rem = node - ( i * i);
+                    if( rem == 0)
+                        return steps;
+                    if(!vis.contains(rem)){
+                        q.add(rem);
+                        vis.add(rem);
+                    }
+                }
+            }
+        }
+    return -1;
+    }
 }
 ```
