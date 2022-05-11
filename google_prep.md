@@ -1,0 +1,32 @@
+# DSA TODO daily study 4 hour
+- Big (o) 
+- sorting(quick sort,merge sort) and other nlog(n) sorting
+- searching(binary search)
+- divide and conquer
+- recursion
+- DP and memoization
+- greedy algorithms
+- bracktracking
+- hashtable
+- trees
+  - Btree, n-ary trees, trie-trees, red/black, avl tree, splay tree with their implementation
+  - You should know about tree traversal algorithms: BFS and DFS, and know the difference between inorder, postorder and preorder.
+- graph
+  -  breadth-first search and depth-first search. You should know their computational complexity, their tradeoffs, and how to implement them in real code.
+  -  Dijkstra 
+  -  prim
+  -  kruskal
+  -  You should especially know about the most famous classes of NP-complete problems, such as traveling salesman and the knapsack problem, and be able to recognize them when an interviewer asks you them in disguise
+- arrays
+- stack
+- queue
+- linkedlists
+- sets
+- maps
+- Math
+  - combinatorics and probability. You should be familiar with n-choose-k problems and their ilk – the more the better
+- OS
+  - to know about processes, threads and concurrency issues
+  - Know about locks and mutexes and semaphores and monitors and how they work. Know about deadlock and livelock and how to avoid them. Know what resources a processes needs, and a thread needs, and how context switching works, and how it's initiated by the operating system and underlying hardware. Know a little about scheduling. The world is rapidly moving towards multi-core, and you'll be a dinosaur in a real hurry if you don't understand the fundamentals of "modern" (which is to say, "kinda broken") concurrency constructs.
+- choose java or javascript for coding
+- practice/write code on google docs

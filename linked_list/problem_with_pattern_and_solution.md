@@ -34,7 +34,16 @@
   - [using BFS and single queue  time complexity around  300 ms](#using-bfs-and-single-queue--time-complexity-around--300-ms)
   - [using bidirectional search](#using-bidirectional-search)
     - [optimal solution time complexity less than 15 ms](#optimal-solution-time-complexity-less-than-15-ms)
-- [Perfect Squares](#perfect-squares)
+- [Perfect Squares( sol using BFS, DP TODO, Math Solution)](#perfect-squares-sol-using-bfs-dp-todo-math-solution)
+  - [using BFS and queue time complexity (n * sqrt(n))](#using-bfs-and-queue-time-complexity-n--sqrtn)
+  - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
+- [min stack problem](#min-stack-problem)
+  - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
+  - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+  - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+- [valid paranthese](#valid-paranthese)
+  - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -1171,10 +1180,14 @@ class Solution {
 }
 ```
 
-#  Perfect Squares
+#  Perfect Squares( sol using BFS, DP TODO, Math Solution)
+https://www.geeksforgeeks.org/minimum-number-of-squares-whose-sum-equals-to-given-number-n/
+
 Given an integer n, return the least number of perfect square numbers that sum to n.
 
 A perfect square is an integer that is the square of an integer; in other words, it is the product of some integer with itself. For example, 1, 4, 9, and 16 are perfect squares while 3 and 11 are not.
+## using BFS and queue time complexity (n * sqrt(n))
+this method is better than recursive exponential approach and max n number will be pushed to queue and for each n at max sqrt(n) comparison will be made so time complexity is n *  sqrt(n)
 
 ```
 class Solution {
@@ -1204,4 +1217,294 @@ class Solution {
     return -1;
     }
 }
+```
+
+## Mathematical solution (Most optimal time complexity)
+The solution is based on Lagrange’s Four Square Theorem.
+According to the theorem, there can be atmost 4 solutions to the problem, i.e. 1, 2, 3, 4
+
+Case 1:
+
+Ans = 1 => This can happen iff the number is a square number. 
+n = {a2 : a ∈ W}
+Example : 1, 4, 9, etc.
+
+Case 2:
+
+Ans = 2 => This is possible if the number is the sum of 2 square numbers.
+
+n = {a2 + b2 : a, b ∈  W}  
+Example : 2, 5, 18, etc. 
+
+Case 3:
+
+Ans = 3 => This can happen if the number is not of the form 4k(8m + 7).
+
+For more information on this : https://en.wikipedia.org/wiki/Legendre%27s_three-square_theorem
+
+n = {a2 + b2 + c2 : a, b, c ∈  W} ⟷  n ≢ {4k(8m + 7) : k, m ∈ W }
+Example : 6, 11, 12 etc.
+
+Case 4:
+
+Ans = 4 => This can happen if the number is of the form 4k(8m + 7).
+
+n = {a2 + b2 + c2 + d2 : a, b, c, d ∈  W} ⟷  n ≡  {4k(8m + 7) : k, m ∈ W }
+Example : 7, 15, 23 etc.
+
+```
+class Solution {
+    
+    static boolean isSquare(int n){
+        int sqrtN=(int)Math.sqrt(n);
+        return (sqrtN * sqrtN) == n;
+    }
+    public int numSquares(int n) {
+        //case 1 is n is a square no then simply return 1 
+        if(isSquare(n))
+            return 1;
+        
+        /* case 2 if n can be represented sum of 2 square no i.e if n - ( i * i) should be a square no any value of i starting from 1 to sqrt of n */
+        for(int i = 1; i < (int) Math.sqrt(n); i++){
+            if(isSquare(n - ( i * i)))
+                return 2;
+        }
+        // case 4 if no is of the form 4a(8k+7)
+        
+        while(n%4==0){
+            n>>=2;
+        }
+        if(n%8==7)
+            return 4;
+        //if not any of the above case then it is case 3 
+        return 3;
+    }
+}
+```
+# min stack problem 
+https://www.geeksforgeeks.org/design-a-stack-that-supports-getmin-in-o1-time-and-o1-extra-space/
+## using extra space time complexity O(1) for all operation and space complexity O(n)
+```
+class MinStack {
+    Stack<Integer> actual;
+    Stack<Integer> aux;
+
+    public MinStack() {
+        this.actual=new Stack<>();
+        this.aux=new Stack<>();
+    }
+    
+    public void push(int val) {
+        actual.push(val);
+        if(aux.isEmpty())
+            aux.push(val);
+        else if(val<=aux.peek())
+            aux.push(val);
+    }
+    
+    public void pop() {
+        int top = actual.pop();
+        if(!aux.isEmpty() && top==aux.peek())
+            aux.pop();
+    }
+    
+    public int top() {
+       return actual.peek();
+    }
+    
+    public int getMin() {
+        return aux.peek();
+    }
+}
+```
+## without extra space TC O(1) SC(1)
+this sol would not work if -2^31 <= val <= 2^31 - 1
+```
+class MinStack {
+    Stack<Integer> s;
+    int min;
+
+
+    public MinStack() {
+        this.s=new Stack<>();       
+    }
+    
+    public void push(int val) {
+      if(s.isEmpty()){
+        min=val;
+        s.push(val);
+      }
+      else if(val<min){
+          s.push(2 * val - min);
+          min=val; 
+      }
+      else
+        s.push(val);          
+    }
+    
+    public void pop() {
+     int top=s.pop();
+     if(top < min)
+         min= 2 * min - top;
+    }
+    
+    public int top() {
+       return s.peek();
+    }
+    
+    public int getMin() {
+        return min;
+    }
+}
+```
+## using a stack of Nodes having both val and min for each node
+```
+class MinStack {
+	private Stack<Node> s;
+        
+    MinStack(){
+        this.s=new Stack<Node>();    
+    }
+    public void push(int x) {
+        
+      if(s.isEmpty()){
+          s.push(new Node(x,x));
+      }else if(x < s.peek().min){
+          s.push(new Node(x,x));
+      }else
+          s.push(new Node(x,s.peek().min));
+    }
+    
+    public void pop() {
+        s.pop();
+    }
+    
+    public int top() {
+        return s.peek().val;
+    }
+    
+    public int getMin() {
+        return s.peek().min;
+    }
+        
+    private class Node {
+        int val;
+        int min;
+            
+        private Node(int val, int min) {
+            this.val = val;
+            this.min = min;
+        }
+    }
+}
+```
+### using a linked list node only slight diff from above solution
+this solution can be used to get max element also instead of min we will keep track max element 
+```
+class MinStack {
+	private Node head;
+        
+    public void push(int x) {
+        if (head == null) 
+            head = new Node(x, x, null);
+        else 
+            head = new Node(x, Math.min(x, head.min), head);
+    }
+    
+    public void pop() {
+        head = head.next;
+    }
+    
+    public int top() {
+        return head.val;
+    }
+    
+    public int getMin() {
+        return head.min;
+    }
+        
+    private class Node {
+        int val;
+        int min;
+        Node next;
+            
+        private Node(int val, int min, Node next) {
+            this.val = val;
+            this.min = min;
+            this.next = next;
+        }
+    }
+}
+```
+# valid paranthese
+best sol TC O(n) SC O(n) 1ms beats 99% on leetcode
+```
+class Solution {
+    public boolean isValid(String s) {
+        
+        Stack<Character> stack = new Stack<>();
+        for (char c : s.toCharArray()) {
+            
+            if (c == '(') {
+                stack.push(')');
+            }
+            else if () {
+                stack.push(']');
+            }
+            else if (c == '{') {
+                stack.push('}');
+            }
+            else if (stack.isEmpty() || c != stack.pop())){
+                return false;
+            }
+        }
+        return stack.isEmpty();
+    }
+
+}
+```
+## my submission ok but not as good as above
+```
+class Solution {
+    Stack<Character> st= new Stack<>();
+    public boolean isValid(String s) {
+                
+        for(int i=0;i<s.length();i++){
+            char c = s.charAt(i);
+            
+            switch(c){
+                case '}': 
+                    if(checkValid('{')){
+                        st.pop();
+                        continue;
+                    }
+                    else
+                        return false;
+                    
+                case ']':
+                    if(checkValid('[')){
+                        st.pop();
+                        continue;
+                    }
+                    else
+                        return false;
+                    
+                case ')':
+                    if(checkValid('(')){
+                        st.pop();
+                        continue;
+                    }
+                    else
+                        return false;                    
+            }
+           st.push(c);             
+        }
+        return st.isEmpty();
+    }
+
+ public boolean checkValid(char c) {
+    return (st.isEmpty() || !st.peek().equals(c)) ? false : true;
+ }           
+
+}      
 ```
