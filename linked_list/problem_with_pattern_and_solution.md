@@ -44,6 +44,25 @@
     - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
 - [valid paranthese](#valid-paranthese)
   - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
+- [binary search O(log(n)](#binary-search-ologn)
+  - [template 1](#template-1-1)
+    - [iterative sol](#iterative-sol)
+    - [sqrure root of x using binary search](#sqrure-root-of-x-using-binary-search)
+    - [checkout below also](#checkout-below-also)
+    - [here below part is extra to calculate the fractional part up to p point](#here-below-part-is-extra-to-calculate-the-fractional-part-up-to-p-point)
+  - [template 2](#template-2-1)
+    - [first bad version problem](#first-bad-version-problem)
+      - [iterative](#iterative)
+      - [recursive](#recursive)
+    - [find peak element](#find-peak-element)
+    - [Find Minimum in Rotated Sorted Array](#find-minimum-in-rotated-sorted-array)
+      - [recursive approach find pivot next element of pivot is min element in array](#recursive-approach-find-pivot-next-element-of-pivot-is-min-element-in-array)
+      - [iterative approach](#iterative-approach)
+  - [template 3](#template-3)
+    - [Search for a Range](#search-for-a-range)
+      - [gfg sol](#gfg-sol)
+      - [sol with template 3 instructions](#sol-with-template-3-instructions)
+      - [sol with single binary search (Easy and clean)](#sol-with-single-binary-search-easy-and-clean)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -1508,3 +1527,411 @@ class Solution {
 
 }      
 ```
+# binary search O(log(n)
+there are 3 templates for binary search 
+## template 1 
+- Template 1 is used to search for an element or condition which can be determined by accessing a single index in the array check below link for more info (https://leetcode.com/explore/learn/card/binary-search/125/template-i/938/)
+### iterative sol
+```
+class Solution {
+    public int search(int[] nums, int target) {
+        int beg = 0,end = nums.length - 1;
+      
+        while(beg <= end){
+            int mid = beg + (end - beg)/2;
+            if(nums[mid]== target)
+                return mid;
+            else if(nums[mid] < target){
+                    beg=mid + 1;
+            }else{
+                    end=mid - 1;
+            }
+        }
+        return -1;
+    }
+}
+```
+`int mid = (low + high)/2;`
+
+But if we calculate the middle index like this means our code is not 100% correct, it contains bugs.
+That is, it fails for larger values of int variables low and high. Specifically, it fails if the sum of low and high is greater than the maximum positive int value(231 – 1 )
+The sum overflows to a negative value and the value stays negative when divided by 2. 
+In java, it throws ArrayIndexOutOfBoundException.
+so always get middle like
+`int mid = low + (high – low)/2;` i.e 3 + 5-3/2 = 4
+
+### sqrure root of x using binary search
+
+```
+class Solution {
+    public int mySqrt(int x) {
+        if(x==0 || x==1)
+            return x;
+        int l=1, r=x/2;
+        int sqrtX=-1;
+        
+        while(l <= r){
+           int mid = l + (r - l)/2;
+            if(mid == x/mid)
+                return mid;
+            if(mid < x/mid){
+                l = mid + 1;
+                sqrtX = mid;
+            }
+            else
+                r= mid - 1;                                    
+        }
+        return sqrtX;
+    }
+}
+```
+### checkout below also 
+https://www.geeksforgeeks.org/find-square-root-number-upto-given-precision-using-binary-search/?ref=lbp
+### here below part is extra to calculate the fractional part up to p point
+   ```
+    // For computing the fractional part
+        // of square root upto given precision
+        double increment = 0.1;
+        for (int i = 0; i < precision; i++) {
+            while (ans * ans <= number) {
+                ans += increment;
+            }
+ 
+            // loop terminates when ans * ans > number
+            ans = ans - increment;
+            increment = increment / 10;
+        }
+        return (float)ans;
+    ```
+## search in a rotated sorted array
+
+https://www.geeksforgeeks.org/search-an-element-in-a-sorted-and-pivoted-array/
+    ```
+    class Solution {
+    public int search(int[] nums, int target) {
+       return bSearch(nums,0,nums.length-1,target);
+       
+    }
+    int bSearch(int[] nums,int l, int h, int target){
+        if(l > h)
+            return -1;
+        int mid = l + (h - l)/2;
+        if(nums[mid] == target)
+            return mid;
+        if(nums[l] <= nums[mid] ){
+            if(target >= nums[l] && target <= nums[mid] )
+                return bSearch(nums,l, mid-1,target);
+            return bSearch(nums,mid + 1, h, target);
+        }
+        if(target >= nums[mid] && target <= nums[h])
+            return bSearch(nums,mid+1,h,target);
+        return bSearch(nums,l,mid-1,target);
+    }
+}
+```
+## template 2
+- Template #2 is an advanced form of Binary Search. It is used to search for an element or condition which requires accessing the current index and its immediate right neighbor's index in the array.
+- (https://leetcode.com/explore/learn/card/binary-search/126/template-ii/937/)
+
+- An advanced way to implement Binary Search.
+- Search Condition needs to access the element's immediate right neighbor
+- Use the element's right neighbor to determine if the condition is met and decide whether to go left or right
+- Guarantees Search Space is at least 2 in size at each step
+- Post-processing required. Loop/Recursion ends when you have 1 element left. Need to assess if the remaining element meets the condition.
+
+```
+Initial Condition: left = 0,
+right = length
+Termination: left == right
+Searching Left: right = mid
+Searching Right: left = mid+1
+```
+### first bad version problem
+- https://leetcode.com/explore/learn/card/binary-search/126/template-ii/947/
+- my sol as per the template 2 correct but not optimal
+```
+/* The isBadVersion API is defined in the parent class VersionControl.
+      boolean isBadVersion(int version); */
+
+public class Solution extends VersionControl {
+    public int firstBadVersion(int n) {
+        int left = 0, right = n;
+        while(left < right){
+            int mid = left + (right - left)/2;
+            if(!isBadVersion(mid) && isBadVersion(mid + 1))
+                return mid + 1;
+            else if(isBadVersion(mid))
+                right = mid;
+            else 
+                left = mid + 1;
+        }
+     return -1;   
+    }
+}
+``` 
+#### iterative
+- discuss better sol in TC
+- The only scenario left is where isBadVersion(mid) \Rightarrow true isBadVersion(mid)⇒true. This tells us that mid may or may not be the first bad version, but we can tell for sure that all versions after midmid can be discarded. Therefore we set right = midright=mid as the new search space of interval [left,mid][left,mid] (inclusive).
+```
+/* The isBadVersion API is defined in the parent class VersionControl.
+      boolean isBadVersion(int version); */
+
+public class Solution extends VersionControl {
+    public int firstBadVersion(int n) {
+        int left = 1, right = n;
+        while(left < right){
+            int mid = left + (right - left)/2;
+            if(isBadVersion(mid)){
+                right = mid;                
+            }else
+                left = mid + 1;
+        }
+     return left;   
+    }
+}
+```
+#### recursive 
+TC O(log(n)) SC O(log(n)) for call stack
+at each step search space is reduced to half and call stack also redcued to half 
+```
+/* The isBadVersion API is defined in the parent class VersionControl.
+      boolean isBadVersion(int version); */
+
+public class Solution extends VersionControl {
+    public int firstBadVersion(int n) {
+     return recSearch(1,n);   
+    }
+    int recSearch(int l, int r){
+       if(l == r)
+           return l;
+       int mid = l +  (r - l)/2;
+        if(isBadVersion(mid))
+           return recSearch(l , mid);
+        else
+           return recSearch(mid + 1, r);
+    }
+}
+```
+### find peak element
+- https://leetcode.com/explore/learn/card/binary-search/126/template-ii/948/
+```
+class Solution {
+    public int findPeakElement(int[] nums) {
+        int l = 0, r = nums.length - 1;
+        while(l < r){
+            int mid = l + (r - l)/2;
+            if(nums[mid] > nums[mid + 1])
+                r = mid;
+            else
+                l = mid + 1;
+        }
+        return l;
+    }
+}
+```
+- lc sol https://leetcode.com/problems/find-peak-element/solution/
+  
+### Find Minimum in Rotated Sorted Array
+#### recursive approach find pivot next element of pivot is min element in array
+```
+class Solution {
+    public int findMin(int[] nums) {
+        int l = 0, r = nums.length - 1;
+        if(r == 0)
+            return nums[l];
+        int pivot = findPivot(nums, l, r);
+        if(pivot == nums.length - 1)
+            return nums[0];
+        return nums[pivot + 1];
+        }
+    //recrusive find of pivot 
+    // try iterative find of pivot also
+    int findPivot(int[] nums,int l ,int r){
+        if(r < l)
+            return -1;
+        if(l == r)
+            return l;
+        int mid = l + (r - l)/2;
+        if(mid < r && nums[mid] > nums[mid + 1])
+            return mid; 
+        else if(mid > l && nums[mid] < nums[mid - 1])
+            return mid - 1;
+        else if(nums[l] < nums[mid])
+            return findPivot(nums,mid + 1, r);
+        else
+            return findPivot(nums, l, mid -1);
+    }
+}
+``` 
+#### iterative approach 
+- https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/solution/
+
+- if first element is less than last then return first element as there are effectively no rotations, if mid element is less than right element then left half inclusive of mid has min else right half
+```
+class Solution {
+    public int findMin(int[] nums) {
+        int l = 0, r = nums.length - 1;
+        if(nums[l] < nums[r])
+            return nums[l];
+        
+        while(l < r){
+            int mid = l + (r - l)/2;
+            if(nums[mid] < nums[r])
+                r = mid;
+            else
+                l = mid + 1;
+        }
+        return nums[l];      
+    }
+}
+```
+## template 3
+- https://leetcode.com/explore/learn/card/binary-search/135/template-iii/936/
+- Search Condition needs to access element's immediate left and right neighbors
+- Use element's neighbors to determine if condition is met and decide whether to go left or right
+- Gurantees Search Space is at least 3 in size at each step
+- Post-processing required. Loop/Recursion ends when you have 2 elements left. Need to assess if the remaining elements meet the condition.
+  
+### Search for a Range
+Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
+
+If target is not found in the array, return [-1, -1].
+#### gfg sol
+- https://www.geeksforgeeks.org/find-first-and-last-positions-of-an-element-in-a-sorted-array/
+- the solution is to use 2 binary searches one for finding first index of matching element and other one for finding the last index of element
+in the code further improvements are done by checking the value of first index if it is -1 then it means element is not in array so simply return [-1,-1] also pass the found first index as lower bound for second binary search 
+  
+```
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        int l = 0, r = nums.length - 1;
+        int[] res = {-1, -1};
+        
+        if(nums.length == 0 )
+            return res;
+        
+        // find starting postion
+        while( l <= r){
+            int mid = l + (r - l)/2;
+            if(nums[mid] == target){
+                res[0] = mid;
+                r = mid - 1; 
+            }
+            else if(nums[mid] < target)
+                l= mid + 1;
+            else 
+                r= mid - 1;
+        }
+        if(res[0] == -1){
+            res[1] = -1;
+            return res;
+        }
+            
+        // find last position
+        l = res[0]; r = nums.length - 1;
+        while(l <= r){
+            int mid = l + (r - l)/2;
+             if(nums[mid] == target){
+                res[1] = mid;
+                l = mid + 1; 
+            }
+            else if(nums[mid] < target)
+                l= mid + 1;
+            else 
+                r= mid - 1;
+        }
+        return res;
+        
+    
+    }
+}
+```
+- https://leetcode.com/explore/learn/card/binary-search/135/template-iii/944/discuss/2039143/clean-and-easy-to-understand-Binary-search-iterative-with-improvements-or-0-ms-beats-100
+
+#### sol with template 3 instructions
+```
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        int l = 0, r = nums.length - 1;
+        int[] res = {-1, -1};
+        
+        if(nums.length == 0 )
+            return res;
+        
+        // find starting postion
+        while( l + 1 < r){
+            int mid = l + (r - l)/2;
+            if(nums[mid] == target){
+                //res[0] = mid;
+                r = mid; 
+            }
+            else if(nums[mid] < target)
+                l = mid;
+            else 
+                r = mid;
+        }
+        if(nums[l] == target)
+            res[0] = l;
+        else if(nums[r] == target)
+            res[0] = r;
+        else{
+            res[0] = res[1] = -1;
+            return res;
+        }
+                                            
+        // find last position
+        l = res[0]; r = nums.length - 1;
+        while(l + 1 < r){
+            int mid = l + (r - l)/2;
+             if(nums[mid] == target){
+                l = mid;                
+            }
+            else if(nums[mid] < target)
+                l = mid;
+            else 
+                r = mid;
+        }
+        
+        if(nums[r] == target)
+            res[1] = r;
+        else if(nums[l] == target)
+            res[1] = l;
+        else
+            res[1] = -1;
+                           
+        return res;
+        
+    
+    }
+}
+```
+#### sol with single binary search (Easy and clean)
+here once we find the target element with normal binary search, we use while loops to get first and last index of the target element
+```
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        int[] res = new int[2];
+        Arrays.fill(res, -1);
+        if (nums == null || nums.length == 0) return res;
+        int left = 0, right = nums.length;
+        while(left < right) {
+            int mid = left + (right-left) / 2;
+            if (nums[mid] == target) {
+                int temp = mid;
+                while(mid >= left && nums[mid] == target) mid--;
+                res[0] = mid+1;
+                mid = temp;
+                while(mid < right && nums[mid] == target) mid++;
+                res[1] = mid-1;
+                return res;
+            } else if (target < nums[mid]) {
+                right = mid;
+            } else {
+                left = mid+1;
+            }
+        }
+        return res;
+    }
+}
+```
+ 

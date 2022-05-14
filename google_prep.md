@@ -1,12 +1,13 @@
 # DSA TODO daily study 4 hour
+refer interview prep guide shared by sangeetha google recruiter
 - Big (o) 
-- sorting(quick sort,merge sort) and other nlog(n) sorting
+- sorting(quick sort,merge sort must) and other nlog(n) sorting
 - searching(binary search)
-- divide and conquer
+- divide and conquer (if have time)
 - recursion
 - DP and memoization
-- greedy algorithms
-- bracktracking
+- greedy algorithms (if have time)
+- bracktracking (if have time)
 - hashtable
 - trees
   - Btree, n-ary trees, trie-trees, red/black, avl tree, splay tree with their implementation
