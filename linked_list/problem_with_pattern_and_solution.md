@@ -1,3 +1,4 @@
+- [youtube channel to checkout for leetcode prob](#youtube-channel-to-checkout-for-leetcode-prob)
 - [Linked List](#linked-list)
   - [to detect cycle/loop in linked list](#to-detect-cycleloop-in-linked-list)
   - [circular linked list applications](#circular-linked-list-applications)
@@ -90,9 +91,19 @@
     - [two sum II](#two-sum-ii)
       - [O(n) sol using two pointers](#on-sol-using-two-pointers)
       - [O(n log n) sol using binary search](#on-log-n-sol-using-binary-search)
+    - [Minimum Size Subarray Sum (revise)](#minimum-size-subarray-sum-revise)
+      - [using 2 pointer/ sliding window O(log(n))](#using-2-pointer-sliding-window-ologn)
+      - [sol using outer loop and binary search TC O(n log n) TODO](#sol-using-outer-loop-and-binary-search-tc-on-log-n-todo)
+    - [min window substring TODO](#min-window-substring-todo)
+  - [rotate array TC O(n) in place SC O(1)](#rotate-array-tc-on-in-place-sc-o1)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
+
+# youtube channel to checkout for leetcode prob
+
+- tech dose (https://www.youtube.com/watch?v=K0NgGYEAkA4)
+- neetcode
 
 # Linked List
 
@@ -2571,4 +2582,63 @@ class Solution {
 
 
     }
+```
+
+### Minimum Size Subarray Sum (revise)
+
+- https://leetcode.com/explore/learn/card/array-and-string/205/array-two-pointer-technique/1299/
+
+#### using 2 pointer/ sliding window O(log(n))
+
+- https://www.youtube.com/watch?v=K0NgGYEAkA4
+- this sol actually uses sliding window via 2 pointers
+
+```
+	class Solution {
+    public int minSubArrayLen(int target, int[] nums) {
+        int str = 0, end = 0, sum = 0, minlen = Integer.MAX_VALUE;
+        for(;end < nums.length; end++){
+            sum += nums[end];
+            while(sum >= target){
+                minlen = Math.min(minlen, end - str + 1);
+                sum -= nums[str++];
+            }
+        }
+        return minlen == Integer.MAX_VALUE ? 0 : minlen;
+    }
+}
+```
+
+#### sol using outer loop and binary search TC O(n log n) TODO
+
+### min window substring TODO
+
+- https://leetcode.com/problems/minimum-window-substring/discuss/26808/Here-is-a-10-line-template-that-can-solve-most-'substring'-problems
+
+## rotate array TC O(n) in place SC O(1)
+
+- algo is to divide the array in half using k i.e 0, n-k-1 and n-k, n
+- then reverse each half
+- then reverse the whole array
+
+```
+class Solution {
+    public void rotate(int[] nums, int k) {
+        int len = nums.length;
+        if(k % len == 0)
+            return;
+        k = k % len;
+        reverse(nums,0, len - k - 1);
+        reverse(nums, len - k, len - 1);
+        reverse(nums, 0, len - 1);
+    }
+
+    void reverse(int[] nums, int s, int e){
+        while(s < e){
+            int temp = nums[s];
+            nums[s++] = nums[e];
+            nums[e--] = temp;
+        }
+    }
+}
 ```
