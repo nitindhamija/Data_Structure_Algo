@@ -42,9 +42,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -80,6 +80,7 @@
   - [plus one](#plus-one)
   - [spiral traverse of matrix](#spiral-traverse-of-matrix)
   - [pascal triange](#pascal-triange)
+  - [pascal triange II](#pascal-triange-ii)
   - [Add Binary](#add-binary)
   - [Implement strStr()](#implement-strstr)
     - [sliding window my sol with TC O(m \* (m - n)) SC O(n)](#sliding-window-my-sol-with-tc-om--m---n-sc-on)
@@ -88,7 +89,7 @@
   - [longest common prefix](#longest-common-prefix)
   - [2-pointer technique](#2-pointer-technique)
     - [Array Partition](#array-partition)
-    - [two sum II](#two-sum-ii)
+    - [two sum II (sorted array)](#two-sum-ii-sorted-array)
       - [O(n) sol using two pointers](#on-sol-using-two-pointers)
       - [O(n log n) sol using binary search](#on-log-n-sol-using-binary-search)
     - [Minimum Size Subarray Sum (revise)](#minimum-size-subarray-sum-revise)
@@ -96,6 +97,35 @@
       - [sol using outer loop and binary search TC O(n log n) TODO](#sol-using-outer-loop-and-binary-search-tc-on-log-n-todo)
     - [min window substring TODO](#min-window-substring-todo)
   - [rotate array TC O(n) in place SC O(1)](#rotate-array-tc-on-in-place-sc-o1)
+    - [reverse words in a string REVISIT](#reverse-words-in-a-string-revisit)
+      - [using stack](#using-stack)
+      - [two pointer revers algo | in place](#two-pointer-revers-algo--in-place)
+    - [move zeros](#move-zeros)
+      - [simple approach O(n) inplace](#simple-approach-on-inplace)
+      - [2 pointer optimized O(n) inplace](#2-pointer-optimized-on-inplace)
+- [hash tables](#hash-tables)
+  - [design hashset](#design-hashset)
+    - [arraylist implementation](#arraylist-implementation)
+    - [BST implementation](#bst-implementation)
+  - [hashmap implementation](#hashmap-implementation)
+    - [using linked list](#using-linked-list)
+  - [single number prob](#single-number-prob)
+  - [intersection of 2 arrays](#intersection-of-2-arrays)
+    - [using hash set TC O(m + n) SC(m + n)](#using-hash-set-tc-om--n-scm--n)
+    - [using sorting and 2 pointer TC O(n logn)](#using-sorting-and-2-pointer-tc-on-logn)
+    - [using sorting and binary search Time complexity: O(nlogn)](#using-sorting-and-binary-search-time-complexity-onlogn)
+  - [happy number problem](#happy-number-problem)
+    - [loop detection using hashset TC log(n) SC log(n)](#loop-detection-using-hashset-tc-logn-sc-logn)
+    - [using floyd's loop detection algo TC log(n) SC O(1) better approach than hashset](#using-floyds-loop-detection-algo-tc-logn-sc-o1-better-approach-than-hashset)
+    - [math sol](#math-sol)
+  - [two sum (non sorted) return indices](#two-sum-non-sorted-return-indices)
+    - [using extra space hashmap TC O(n) SC O(n)](#using-extra-space-hashmap-tc-on-sc-on)
+    - [using sorting and 2 pointer technique TC n logn SC is n( 3n to be exact)](#using-sorting-and-2-pointer-technique-tc-n-logn-sc-is-n-3n-to-be-exact)
+  - [isomorphic sol](#isomorphic-sol)
+    - [using 2 array trick from discuss](#using-2-array-trick-from-discuss)
+    - [sol using 2 hashmap approach is similar but not very readable](#sol-using-2-hashmap-approach-is-similar-but-not-very-readable)
+    - [transformation trick](#transformation-trick)
+    - [using a single map](#using-a-single-map)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -2418,6 +2448,40 @@ class Solution {
 }
 ```
 
+## pascal triange II
+
+- using pattern O(rowindex) exta space TC O(n^2)
+- https://leetcode.com/explore/learn/card/array-and-string/204/conclusion/1171/
+
+```
+public List<Integer> getRow(int rowIndex) {
+      Integer[] result =  new Integer[rowIndex + 1];
+      Arrays.fill(result, 0);
+      result[0] = 1;
+      for(int i = 1; i < rowIndex + 1; i++)
+        for(int j = i; j >= 1; j--)
+          result[j] += result[j - 1];
+      return Arrays.asList(result);
+    }
+```
+
+```
+- using binomial coefficient
+- TC O(n) O(rowIndex) extra space
+class Solution {
+    public List<Integer> getRow(int n) {
+        List<Integer> list = new LinkedList<>();
+        long nCk = 1;
+        for (int k = 0; k <= n; k++) {
+            list.add((int) nCk);
+            nCk = nCk * (n - k) / (k + 1);
+        }
+
+        return list;
+    }
+}
+```
+
 ## Add Binary
 
 https://leetcode.com/explore/learn/card/array-and-string/203/introduction-to-string/1160/
@@ -2517,7 +2581,7 @@ class Solution {
 
 ### Array Partition
 
-### two sum II
+### two sum II (sorted array)
 
 - https://leetcode.com/explore/learn/card/array-and-string/205/array-two-pointer-technique/1153/
 
@@ -2639,6 +2703,793 @@ class Solution {
             nums[s++] = nums[e];
             nums[e--] = temp;
         }
+    }
+}
+```
+
+### reverse words in a string REVISIT
+
+many ways to solve it like using split method of regex to break words in string array and processing in reverse and 2 ways shown below
+
+- https://leetcode.com/problems/reverse-words-in-a-string-iii/solution/
+
+#### using stack
+
+- using stack TC O(n) SC O(k + l)
+  k is no of words in string to store in stack
+  l is length of biggest word in string to store in stringbuilder
+
+```
+class Solution {
+    public String reverseWords(String s) {
+        int len = s.length(), i = 0;
+        Stack<String> stk = new Stack<>();
+        while(i < len){
+            StringBuilder sb = new StringBuilder();
+            while(i < len && s.charAt(i) != ' '){
+                sb.append(s.charAt(i));
+                i++;
+            }
+            if(!sb.isEmpty()){
+                stk.push(sb.toString());
+            }
+            i++;
+        }
+       StringBuilder res = new StringBuilder();
+       while(!stk.isEmpty()){
+           res.append(stk.pop());
+           res.append(" ");
+       }
+        return res.toString().trim();
+    }
+}
+```
+
+#### two pointer revers algo | in place
+
+- in place SC O(1) TC O(n)
+- reverse whole string
+- then reverse each word and take care of spaces
+
+```
+class Solution {
+    public String reverseWords(String s) {
+        int len = s.length();
+        char[] str = s.toCharArray();
+        reverse(str, 0, len - 1);
+        reverseWords(str, len);
+        return cleanSpaces(str, len);
+    }
+    void reverse(char[] str, int start, int end){
+        while(start < end){
+            char temp = str[start];
+            str[start++] = str[end];
+            str[end--] = temp;
+        }
+    }
+
+    void reverseWords(char[] str, int end){
+        int i = 0, j = 0;
+        while(i < end){
+            while(i < j || i < end && str[i] == ' ') i++;
+            while(j < i || j < end && str[j] != ' ') j++;
+            reverse(str, i, j - 1);
+        }
+    }
+    String cleanSpaces(char[] str,int len){
+        int i = 0, j = 0;
+        while(i < len){
+            while(i < len && str[i] == ' ') i++;
+            while(i < len && str[i] != ' ') str[j++] = str[i++];
+            while(i < len && str[i] == ' ') i++;
+            if(i < len) str[j++] = ' ';
+        }
+        return new String(str).substring(0 , j);
+    }
+}
+```
+
+### move zeros
+
+https://leetcode.com/explore/learn/card/array-and-string/204/conclusion/1174/
+
+#### simple approach O(n) inplace
+
+```
+public void moveZeroes(int[] nums) {
+    if (nums == null || nums.length == 0) return;
+
+    int insertPos = 0;
+    for (int num: nums) {
+        if (num != 0) nums[insertPos++] = num;
+    }
+
+    while (insertPos < nums.length) {
+        nums[insertPos++] = 0;
+    }
+}
+```
+
+this sol is not good for the case 0,0,0,0,0,0,1
+since n-1 unessary writes will happen in while loop
+so below sol is better in reducing total no of operations for such cases however in normal case with few 0 it might not be best since we incurr write cost due to swapping
+
+#### 2 pointer optimized O(n) inplace
+
+```
+class Solution {
+    public void moveZeroes(int[] nums) {
+        int j = 0;
+        for(int i = 0; i < nums.length; i++){
+            if(nums[i] != 0){
+                swap(nums, i , j++);
+            }
+        }
+    }
+       void swap(int[] nums, int i, int k){
+            int temp = nums[i];
+            nums[i] = nums[k];
+            nums[k] = temp;
+        }
+}
+```
+
+# hash tables
+
+## design hashset
+
+- https://leetcode.com/explore/learn/card/hash-table/182/practical-applications/1139/discuss/170092/can-you-guys-think-before-doing
+
+- https://aaronice.gitbook.io/lintcode/hash-table/design-hashset
+
+### arraylist implementation
+
+```
+class MyHashSet {
+    int MAX_LEN = 100000;
+    List<Integer>[] bucket;
+
+    public MyHashSet() {
+        this.bucket = new ArrayList[MAX_LEN];
+    }
+
+    public void add(int key) {
+        int index = hash(key);
+        if(getPos(key, index) < 0){
+            if(bucket[index] == null){
+                bucket[index] = new ArrayList<Integer>();
+            }
+            bucket[index].add(key);
+        }
+    }
+
+    public void remove(int key) {
+        int index = hash(key);
+        int eleIndex = getPos(key, index);
+        if(eleIndex >= 0)
+            bucket[index].remove(eleIndex);
+    }
+
+    public boolean contains(int key) {
+        int index = hash(key);
+        return getPos(key, index) < 0 ? false: true;
+    }
+
+    private int getPos(int key, int index){
+        List<Integer> temp =  bucket[index];
+        if(temp == null)
+            return -1;
+        for(int i = 0; i < temp.size(); i++ ){
+            if(key == temp.get(i))
+                return i;
+        }
+        return -1;
+    }
+
+    private int hash(int key){
+        return key % MAX_LEN;
+    }
+}
+
+/**
+ * Your MyHashSet object will be instantiated and called as such:
+ * MyHashSet obj = new MyHashSet();
+ * obj.add(key);
+ * obj.remove(key);
+ * boolean param_3 = obj.contains(key);
+ */
+```
+
+### BST implementation
+
+```
+class MyHashSet {
+
+  /** Initialize your data structure here. */
+  private Bucket[] bucketArray;
+  private int keyRange;
+  public MyHashSet() {
+    this.keyRange = 769;
+    this.bucketArray = new Bucket[this.keyRange];
+    for (int i = 0; i < this.keyRange; i++) {
+      this.bucketArray[i] = new Bucket();
+    }
+  }
+
+  protected int _hash(int key) {
+    return key % this.keyRange;
+  }
+
+  public void add(int key) {
+    int bucketIndex = this._hash(key);
+    this.bucketArray[bucketIndex].insert(key);
+  }
+
+  public void remove(int key) {
+    int bucketIndex = this._hash(key);
+    this.bucketArray[bucketIndex].delete(key);
+  }
+
+  /** Returns true if this set contains the specified element */
+  public boolean contains(int key) {
+    int bucketIndex = this._hash(key);
+    return this.bucketArray[bucketIndex].exists(key);
+  }
+}
+
+
+class Bucket {
+  private BSTree tree;
+
+  public Bucket() {
+    tree = new BSTree();
+  }
+
+  public void insert(Integer key) {
+    this.tree.root = this.tree.insertToBST(this.tree.root, key);
+  }
+
+  public void delete(Integer key) {
+    this.tree.root = this.tree.deleteFromBST(this.tree.root, key);
+  }
+
+  public boolean exists(Integer key) {
+    TreeNode node = this.tree.searchBST(this.tree.root, key);
+    return node != null;
+  }
+}
+
+
+class BSTree {
+  TreeNode root = null;
+
+  public TreeNode searchBST(TreeNode root, int val) {
+    if (root == null || val == root.val) {
+      return root;
+    }
+    return root.val > val ? searchBST(root.left, val) : searchBST(root.right, val);
+  }
+
+  public TreeNode insertToBST(TreeNode root, int val) {
+    if (root == null) {
+      return new TreeNode(val);
+    }
+
+    if (root.val < val) {
+      root.right = insertToBST(root.right, val);
+    }
+    else if (root.val > val) {
+      root.left = insertToBST(root.left, val);
+    }
+    else {
+      return root;
+    }
+    return root;
+  }
+
+  public TreeNode deleteFromBST(TreeNode root, int key) {
+    if (root == null) {
+      return null;
+    }
+    if (root.val < key) {
+      root.right = deleteFromBST(root.right, key);
+    }
+    else if (root.val > key) {
+      root.left = deleteFromBST(root.left, key);
+    }
+    else {
+      if (root.left == null && root.right == null) {
+        root = null;
+      }
+      else if (root.right != null) {
+        root.val = successor(root);
+        root.right = deleteFromBST(root.right, root.val);
+      }
+      else {
+        root.val = predecessor(root);
+        root.left = deleteFromBST(root.left, root.val);
+      }
+    }
+    return root;
+  }
+
+  private int successor(TreeNode root) {
+    root = root.right;
+    while (root.left != null) {
+      root = root.left;
+    }
+    return root.val;
+  }
+
+  private int predecessor(TreeNode root) {
+    root = root.left;
+    while (root.right != null) {
+      root = root.right;
+    }
+    return root.val;
+  }
+}
+
+
+class TreeNode {
+  int val;
+  TreeNode left;
+  TreeNode right;
+
+  public TreeNode(int x) {
+    val = x;
+  }
+}
+
+/**
+ * Your MyHashSet object will be instantiated and called as such:
+ * MyHashSet obj = new MyHashSet();
+ * obj.add(key);
+ * obj.remove(key);
+ * boolean param_3 = obj.contains(key);
+ */
+```
+
+## hashmap implementation
+
+### using linked list
+
+```
+ class MyHashMap {
+    class ListNode{
+        int val, key;
+        ListNode next;
+
+        ListNode(int k, int v){
+            this.key=k;
+            this.val=v;
+        }
+    }
+
+    ListNode[] main;
+
+    public MyHashMap() {
+        main = new ListNode[100000];
+    }
+
+    public void put(int key, int value) {
+        int index = indexHash(key);
+        if(main[index] == null){
+            main[index] = new ListNode(-1, -1);
+        }
+        ListNode prev = find(main[index], key);
+        if(prev.next==null){
+            prev.next = new ListNode(key, value);
+        }else{
+            prev.next.val = value;
+        }
+    }
+
+    public int get(int key) {
+        int index = indexHash(key);
+
+        if(main[index] == null){
+            return -1;
+        }
+        ListNode node = find(main[index], key);
+        return node.next==null?-1:node.next.val;
+    }
+
+    public void remove(int key) {
+            int index = indexHash(key);
+            if (main[index] == null) return;
+
+            ListNode prev = find(main[index], key);
+            if (prev.next == null) return;
+            prev.next = prev.next.next;
+    }
+
+    ListNode find(ListNode bucket, int key){
+        ListNode node = bucket, prev=null;
+        while(node!=null && node.key!=key){
+            prev = node;
+            node = node.next;
+        }
+
+        return prev;
+    }
+
+    int indexHash(int key){
+        return (key) % main.length;
+    }
+}
+
+/**
+ * Your MyHashMap object will be instantiated and called as such:
+ * MyHashMap obj = new MyHashMap();
+ * obj.put(key,value);
+ * int param_2 = obj.get(key);
+ * obj.remove(key);
+ */
+```
+
+## single number prob
+
+- using xor, set, map , sum of elements
+- https://leetcode.com/explore/learn/card/hash-table/183/combination-with-other-algorithms/1176/discuss/1771720/C%2B%2B-EASY-SOLUTIONS-(SORTING-XOR-MAPS-(OR-FREQUENCY-ARRAY))/1404899
+
+## intersection of 2 arrays
+
+- https://leetcode.com/problems/intersection-of-two-arrays/solution/
+- https://leetcode.com/problems/intersection-of-two-arrays/discuss/81969/Three-Java-Solutions
+
+### using hash set TC O(m + n) SC(m + n)
+
+```
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+     Set<Integer> set1 = new HashSet<>();
+     Set<Integer> set2 =  new HashSet<>();
+     for(Integer n : nums1) set1.add(n);
+     for(Integer n : nums2) set2.add(n);
+
+     if(set1.size() < set2.size())
+            return findIntersection(set1, set2);
+        else
+            return findIntersection(set2, set1);
+    }
+    int[] findIntersection(Set<Integer> set1, Set<Integer> set2){
+        int[] res = new int[set1.size()];
+        int i = 0;
+        for(Integer n : set1)
+            if(set2.contains(n))
+                res[i++] = n;
+        return Arrays.copyOf(res,i);
+    }
+}
+```
+
+- optimized with fewer checks TC and SC still the same
+
+```
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        Set<Integer> intersect = new HashSet<>();
+        for (int i = 0; i < nums1.length; i++) {
+            set.add(nums1[i]);
+        }
+        for (int i = 0; i < nums2.length; i++) {
+            if (set.contains(nums2[i])) {
+                intersect.add(nums2[i]);
+            }
+        }
+        int[] result = new int[intersect.size()];
+        int i = 0;
+        for (Integer num : intersect) {
+            result[i++] = num;
+        }
+        return result;
+    }
+}
+```
+
+### using sorting and 2 pointer TC O(n logn)
+
+```
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int i = 0;
+        int j = 0;
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] < nums2[j]) {
+                i++;
+            } else if (nums1[i] > nums2[j]) {
+                j++;
+            } else {
+                set.add(nums1[i]);
+                i++;
+                j++;
+            }
+        }
+        int[] result = new int[set.size()];
+        int k = 0;
+        for (Integer num : set) {
+            result[k++] = num;
+        }
+        return result;
+    }
+}
+```
+
+### using sorting and binary search Time complexity: O(nlogn)
+
+```
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        Arrays.sort(nums2);
+        for (Integer num : nums1) {
+            if (binarySearch(nums2, num)) {
+                set.add(num);
+            }
+        }
+        int i = 0;
+        int[] result = new int[set.size()];
+        for (Integer num : set) {
+            result[i++] = num;
+        }
+        return result;
+    }
+
+    public boolean binarySearch(int[] nums, int target) {
+        int low = 0;
+        int high = nums.length - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] == target) {
+                return true;
+            }
+            if (nums[mid] > target) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return false;
+    }
+}
+```
+
+## happy number problem
+
+- https://leetcode.com/explore/learn/card/hash-table/183/combination-with-other-algorithms/1131
+
+here the idea of different sol is to detect loop or check if n has become 1 at any stage so this problem can be related to detecting loops in linked list and so we can use here floyd's loop detection algorithn with 2 pointer or use a hashset to detect the loop simply by checking if n already exists in set
+
+### loop detection using hashset TC log(n) SC log(n)
+
+time complexity here mostly due to getNext() and as per the explanation of leetcode sol it is log(n)
+
+```
+class Solution {
+    public boolean isHappy(int n) {
+    Set<Integer> seen = new HashSet<>();
+        while(n != 1 && !seen.contains(n)){
+            seen.add(n);
+            n = getNext(n);
+        }
+        return n == 1;
+    }
+    int getNext(int n){
+        int sum = 0;
+        while(n != 0){
+            int temp = n % 10;
+            sum += temp * temp;
+            n = n/10;
+        }
+        return sum;
+    }
+}
+```
+
+### using floyd's loop detection algo TC log(n) SC O(1) better approach than hashset
+
+19 -> 82 -> 68 -> 100 -> 1
+
+```
+class Solution {
+    public boolean isHappy(int n) {
+        int slow = n;
+        int fast = getNext(n);
+
+        while(fast != 1 && fast != slow)
+            {
+                fast = getNext(getNext(fast));
+                slow = getNext(slow);
+            }
+        return fast == 1;
+        }
+
+    int getNext(int n){
+        int sum = 0;
+        while(n != 0){
+            int temp = n % 10;
+            sum += temp * temp;
+            n = n/10;
+        }
+        return sum;
+    }
+}
+```
+
+### math sol
+
+- n will decrease to seed point, which is in 1 to 9. Only 1 and 7 will be the valid seed.
+
+```
+public boolean isHappy(int n) {
+        if(n == 1 || n == 7) return true;
+        else if(n < 10) return false;
+        int m = 0;
+        while(n != 0){
+            int tail = n % 10;
+            m += tail * tail;
+            n = n/10;
+        }
+        return isHappy(m);
+    }
+```
+
+## two sum (non sorted) return indices
+
+- here extra space is needed to keep track of indices and return that's why hashmap or 2d array is needed
+
+### using extra space hashmap TC O(n) SC O(n)
+
+```
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        Map<Integer,Integer> map = new HashMap<>();
+
+        for(int i = 0; i < nums.length; i++){
+            if(map.containsKey(target - nums[i])){
+                return new int[] {map.get(target - nums[i]),  i };
+            }
+          map.put(nums[i], i);
+        }
+        return new int[] {-1,  -1 };
+    }
+}
+```
+
+### using sorting and 2 pointer technique TC n logn SC is n( 3n to be exact)
+
+time complexity of soring nlogn in case or merge/heap sort and and then single traversal to check sum
+so TC is n + nlogn = nlogn
+and SC is 2n for 2d array and sorting also uses n so it's 3n i.e n
+
+```
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+
+        int[][] orig = new int[nums.length][2];
+        for(int i = 0; i < nums.length; i++)
+        {   orig[i][0] = nums[i];
+            orig[i][1] = i;
+        }
+
+        Arrays.sort(orig, Comparator.comparingInt(o -> o[0]));
+        int str = 0, end = nums.length - 1;
+        while(str < end){
+            int sum = orig[str][0] + orig[end][0];
+            if(sum == target)
+                return new int[] {orig[str][1], orig[end][1]};
+            else if(sum > target)
+                end--;
+            else
+                str++;
+        }
+        return null;
+    }
+}
+```
+
+## isomorphic sol
+
+### using 2 array trick from discuss
+
+```
+class Solution {
+  public boolean isIsomorphic (String s, String t) {
+        int[] m1 = new int[256];
+        int[] m2 = new int[256];
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            if (m1[s.charAt(i)] != m2[t.charAt(i)]) return false;
+            m1[s.charAt(i)] = i + 1;
+            m2[t.charAt(i)] = i + 1;
+        }
+        return true;
+    }
+}
+```
+
+### sol using 2 hashmap approach is similar but not very readable
+
+```
+class Solution {
+    public boolean isIsomorphic(String s, String t) {
+        Map<Character,Character> mapping_s_t = new LinkedHashMap<>();
+        Map<Character,Character> mapping_t_s = new LinkedHashMap<>();
+        for(int i = 0; i < s.length(); i++){
+            char sval = s.charAt(i);
+            char tval = t.charAt(i);
+            if(!mapping_s_t.containsKey(sval) && !mapping_t_s.containsKey(tval)){
+                mapping_s_t.put(sval, tval);
+                mapping_t_s.put(tval, sval);
+            }else if((mapping_s_t.containsKey(sval) && mapping_s_t.get(sval) != tval) ||
+                      (mapping_t_s.containsKey(tval)  && mapping_t_s.get(tval) != sval))
+                return false;
+        }
+
+      return true;
+    }
+}
+```
+
+### transformation trick
+
+- by transforming the char to it's index in both string and store in array or string builder with a delimeter " " or ,
+- https://leetcode.com/problems/isomorphic-strings/solution/
+
+```
+class Solution {
+    private String transformString(String s) {
+        Map<Character, Integer> indexMapping = new HashMap<>();
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < s.length(); ++i) {
+            char c1 = s.charAt(i);
+
+            if (!indexMapping.containsKey(c1)) {
+                indexMapping.put(c1, i);
+            }
+
+            builder.append(Integer.toString(indexMapping.get(c1)));
+            builder.append(" ");
+        }
+        return builder.toString();
+    }
+
+    public boolean isIsomorphic(String s, String t) {
+        return transformString(s).equals(transformString(t));
+    }
+}
+```
+
+### using a single map
+
+```
+class Solution {
+    public boolean isIsomorphic(String s, String t) {
+      Map<Character, Character> map = new HashMap<>();
+        if(s.length() != t.length()){
+        return false;
+    }
+
+    for(int i =0; i<s.length();i++){
+        if((map.containsKey(s.charAt(i)) && t.charAt(i) != map.get(s.charAt(i)))){
+            return false;
+        }
+        if(!map.containsKey(s.charAt(i))) {
+            if(!map.values().contains(t.charAt(i))){
+             map.put(s.charAt(i),t.charAt(i));
+            }
+            else{
+                 return false;
+            }
+        }
+    }
+        return true;
     }
 }
 ```
