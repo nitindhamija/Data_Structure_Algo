@@ -1,13 +1,9 @@
-package tree.BinarySearchTree;
+package DS_ALGO_PROG.tree.BinarySearchTree;
 
-import commons.tree.TreeNode;
-import tree.BinaryTree.CreateBinaryTree;
+import DS_ALGO_PROG.commons.tree.TreeNode;
+import DS_ALGO_PROG.tree.BinaryTree.CreateBinaryTree;
 
 public class BinarySearchTree {
-
-    public BinarySearchTree() {
-
-    }
 
     /*
      * Binary search tree insertion, terminal condition is checking the node for
@@ -65,9 +61,19 @@ public class BinarySearchTree {
      */
     private static TreeNode deleteNode(TreeNode root, int key) {
         if (root.data == key && root.left != null && root.right != null) {
-            TreeNode node = findInorderSuccessor(root.right);// find parent of inorder successor
-            root.data = node.left.data; // replace root value with inorder successor's value
-            node.left = null; // remove inorder successor from the tree
+            TreeNode succParent = root;
+            TreeNode succ = root.right;
+
+            while (succ.left != null) {
+                succParent = succ;
+                succ = succ.left;
+            }
+            if (succParent != root)
+                succParent.left = succ.right;
+            else
+                succParent.right = succ.right;
+            root.data = succ.data;
+
         } else if (root.data == key && root.left != null) {
             root.data = root.left.data; // replace root value with it's left child value
             root.left = null; // remove left child from the tree
@@ -94,6 +100,8 @@ public class BinarySearchTree {
         root = insert(root, 31);
         // CreateBinaryTree tree = new CreateBinaryTree();
         CreateBinaryTree.inorder(root);
+        TreeNode temp = CreateBinaryTree.inorderSuccessor(root, null, 10);
+        System.out.println("\n root " + temp.data);
         System.out.println("\n root " + root.data);
         delete(root, 5); // delete leaf node
         CreateBinaryTree.inorder(root);

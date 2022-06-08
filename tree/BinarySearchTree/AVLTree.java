@@ -1,9 +1,9 @@
-package tree.BinarySearchTree;
+package DS_ALGO_PROG.tree.BinarySearchTree;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-import commons.tree.TreeNode;
+import DS_ALGO_PROG.commons.tree.TreeNode;
 
 public class AVLTree {
 
@@ -105,7 +105,7 @@ public class AVLTree {
             return rightRotate(root);
         }
 
-        if (balance < -1 && key > root.right.data) // RR case which require right rotation to be balanced
+        if (balance < -1 && key > root.right.data) // RR case which require left rotation to be balanced
             return leftRotate(root);
 
         if (balance < -1 && key < root.right.data) {// RL case which require right and left rotation to be balanced

@@ -5,7 +5,7 @@ import commons.tree.STreeNode;
 /**
  * splay tree is practically better in performance as compared to AVL/RBtree
  * beacuase it splays i.e it makes the last accessed/inserted element at the
- * root or nearer to the roor that way if that element is accessed again it will
+ * root or nearer to the root that way if that element is accessed again it will
  * take either O(1) o(2) i.e less than o(log n) in caching spay tree should be
  * choosen
  * 

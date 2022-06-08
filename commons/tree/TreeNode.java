@@ -1,4 +1,4 @@
-package commons.tree;
+package DS_ALGO_PROG.commons.tree;
 
 public class TreeNode {
     public int data, height;

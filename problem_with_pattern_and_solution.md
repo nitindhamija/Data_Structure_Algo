@@ -85,7 +85,7 @@
   - [Implement strStr()](#implement-strstr)
     - [sliding window my sol with TC O(m \* (m - n)) SC O(n)](#sliding-window-my-sol-with-tc-om--m---n-sc-on)
     - [normal TC O(m \* n) SC O(1)](#normal-tc-om--n-sc-o1)
-  - [to check KMP optimze sol](#to-check-kmp-optimze-sol)
+  - [to check KMP optimze sol TC O(m + n) SC O(n)](#to-check-kmp-optimze-sol-tc-om--n-sc-on)
   - [longest common prefix](#longest-common-prefix)
   - [2-pointer technique](#2-pointer-technique)
     - [Array Partition](#array-partition)
@@ -126,6 +126,44 @@
     - [sol using 2 hashmap approach is similar but not very readable](#sol-using-2-hashmap-approach-is-similar-but-not-very-readable)
     - [transformation trick](#transformation-trick)
     - [using a single map](#using-a-single-map)
+  - [minimum index sum of two lists](#minimum-index-sum-of-two-lists)
+    - [using a hashmap](#using-a-hashmap)
+  - [first unique character in string](#first-unique-character-in-string)
+    - [single pass sol using array of size 26 lower case alphabets (better approach since only one loop)](#single-pass-sol-using-array-of-size-26-lower-case-alphabets-better-approach-since-only-one-loop)
+    - [using hashmap with 2 pass](#using-hashmap-with-2-pass)
+  - [intersection of 2 arrays II](#intersection-of-2-arrays-ii)
+    - [using hashmap TC O(M + N) SC O(M)](#using-hashmap-tc-om--n-sc-om)
+    - [using sorting and 2 pointer technique](#using-sorting-and-2-pointer-technique)
+  - [contains Duplicate II](#contains-duplicate-ii)
+    - [using hashmap](#using-hashmap)
+    - [using hashset](#using-hashset)
+  - [group anagrams](#group-anagrams)
+    - [using sorting key](#using-sorting-key)
+    - [from discus](#from-discus)
+  - [valid Sudoku](#valid-sudoku)
+    - [using hashset/hashmap approach and using %, / for block traversal in matrix (5ms leetcode)](#using-hashsethashmap-approach-and-using---for-block-traversal-in-matrix-5ms-leetcode)
+      - [logic explanation](#logic-explanation)
+      - [only we used boolean array here instead of hashset to improve space complexity 3ms on leetcode](#only-we-used-boolean-array-here-instead-of-hashset-to-improve-space-complexity-3ms-on-leetcode)
+    - [sol using choice of key in hashmap](#sol-using-choice-of-key-in-hashmap)
+    - [GFG clean sol using the same approach](#gfg-clean-sol-using-the-same-approach)
+- [tree](#tree)
+  - [Binary Tree](#binary-tree)
+  - [is Valid BST](#is-valid-bst)
+    - [intuitive sol with upper and lower limits](#intuitive-sol-with-upper-and-lower-limits)
+    - [inorder traversal sol](#inorder-traversal-sol)
+      - [recursive sol](#recursive-sol)
+      - [iterative sol IMP REVISIT](#iterative-sol-imp-revisit)
+    - [inorder successor in BST](#inorder-successor-in-bst)
+      - [using intution method 1](#using-intution-method-1)
+      - [using inorder traversal help](#using-inorder-traversal-help)
+    - [BSTIterator inorder](#bstiterator-inorder)
+      - [using stack](#using-stack-1)
+    - [search in BST iterative and recursive](#search-in-bst-iterative-and-recursive)
+      - [iterative](#iterative-1)
+      - [recursive](#recursive-1)
+    - [deletion in BST](#deletion-in-bst)
+    - [kth largest element in a stream](#kth-largest-element-in-a-stream)
+    - [kth smallest element in a stream](#kth-smallest-element-in-a-stream)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -460,7 +498,7 @@ public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
     // 2.break the linked list in half and reverse the second half and compare it
     // with first and take care of odd case time complexity O(n) space complexity
     // O(1)
-    // 3.use recursion and and two pointers left and right
+    // 3.another way is to use recursion with 2 pointers left and right, trick is point left to head in recursive method so that when we reach last node we have access to first node and comparsion can be done
 
 ```
     /**
@@ -2558,7 +2596,54 @@ public int strStr(String haystack, String needle) {
 }
 ```
 
-## to check KMP optimze sol
+## to check KMP optimze sol TC O(m + n) SC O(n)
+
+- Knuth morris patt algo for pattern searching( check neetcode and techdose you tube channel)
+- // on line no 2062 we are doing prevLPS + 1 instead of lps[PrevLPS] + 1 since prevLPS will always be the value of longest prefix equal to suffix for covered string
+
+```
+class Solution {
+    public int strStr(String haystack, String needle) {
+        int subLen = needle.length(), strLen = haystack.length();
+
+        if(subLen == 0)
+            return 0;
+        if(subLen > strLen)
+            return -1;
+        int[] lps = new int[subLen];
+        int i = 1, prevLPS = 0;
+        lps[prevLPS] = 0;
+
+        while(i < subLen){
+            if(needle.charAt(i) == needle.charAt(prevLPS)){
+               lps[i] = prevLPS + 1;
+               i++;
+               prevLPS++;
+            }else if(prevLPS == 0){
+                lps[i] = 0;
+                i++;
+            }else{
+                prevLPS = lps[prevLPS - 1];
+            }
+        }
+
+        int strIndex = 0, subIndex = 0;
+        while(strIndex < strLen){
+            if(haystack.charAt(strIndex) == needle.charAt(subIndex)){
+                strIndex++;
+                subIndex++;
+            }else if(subIndex == 0)
+                strIndex++;
+             else
+                subIndex = lps[subIndex - 1];
+
+            if(subIndex == subLen)
+                return strIndex - subLen;
+        }
+        return -1;
+    }
+}
+```
 
 ## longest common prefix
 
@@ -3342,6 +3427,9 @@ public boolean isHappy(int n) {
 ## two sum (non sorted) return indices
 
 - here extra space is needed to keep track of indices and return that's why hashmap or 2d array is needed
+- sliding window will not work here
+
+- sliding window can't work on unsorted array for example consider the case [3,2,3] target is 6 now sliding window size is 2, now sliding window will fail here reasons are given below sliding window works on the problem where consecutive elements are concerned, since array is unsorted, we are not sure if consecutive elements will always sum up to target it might happen that non consecutive elements i.e elements not part of window sum up to target and that is what happens with [3,2,3] now if the array is sorted then array will be [2,3,3] now as you can see sum of consecutive elements will be moving in upwards direction always as we move the window hence we can continue moving the window till the sum is less than target and we know for sure that consecutive elements will sum up to target else target does not exist.
 
 ### using extra space hashmap TC O(n) SC O(n)
 
@@ -3490,6 +3578,782 @@ class Solution {
         }
     }
         return true;
+    }
+}
+```
+
+## minimum index sum of two lists
+
+- https://leetcode.com/problems/minimum-index-sum-of-two-lists/solution/
+
+### using a hashmap
+
+- hash map linear TC approach TC (m + n) SC (m * x) hashmap size grows upto m*x where x refers to average string length.
+- j <= sum is for early termination of the loop. It might be helpful to the speed.
+
+```
+public class Solution {
+    public String[] findRestaurant(String[] list1, String[] list2) {
+        Map<String, Integer> map = new HashMap<>();
+        List<String> res = new ArrayList<>();
+        int minSum = Integer.MAX_VALUE;
+        for(int i = 0;i< list1.length; i++)
+            map.put(list1[i],i);
+        for(int j = 0;j < list2.length && j <= minSum; j++){
+            if(map.containsKey(list2[j])){
+                int sum = j + map.get(list2[j]);
+                if(sum < minSum){
+                    minSum = sum;
+                    res.clear();
+                    res.add(list2[j]);
+                }else if(sum == minSum){
+                    res.add(list2[j]);
+                }
+            }
+        }
+        return res.toArray(new String[res.size()]);
+    }
+}
+```
+
+- here the trick is iterate the list1 and list2 store i + j as key and list of matching restaurant as values in map
+
+TC O(m*n*x) SC(m\*x)
+m length of list1 n length of list 2
+
+```
+public class Solution {
+    public String[] findRestaurant(String[] list1, String[] list2) {
+        HashMap < Integer, List < String >> map = new HashMap < > ();
+        for (int i = 0; i < list1.length; i++) {
+            for (int j = 0; j < list2.length; j++) {
+                if (list1[i].equals(list2[j])) {
+                    if (!map.containsKey(i + j))
+                        map.put(i + j, new ArrayList < String > ());
+                    map.get(i + j).add(list1[i]);
+                }
+            }
+        }
+        int min_index_sum = Integer.MAX_VALUE;
+        for (int key: map.keySet())
+            min_index_sum = Math.min(min_index_sum, key);
+        String[] res = new String[map.get(min_index_sum).size()];
+        return map.get(min_index_sum).toArray(res);
+    }
+}
+```
+
+## first unique character in string
+
+### single pass sol using array of size 26 lower case alphabets (better approach since only one loop)
+
+- Here i am using only a single loop on the array which can range up to 10^5 elements as per the problem
+  and i am achieving this by storing the index of each character in 0th column of my 2d array and now i can easily find out if the current character is encounter more than one by comparing 1st column value which shows the frequency of the each char in the string and once i find a duplicate character i set firstIndex i.e 0th column value to -1 so that these elements can be ignored during my second loop of 26 elements, yes there is second loop but since it looping up to a constant no it is consider constant O(26) ~ O(1)
+  And after the loop finishes, finally now we have an 2 array of each encounter char with their first occurrence position in the array and the freq
+  now since we need to find first non repeating character, we will need to find minimum index non repeating character from the array.
+
+TC O(N) SC O(1) since O(26) is constant
+
+```
+class Solution {
+    public int firstUniqChar(String s) {
+        int[][] arr = new int[26][2];
+
+        for(int i = 0; i < s.length(); i++){
+            int index = s.charAt(i) - 'a';
+            if(arr[index][1] > 0)
+                arr[index][0] = -1;
+            else{
+                arr[index][0] = i + 1;
+                arr[index][1] = arr[index][1] + 1;
+            }
+        }
+        int minIndex = Integer.MAX_VALUE;
+        for(int i = 0; i < arr.length; i++)
+            if(arr[i][0] > 0 && minIndex > arr[i][0])
+                minIndex = arr[i][0];
+
+        return minIndex != Integer.MAX_VALUE ? minIndex - 1 : -1;
+    }
+}
+```
+
+### using hashmap with 2 pass
+
+TC O(N) SC O(1) since O(26) is constant
+
+```
+class Solution {
+    public int firstUniqChar(String s) {
+        Map<Character, Integer> seen = new HashMap<>();
+        for(int i = 0; i < s.length(); i++){
+            char c = s.charAt(i);
+            if(seen.containsKey(c))
+                seen.put(c,seen.get(c) + 1);
+            else
+                seen.put(c, 1);
+        }
+
+        for(int i = 0; i < s.length(); i++){
+            if(seen.get(s.charAt(i)) == 1)
+                return i;
+        }
+        return -1;
+    }
+}
+```
+
+## intersection of 2 arrays II
+
+- https://leetcode.com/explore/learn/card/hash-table/184/comparison-with-other-data-structures/1178
+
+- https://leetcode.com/explore/learn/card/hash-table/184/comparison-with-other-data-structures/1178/discuss/1468295/Python-2-approaches-and-3-Follow-up-Questions-Clean-and-Concise
+
+### using hashmap TC O(M + N) SC O(M)
+
+```
+class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        // count freq of nums1
+        HashMap<Integer, Integer> map = new HashMap();
+        for (int num : nums1) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+        // collect result
+        ArrayList<Integer> result = new ArrayList();
+        for (int num: nums2) {
+            if (map.containsKey(num)){
+                result.add(num);
+                map.put(num, map.get(num) - 1);
+                map.remove(num, 0);
+            }
+        }
+       // convert
+       int[] r = new int[result.size()];
+       for(int i = 0; i < result.size(); i++) {
+           r[i] = result.get(i);
+       }
+       return r;
+    }
+}
+```
+
+### using sorting and 2 pointer technique
+
+TC nlog(n) + n so O(nlogn) SC O(n) if merge sort is used for sorting
+
+```
+class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        List<Integer> res = new ArrayList<>();
+        int len = nums1.length > nums2.length ? nums2.length : nums1.length;
+        int left = 0, right = 0;
+        while(left < nums1.length && right < nums2.length){
+            if(nums1[left] < nums2[right])
+                left++;
+            else if (nums1[left] > nums2[right])
+                right++;
+            else{
+                res.add(nums1[left]);
+                left++;
+                right++;
+            }
+        }
+        return res.stream().mapToInt(i -> i).toArray();
+    }
+}
+```
+
+## contains Duplicate II
+
+- https://leetcode.com/explore/learn/card/hash-table/184/comparison-with-other-data-structures/1121
+
+### using hashmap
+
+TC O(n) SC O(n)
+
+```
+class Solution {
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+     if(nums.length == 1)
+         return false;
+     Map<Integer,Integer> map = new HashMap<>();
+     for(int i = 0; i < nums.length; i++){
+        Integer duplicateIndex = map.put(nums[i], i);
+        if( duplicateIndex != null && i - duplicateIndex <= k)
+            return true;
+     }
+        return false;
+    }
+}
+```
+
+### using hashset
+
+TC O(n) SC O(n)
+
+```
+public boolean containsNearbyDuplicate(int[] nums, int k) {
+        Set<Integer> set = new HashSet<Integer>();
+        for(int i = 0; i < nums.length; i++){
+            if(i > k) set.remove(nums[i-k-1]);
+            if(!set.add(nums[i])) return true;
+        }
+        return false;
+ }
+```
+
+## group anagrams
+
+### using sorting key
+
+TC O (mlogm) \* O(n) SC O(n)
+
+```
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<>();
+     for(String str: strs){
+         char[] tempCharArr = str.toCharArray();
+         Arrays.sort(tempCharArr);
+         String s = new String(tempCharArr);
+         if(map.containsKey(s)){
+             map.get(s).add(str);
+         }else{
+             List<String> temp = new ArrayList<>();
+             temp.add(str);
+             map.put(s, temp);
+         }
+     }
+     return new ArrayList<>(map.values());
+    }
+}
+```
+
+### from discus
+
+TC O(n \* m) SC O(n)
+
+```
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> groups = new HashMap<>();
+
+        for (String str: strs) {
+            char[] freqArr = new char[26];
+            for (int i = 0; i < str.length(); i++) {
+                freqArr[str.charAt(i) - 'a']++;
+            }
+            String key = new String(freqArr);
+            if (groups.containsKey(key)) {
+                groups.get(key).add(str);
+            } else {
+                List<String> newGroup = new ArrayList<>();
+                newGroup.add(str);
+                groups.put(key, newGroup);
+            }
+        }
+
+        return new ArrayList<>(groups.values());
+    }
+
+}
+```
+
+## valid Sudoku
+
+- https://leetcode.com/explore/learn/card/hash-table/185/hash_table_design_the_key/1126/
+
+### using hashset/hashmap approach and using %, / for block traversal in matrix (5ms leetcode)
+
+here to improve space complexity we can make use of boolean array instead of hashmap also as shown in after the first section
+
+- https://leetcode.com/explore/learn/card/hash-table/185/hash_table_design_the_key/1126/discuss/15450/Shared-my-concise-Java-code
+- TC O(n^2) SC (3n)
+
+```
+class Solution {
+    public boolean isValidSudoku(char[][] board) {
+        for(int i = 0; i < 9; i++){
+            Set<Character> row = new HashSet<>();
+            Set<Character> col = new HashSet<>();
+            Set<Character> box = new HashSet<>();
+            for(int j = 0; j < 9; j++){
+                if(board[i][j] != '.' && !row.add(board[i][j]))
+                   return false;
+                if(board[j][i] != '.' && !col.add(board[j][i]))
+                   return false;
+                int m = (3 * (i / 3)) + j / 3;
+                int n = (3 * (i % 3)) + j % 3;
+                if(board[m][n] != '.' && !box.add(board[m][n]))
+                   return false;
+            }
+        }
+           return true;
+    }
+}
+```
+
+#### logic explanation
+
+Great solution!. Just trying to explain how to think about % and /. These two operators can be helpful for matrix traversal problems.
+
+For a block traversal, it goes the following way.
+
+0,0, 0,1, 0,2; < --- 3 Horizontal Steps followed by 1 Vertical step to next level.
+
+1,0, 1,1, 1,2; < --- 3 Horizontal Steps followed by 1 Vertical step to next level.
+
+2,0, 2,1, 2,2; < --- 3 Horizontal Steps.
+
+And so on...
+But, the j iterates from 0 to 9.
+
+But we need to stop after 3 horizontal steps, and go down 1 step vertical.
+
+Use % for horizontal traversal. Because % increments by 1 for each j : 0%3 = 0 , 1%3 = 1, 2%3 = 2, and resets back. So this covers horizontal traversal for each block by 3 steps.
+
+Use / for vertical traversal. Because / increments by 1 after every 3 j: 0/3 = 0; 1/3 = 0; 2/3 =0; 3/3 = 1.
+
+So far, for a given block, you can traverse the whole block using just j.
+
+But because j is just 0 to 9, it will stay only first block. But to increment block, use i. To move horizontally to next block, use % again : ColIndex = 3 \* i%3 (Multiply by 3 so that the next block is after 3 columns. Ie 0,0 is start of first block, second block is 0,3 (not 0,1);
+
+Similarly, to move to next block vertically, use / and multiply by 3 as explained above. Hope this helps.
+
+#### only we used boolean array here instead of hashset to improve space complexity 3ms on leetcode
+
+```
+class Solution {
+    public boolean isValidSudoku(char[][] board) {
+        for(int i = 0; i < 9; i++){
+
+            boolean[] row =  new boolean[9];
+            boolean[] col =  new boolean[9];
+            boolean[] box =  new boolean[9];
+            for(int j = 0; j < 9; j++){
+                if(board[i][j] == '.')
+                {}
+                else if(row[board[i][j] - '1'])
+                    return false;
+                else
+                    row[board[i][j] - '1'] = true;
+
+                if(board[j][i] == '.')
+                {}
+                else if(col[board[j][i] - '1'])
+                    return false;
+                else
+                    col[board[j][i] - '1'] = true;
+
+                int m = (3 * (i / 3)) + j / 3;
+                int n = (3 * (i % 3)) + j % 3;
+                 if(board[m][n] == '.')
+                {}
+                else if(box[board[m][n] - '1'])
+                    return false;
+                else
+                    box[board[m][n] - '1'] = true;
+
+            }
+        }
+           return true;
+    }
+}
+```
+
+### sol using choice of key in hashmap
+
+Collect the set of things we see, encoded as strings. For example:
+
+'4' in row 7 is encoded as "(4)7".
+'4' in column 7 is encoded as "7(4)".
+'4' in the top-right block is encoded as "0(4)2".
+Scream false if we ever fail to add something because it was already added (i.e., seen before).
+![](img/sudoku.png)
+
+- here if you analyse top right block will always have 0(value)2 as the values similarly top left will always have 0(value)0 so when same value appears in block we will know
+
+```
+class Solution {
+    public boolean isValidSudoku(char[][] board) {
+        Set<String> seen = new HashSet<>();
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++){
+                if(board[i][j] != '.'){
+                    String key = "(" + board[i][j] + ")";
+                    if(!seen.add(key + i) || !seen.add(j + key) || !seen.add(i/3 + key + j/3))
+                        return false;
+                }
+            }
+        }
+           return true;
+    }
+}
+```
+
+### GFG clean sol using the same approach
+
+- https://www.geeksforgeeks.org/check-if-given-sudoku-board-configuration-is-valid-or-not/?ref=lbp
+
+# tree
+
+## Binary Tree
+
+- BFS vs DFS travesal of binary tree
+- https://www.geeksforgeeks.org/bfs-vs-dfs-binary-tree/?ref=lbp
+  A Tree is typically traversed in two ways:
+
+- Breadth First Traversal (Or Level Order Traversal) (using queue)
+- Depth First Traversals (using stack)
+  - Inorder Traversal (Left-Root-Right) must know iterative method which can be used to solve other BST prob
+  - Preorder Traversal (Root-Left-Right)
+  - Postorder Traversal (Left-Right-Root)
+
+Why do we care?
+
+- There are many tree questions that can be solved using any of the above four traversals. Examples of such questions are size, maximum, minimum, print left view, etc.
+
+Is there any difference in terms of Time Complexity?
+
+- All four traversals require O(n) time as they visit every node exactly once.
+
+Is there any difference in terms of Extra Space?
+
+- There is difference in terms of extra space required.
+
+- Extra Space required for Level Order Traversal is O(w) where w is maximum width of Binary Tree. In level order traversal, queue one by one stores nodes of different level.
+- Extra Space required for Depth First Traversals is O(h) where h is maximum height of Binary Tree. In Depth First Traversals, stack (or function call stack) stores all ancestors of a node.
+
+## is Valid BST
+
+- https://leetcode.com/problems/validate-binary-search-tree/
+- https://www.geeksforgeeks.org/a-program-to-check-if-a-binary-tree-is-bst-or-not/
+
+### intuitive sol with upper and lower limits
+
+- trick is to use upper and lower limits for each node, check if max value in left subtree is smaller than the node and min value in right subtree greater than the node.
+
+```
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+
+        return BSTHelper(root,null,null);
+    }
+   boolean BSTHelper(TreeNode root,Integer l, Integer r){
+        if(root == null)
+            return true;
+        if(l != null && root.val <= l)
+            return false;
+        if(r != null && root.val >= r)
+            return false;
+        return BSTHelper(root.left,l ,root.val) && BSTHelper(root.right, root.val, r);
+    }
+}
+```
+
+### inorder traversal sol
+
+- another approach is to inorder traversal and keep track of prev node and check if prev node data < node data as inorder traversal yeilds sorted data in BST
+
+#### recursive sol
+
+```
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    Integer prev;
+    public boolean isValidBST(TreeNode root) {
+      prev = null;
+    return  inOrder(root);
+    }
+    boolean inOrder(TreeNode root){
+        if(root == null)
+            return true;
+        if(!inOrder(root.left))
+            return false;
+
+        if(prev != null && prev >= root.val)
+            return false;
+        prev = root.val;
+
+     return inOrder(root.right);
+    }
+}
+```
+
+#### iterative sol IMP REVISIT
+
+```
+ public boolean isValidBST(TreeNode root) {
+        Integer prev = null;
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        while(root != null || !stack.isEmpty()){
+            while(root != null){
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            if(prev != null && prev >= root.val)
+                return false;
+            prev = root.val;
+            root = root.right;
+        }
+        return true;
+    }
+```
+
+### inorder successor in BST
+
+    - https://www.geeksforgeeks.org/inorder-predecessor-successor-given-key-bst/?ref=lbp
+    - https://www.techiedelight.com/find-inorder-successor-given-key-bst/
+    - https://www.geeksforgeeks.org/inorder-successor-in-binary-search-tree/
+
+#### using intution method 1
+
+TC O(h) or O(logn) h is height of tree, n is the no of nodes in tree SC due to call stack O(h)
+
+```
+    /**
+     * if key is found and If its right subtree is not null The successor will be
+     * the left most child of right subtree or right child itself.
+     * If right subtree of node is NULL, then succ is one of the ancestors. Do the following.
+     * Travel up using the parent pointer until you see a node which is left child of its parent.
+     * The parent of such a node is the succ.
+     * to find the ancestors do this if key is smaller then root then set root as succ and recurse for left subtree
+     *
+     **/
+    public static TreeNode inorderSuccessor(TreeNode root, TreeNode succ, int key) {
+        if (root == null)
+            return succ;
+        if (root.data == key) {
+            if (root.right != null) {
+                return leftmost(root.right);
+            }
+        } else if (key > root.data) {
+            return inorderSuccessor(root.right, succ, key);
+        } else {
+            succ = root;
+            return inorderSuccessor(root.left, succ, key);
+        }
+        return succ;
+    }
+
+    public static TreeNode leftmost(TreeNode node) {
+        while (node.left != null)
+            node = node.left;
+        return node;
+    }
+```
+
+#### using inorder traversal help
+
+- i can see that by traversing in order sorted sequence is produced so while traversing i can check the first node greter than the key is our succ
+- this iterative inorder template is very useful for handling BST prob
+
+```
+ public TreeNode inorderSuccessor(TreeNode root, int key) {
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        while(root != null || !stack.isEmpty()){
+            while(root != null){
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            if(root.data > key)
+                return root;
+            root = root.right;
+        }
+        return null;
+    }
+```
+
+### BSTIterator inorder
+
+- https://leetcode.com/explore/learn/card/introduction-to-data-structure-binary-search-tree/140/introduction-to-a-bst/1008/
+
+#### using stack
+
+```
+public class BSTIterator {
+    private Stack<TreeNode> stack = new Stack<TreeNode>();
+
+    public BSTIterator(TreeNode root) {
+        pushAll(root);
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return !stack.isEmpty();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode tmpNode = stack.pop();
+        pushAll(tmpNode.right);
+        return tmpNode.val;
+    }
+
+    private void pushAll(TreeNode node) {
+        for (; node != null; stack.push(node), node = node.left);
+    }
+}
+```
+
+### search in BST iterative and recursive
+
+#### iterative
+
+```
+class Solution {
+    public TreeNode searchBST(TreeNode root, int val) {
+        if(root == null)
+            return null;
+        while(root != null && root.val != val){
+            root = val > root.val ? root.right : root.left;
+        }
+        return root;
+    }
+}
+```
+
+#### recursive
+
+```
+class Solution {
+    public TreeNode searchBST(TreeNode root, int val) {
+        if(root == null)
+            return null;
+        if(root.val == val)
+            return root;
+        else if(root.val > val)
+            return searchBST(root.left, val);
+        else
+            return searchBST(root.right, val);
+    }
+}
+```
+
+### deletion in BST
+
+in the below sol we are actually deleting the node and not replacing it's value and deleting inorder successor
+
+```
+class Solution {
+  public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) return null;
+
+        if (root.val > key) {
+            root.left = deleteNode(root.left, key);
+        } else if (root.val < key) {
+            root.right = deleteNode(root.right, key);
+        } else {
+            if (root.left == null) return root.right;
+            if (root.right == null) return root.left;
+
+            TreeNode rightSmallest = root.right;
+            while (rightSmallest.left != null) rightSmallest = rightSmallest.left;
+            rightSmallest.left = root.left;
+            return root.right;
+        }
+        return root;
+    }
+}
+```
+
+### kth largest element in a stream
+
+- check if iterative inorder traversal of BST can be used to solve the problem(TODO)
+
+- https://leetcode.com/explore/learn/card/introduction-to-data-structure-binary-search-tree/142/conclusion/1018
+- this problem is a perfect one to be solved with a heap, also known as a priority queue. check (https://leetcode.com/problems/kth-largest-element-in-a-stream/solution/)
+- Well, a heap is also capable of removing the smallest element quickly, so what if we just keep removing the smallest element from nums until nums.length == k, That's the key to solving this problem - use a min-heap(min means that the heap will remove/find the smallest element, a max heap is the same thing but for the largest element) and keep the heap at size k.That way, the smallest element in the heap (the one we can access in O(1)O(1)) will always be the kth largest element.
+- naive trivial way is to sort the array and then return kth largest from end in O(1) constant time by removing largest/smallest from end till we have n - k elements in array, but since add operation will be O(n) and then sorting again will cost nlogn so in short insert will be n \* n log n = n^2
+
+Given N as the length of nums and M as the number of calls to add(),
+
+- Time complexity: O(N⋅log(N)+M⋅log(k))
+
+- The time complexity is split into two parts. First, the constructor needs to turn nums into a heap of size k. In Python, heapq.heapify() can turn nums into a heap in O(N)O(N) time. Then, we need to remove from the heap until there are only k elements in it, which means removing N - k elements. Since k can be, say 1, in terms of big OO this is N operations, with each operation costing \log(N)log(N). Therefore, the constructor costsO(N+N⋅log(N))=O(N⋅log(N)).
+
+- Next, every call to add() involves adding an element to heap and potentially removing an element from heap. Since our heap is of size k, every call to add() at worst costs O(2∗log(k))=O(log(k)). That means M calls to add() costsO(M⋅log(k)).
+
+- Space complexity: O(N)
+
+- The only extra space we use is the heap. While during add() calls we limit the size of the heap to k, in the constructor we start by converting nums into a heap, which means the heap will initially be of size N.
+  // PriorityQueue<Integer> maxPQ = new PriorityQueue<>(Collections.reverseOrder()); for max heap by default it is min heap
+
+```
+class KthLargest {
+    private final Queue<Integer> heap;
+    private final int k;
+
+    public KthLargest(int k, int[] nums) {
+        this.heap = new PriorityQueue<>();
+        this.k = k;
+        for(int num : nums)
+            heap.offer(num);
+
+        while(heap.size() > k)
+            heap.poll();
+    }
+
+    public int add(int val) {
+        heap.offer(val);
+        if(heap.size() > this.k)
+            heap.poll();
+
+        return heap.peek();
+    }
+}
+
+/**
+ * Your KthLargest object will be instantiated and called as such:
+ * KthLargest obj = new KthLargest(k, nums);
+ * int param_1 = obj.add(val);
+ */
+```
+
+### kth smallest element in a stream
+
+-same approach can be used here only thing to change is use of max heap instead of min heap
+
+```
+class KthLargest {
+    private final Queue<Integer> heap;
+    private final int k;
+
+    public KthLargest(int k, int[] nums) {
+        this.heap = new PriorityQueue<>(Collections.reverseOrder());
+        this.k = k;
+        for(int num : nums)
+            heap.offer(num);
+
+        while(heap.size() > k)
+            heap.poll();
+    }
+
+    public int add(int val) {
+        heap.offer(val);
+        if(heap.size() > this.k)
+            heap.poll();
+
+        return heap.peek();
     }
 }
 ```
