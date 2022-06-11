@@ -153,9 +153,11 @@
     - [inorder traversal sol](#inorder-traversal-sol)
       - [recursive sol](#recursive-sol)
       - [iterative sol IMP REVISIT](#iterative-sol-imp-revisit)
-    - [inorder successor in BST](#inorder-successor-in-bst)
-      - [using intution method 1](#using-intution-method-1)
-      - [using inorder traversal help](#using-inorder-traversal-help)
+    - [inorder successor/predecessor in BST](#inorder-successorpredecessor-in-bst)
+      - [successor using intution method 1](#successor-using-intution-method-1)
+      - [predecessor using intution method 1](#predecessor-using-intution-method-1)
+      - [successor using inorder traversa](#successor-using-inorder-traversa)
+      - [predecessor of a node in BST using inorder traversal](#predecessor-of-a-node-in-bst-using-inorder-traversal)
     - [BSTIterator inorder](#bstiterator-inorder)
       - [using stack](#using-stack-1)
     - [search in BST iterative and recursive](#search-in-bst-iterative-and-recursive)
@@ -164,6 +166,13 @@
     - [deletion in BST](#deletion-in-bst)
     - [kth largest element in a stream](#kth-largest-element-in-a-stream)
     - [kth smallest element in a stream](#kth-smallest-element-in-a-stream)
+    - [kth smallest/largest element in a BST](#kth-smallestlargest-element-in-a-bst)
+    - [find median of integer stream (TODO)](#find-median-of-integer-stream-todo)
+    - [inorder/preorder using morris traversal(TODO)](#inorderpreorder-using-morris-traversaltodo)
+    - [Lowest Common Ancestor of a Binary Search Tree](#lowest-common-ancestor-of-a-binary-search-tree)
+      - [using recursion](#using-recursion)
+      - [iterative sol](#iterative-sol-1)
+    - [contains duplicate III](#contains-duplicate-iii)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -172,6 +181,7 @@ keep revisting these problems and algo's to keep it fresh in the memory until yo
 
 - tech dose (https://www.youtube.com/watch?v=K0NgGYEAkA4)
 - neetcode
+- tushar roy
 
 # Linked List
 
@@ -4118,13 +4128,13 @@ class Solution {
     }
 ```
 
-### inorder successor in BST
+### inorder successor/predecessor in BST
 
     - https://www.geeksforgeeks.org/inorder-predecessor-successor-given-key-bst/?ref=lbp
     - https://www.techiedelight.com/find-inorder-successor-given-key-bst/
     - https://www.geeksforgeeks.org/inorder-successor-in-binary-search-tree/
 
-#### using intution method 1
+#### successor using intution method 1
 
 TC O(h) or O(logn) h is height of tree, n is the no of nodes in tree SC due to call stack O(h)
 
@@ -4135,7 +4145,7 @@ TC O(h) or O(logn) h is height of tree, n is the no of nodes in tree SC due to c
      * If right subtree of node is NULL, then succ is one of the ancestors. Do the following.
      * Travel up using the parent pointer until you see a node which is left child of its parent.
      * The parent of such a node is the succ.
-     * to find the ancestors do this if key is smaller then root then set root as succ and recurse for left subtree
+     * to find the ancestors do this if key is smaller then root then set root as succ(makes sense since root can be succ for it's left subtree ) and recurse for left subtree
      *
      **/
     public static TreeNode inorderSuccessor(TreeNode root, TreeNode succ, int key) {
@@ -4161,7 +4171,42 @@ TC O(h) or O(logn) h is height of tree, n is the no of nodes in tree SC due to c
     }
 ```
 
-#### using inorder traversal help
+#### predecessor using intution method 1
+
+```
+ /**
+     * if key is found and If its left subtree is not null The successor will be
+     * the right most child of right subtree or left child itself.
+     * If left subtree of node is NULL, then succ is one of the ancestors. Do the following.
+     * Travel up using the parent pointer until you see a node which is right child of its parent.
+     * The parent of such a node is the pred.
+     * to find the ancestors do this if key is greater then root then set root as pred and recurse for right subtree
+     *
+     **/
+   public static TreeNode inorderPredecessor(TreeNode root, TreeNode pred, int key) {
+        if (root == null)
+            return pred;
+        if (root.data == key) {
+            if (root.left != null) {
+                return rightmost(root.left);
+            }
+        } else if (key > root.data) {
+            pred = root;
+            return inorderSuccessor(root.right, pred, key);
+        } else {
+            return inorderSuccessor(root.left, pred, key);
+        }
+        return pred;
+    }
+
+    public static TreeNode rightmost(TreeNode node) {
+        while (node.right != null)
+            node = node.right;
+        return node;
+    }
+```
+
+#### successor using inorder traversa
 
 - i can see that by traversing in order sorted sequence is produced so while traversing i can check the first node greter than the key is our succ
 - this iterative inorder template is very useful for handling BST prob
@@ -4175,8 +4220,29 @@ TC O(h) or O(logn) h is height of tree, n is the no of nodes in tree SC due to c
                 root = root.left;
             }
             root = stack.pop();
-            if(root.data > key)
+            if(root.data == key)
                 return root;
+            root = root.right;
+        }
+        return null;
+    }
+```
+
+#### predecessor of a node in BST using inorder traversal
+
+```
+ public TreeNode inorderPredecessor(TreeNode root, int key) {
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode pred;
+        while(root != null || !stack.isEmpty()){
+            while(root != null){
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            if(root.data == key)
+                return pred;
+            pred = root;
             root = root.right;
         }
         return null;
@@ -4282,14 +4348,14 @@ class Solution {
 
 - https://leetcode.com/explore/learn/card/introduction-to-data-structure-binary-search-tree/142/conclusion/1018
 - this problem is a perfect one to be solved with a heap, also known as a priority queue. check (https://leetcode.com/problems/kth-largest-element-in-a-stream/solution/)
-- Well, a heap is also capable of removing the smallest element quickly, so what if we just keep removing the smallest element from nums until nums.length == k, That's the key to solving this problem - use a min-heap(min means that the heap will remove/find the smallest element, a max heap is the same thing but for the largest element) and keep the heap at size k.That way, the smallest element in the heap (the one we can access in O(1)O(1)) will always be the kth largest element.
-- naive trivial way is to sort the array and then return kth largest from end in O(1) constant time by removing largest/smallest from end till we have n - k elements in array, but since add operation will be O(n) and then sorting again will cost nlogn so in short insert will be n \* n log n = n^2
+- Well, a heap is also capable of removing the smallest element quickly, so what if we just keep removing the smallest element from nums until nums.length == k, That's the key to solving this problem - use a min-heap(min means that the heap will remove/find the smallest element, a max heap is the same thing but for the largest element) and keep the heap at size k.That way, the smallest element in the heap (the one we can access in O(1) will always be the kth largest element.
+- naive trivial way is to sort the array and then return kth largest from end in O(1) constant time by removing largest/smallest from end till we have n - k + 1 elements in array, but since add operation will be O(n) and then sorting again will cost nlogn so in short insert will be n \* n log n = n^2
 
 Given N as the length of nums and M as the number of calls to add(),
 
 - Time complexity: O(N⋅log(N)+M⋅log(k))
 
-- The time complexity is split into two parts. First, the constructor needs to turn nums into a heap of size k. In Python, heapq.heapify() can turn nums into a heap in O(N)O(N) time. Then, we need to remove from the heap until there are only k elements in it, which means removing N - k elements. Since k can be, say 1, in terms of big OO this is N operations, with each operation costing \log(N)log(N). Therefore, the constructor costsO(N+N⋅log(N))=O(N⋅log(N)).
+- The time complexity is split into two parts. First, the constructor needs to turn nums into a heap of size k. In Python, heapq.heapify() can turn nums into a heap in O(N) time. Then, we need to remove from the heap until there are only k elements in it, which means removing N - k elements. Since k can be, say 1, in terms of big O this is N operations, with each operation costing log(N). Therefore, the constructor costsO(N+N⋅log(N))=O(N⋅log(N)).
 
 - Next, every call to add() involves adding an element to heap and potentially removing an element from heap. Since our heap is of size k, every call to add() at worst costs O(2∗log(k))=O(log(k)). That means M calls to add() costsO(M⋅log(k)).
 
@@ -4297,6 +4363,8 @@ Given N as the length of nums and M as the number of calls to add(),
 
 - The only extra space we use is the heap. While during add() calls we limit the size of the heap to k, in the constructor we start by converting nums into a heap, which means the heap will initially be of size N.
   // PriorityQueue<Integer> maxPQ = new PriorityQueue<>(Collections.reverseOrder()); for max heap by default it is min heap
+
+- sol using BST as mentioned in explore card https://leetcode.com/problems/kth-largest-element-in-a-stream/discuss/147729/O(h)-Java-Solution-Using-BST
 
 ```
 class KthLargest {
@@ -4354,6 +4422,154 @@ class KthLargest {
             heap.poll();
 
         return heap.peek();
+    }
+}
+```
+
+### kth smallest/largest element in a BST
+
+- https://leetcode.com/problems/kth-smallest-element-in-a-bst/
+- this can be solved with inorder traversal by simply decrementing the k value and when it reaches 0 we are at the kth smallest element in inorder traversal, however TC for this sol is O(n) where n is the no of nodes in BST and SC is O(h), which can be reduced to O(1) using morris traversal
+- also if there are freq insertion/deletion operation in BST and freq access to kth smallest element then heap is ideal choice since insertion/deletion is log(n) and min/max heap smallest/largest element access is O(1)
+- stack can be taken as stack, arrayDeque, linkedlist in java
+- LinkedList<TreeNode> stack = new LinkedList<>();
+
+- sol to the follow up https://leetcode.com/problems/kth-smallest-element-in-a-bst/solution/
+- ideal sol for follow up is modify the strcuture of tree to have left subtree node count lNodeCount++ of all nodes during construction/insertion/deletion that way if k = lNodeCount + 1 for a node then that node is the kth smallest node which can be found in O(h) as explained in below gfg link
+- https://www.geeksforgeeks.org/find-k-th-smallest-element-in-bst-order-statistics-in-bst/
+
+```
+class Solution {
+    public int kthSmallest(TreeNode root, int k) {
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        while(root != null ||  !stack.isEmpty()){
+            while(root !=  null){
+                stack.push(root);
+                root =  root.left;
+            }
+            root = stack.pop();
+
+            if(--k == 0)
+                return root.val;
+            root = root.right;
+        }
+        return -1;
+    }
+}
+```
+
+- Complexity Analysis
+
+Time complexity: O(H + k), where H is a tree height. This complexity is defined by the stack, which contains at least H + k elements, since before starting to pop out one has to go down to a leaf. This results in O(log N + k) for the balanced tree and O(N + k) for completely unbalanced tree with all the nodes in the left subtree.
+Space complexity: O(H) to keep the stack, where H is a tree height. That makes O(N) in the worst case of the skewed tree, and O(logN) in the average case of the balanced tree.
+
+- IMPORTENT if we use here max heap then TC will be nlogn for construction of maxheap and then for removing k elements from top is nlog(n) and accessing the top element is O(1) so total TC 2nlog(n) + O(1)
+- so using heap is not better here since construction cost is higher and since it an array not a stream where we need to freq access the kth smallest element but we have stream where kth smallest element keep on changing then heap could be better choice.
+
+### find median of integer stream (TODO)
+
+### inorder/preorder using morris traversal(TODO)
+
+### Lowest Common Ancestor of a Binary Search Tree
+
+- https://leetcode.com/explore/learn/card/introduction-to-data-structure-binary-search-tree/142/conclusion/1012/
+- https://www.geeksforgeeks.org/lowest-common-ancestor-in-a-binary-search-tree/?ref=lbp
+- trick is if LCA lies in between the node 1 and node2 so if a node n is greater than both n1 and n2 then LCA lier in left subtree else if n is smaller than both n1 and n2 then LCA lies in right subtree else node n is the LCA
+
+#### using recursion
+
+TC O(h) SC O(h), SC O(1) if recusion stack is not considered
+
+```
+class Solution {
+    //TreeNode lca;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root == null)
+            return root;
+        if(root.val > p.val && root.val > q.val)
+            return lowestCommonAncestor(root.left, p , q);
+        else if (root.val < p.val && root.val < q.val)
+            return lowestCommonAncestor(root.right, p, q);
+        else{
+            return root;
+        }
+    }
+}
+```
+
+#### iterative sol
+
+TC O(h) SC SC O(1)
+
+```
+class Solution {
+    //TreeNode lca;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+       while(root != null){
+           if(root.val > p.val && root.val > q.val)
+               root = root.left;
+           else if(root.val < p.val && root.val < q.val)
+               root = root.right;
+           else
+               return root;
+       }
+        return null;
+    }
+}
+```
+
+### contains duplicate III
+
+- https://www.youtube.com/watch?v=Cu7g9ovYHNI
+
+- using brute force TC will O(n\*k)
+- in earlier contains duplicate II prob we used hashmap/hashset to solve the prob since there we are not having t i.e we were actually looking for duplicates but here the prob is slightly different as we have to find nearest duplicate i.e num[j] - num[i] <= t
+- here we look at the brute force sol in outer loop we are going through the array and in inner loop we are checking the diff between nums[i] and elements from i + 1 to k elements so essentially for each element we are doing k operations so it n \* k
+- we can optimise the k operations we use a BST because in BST insertion, deletion, searching all operation are log n so here we can maintain a BST of size k that way we can do all operation in log(k) size , so we can use treeset here we can add k elements to tree and while adding the numbers we can check the range num - t or num + t + 1 in the set any any num exists between this range then we found the nearest duplicate
+  or alternatively you use floor and ceiling method of treeset to check if nearest duplicate exists
+
+TC O (n log(k))
+SC O (log(k))
+
+```
+class Solution {
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+        TreeSet<Integer> set = new TreeSet<>();
+        for(int i = 0; i < nums.length; i++){
+            Integer floor = set.floor(nums[i]);
+            Integer ceiling = set.ceiling(nums[i]);
+
+            if((floor != null &&  (long) nums[i] - floor <= t) || (ceiling != null &&  (long) ceiling - nums[i] <= t))
+                return true;
+
+            set.add(nums[i]);
+            if(set.size() > k)
+                set.remove(nums[i - k]);
+        }
+        return false;
+    }
+}
+```
+
+- we can use subset method of treeset to improve the readablilty of the code and it is simply combining the check of floor and ceil together
+
+```
+class Solution {
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+        TreeSet<Long> set = new TreeSet<>();
+        for(int i = 0; i < nums.length; i++){
+            long from = (long) nums[i] - t;
+            long to = (long) nums[i] + t + 1;
+            SortedSet<Long> subSet = set.subSet(from, to);
+
+            if(subSet.size() > 0)
+                return true;
+
+            set.add((long)nums[i]);
+            if(set.size() > k)
+                set.remove((long)nums[i - k]);
+        }
+        return false;
     }
 }
 ```
