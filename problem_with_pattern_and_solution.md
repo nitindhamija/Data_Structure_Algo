@@ -50,7 +50,7 @@
 - [binary search O(log(n)](#binary-search-ologn)
   - [template 1](#template-1-1)
     - [iterative sol](#iterative-sol)
-    - [sqrure root of x using binary search](#sqrure-root-of-x-using-binary-search)
+    - [sqaure root of x using binary search](#sqaure-root-of-x-using-binary-search)
     - [checkout below also](#checkout-below-also)
     - [here below part is extra to calculate the fractional part up to p point](#here-below-part-is-extra-to-calculate-the-fractional-part-up-to-p-point)
   - [search in a rotated sorted array](#search-in-a-rotated-sorted-array)
@@ -173,6 +173,27 @@
       - [using recursion](#using-recursion)
       - [iterative sol](#iterative-sol-1)
     - [contains duplicate III](#contains-duplicate-iii)
+    - [is binary tree balanced](#is-binary-tree-balanced)
+      - [non optimal sol TC O(n^2)](#non-optimal-sol-tc-on2)
+      - [optimal sol TC O(n) SC O(n)](#optimal-sol-tc-on-sc-on)
+    - [convert sorten int array to BST TC O(n) SC(n) for recursion](#convert-sorten-int-array-to-bst-tc-on-scn-for-recursion)
+- [sliding window](#sliding-window)
+  - [Longest Substring with K Distinct Characters](#longest-substring-with-k-distinct-characters)
+    - [SOL : trick is to use hashmap with char and their freq to keep k unique char and keep expanding and shrinking window till map is size is k exactly](#sol--trick-is-to-use-hashmap-with-char-and-their-freq-to-keep-k-unique-char-and-keep-expanding-and-shrinking-window-till-map-is-size-is-k-exactly)
+- [sorting](#sorting)
+  - [merge sort TC O(nlogn) SC(n)](#merge-sort-tc-onlogn-scn)
+    - [Applications of Merge Sort:](#applications-of-merge-sort)
+  - [quick sort](#quick-sort)
+    - [using end index as the pivot](#using-end-index-as-the-pivot)
+      - [Time taken by QuickSort, in general, can be written as following.](#time-taken-by-quicksort-in-general-can-be-written-as-following)
+    - [if we use middle element as pivot then partition algo is bit different](#if-we-use-middle-element-as-pivot-then-partition-algo-is-bit-different)
+  - [quick sort vs merge sort](#quick-sort-vs-merge-sort)
+  - [importance of stability of sorting](#importance-of-stability-of-sorting)
+  - [heap sort (TODO)](#heap-sort-todo)
+- [my calendar II](#my-calendar-ii)
+  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -1094,32 +1115,30 @@ https://leetcode.com/explore/learn/card/queue-stack/231/practical-application-qu
 ### template 1
 
 ```
-
-/\*\*
-
-- Return the length of the shortest path between root and target node.
-  \*/
-  int BFS(Node root, Node target) {
-  Queue<Node> queue; // store all nodes which are waiting to be processed
-  int step = 0; // number of steps neeeded from root to current node
-  // initialize
-  add root to queue;
-  // BFS
-  while (queue is not empty) {
-  // iterate the nodes which are already in the queue
-  int size = queue.size();
-  for (int i = 0; i < size; ++i) {
-  Node cur = the first node in queue;
-  return step if cur is target;
-  for (Node next : the neighbors of cur) {
-  add next to queue;
-  }
-  remove the first node from queue;
-  }
-  step = step + 1;
-  }
-  return -1; // there is no path from root to target
-  }
+/**
+ * Return the length of the shortest path between root and target node.
+ */
+int BFS(Node root, Node target) {
+    Queue<Node> queue;  // store all nodes which are waiting to be processed
+    int step = 0;       // number of steps neeeded from root to current node
+    // initialize
+    add root to queue;
+    // BFS
+    while (queue is not empty) {
+        // iterate the nodes which are already in the queue
+        int size = queue.size();
+        for (int i = 0; i < size; ++i) {
+            Node cur = the first node in queue;
+            return step if cur is target;
+            for (Node next : the neighbors of cur) {
+                add next to queue;
+            }
+            remove the first node from queue;
+        }
+        step = step + 1;
+    }
+    return -1;          // there is no path from root to target
+}
 
 ```
 
@@ -1131,38 +1150,35 @@ https://leetcode.com/explore/learn/card/queue-stack/231/practical-application-qu
 Sometimes, it is important to make sure that we never visit a node twice. Otherwise, we might get stuck in an infinite loop, e.g. in graph with cycle. If so, we can add a hash set to the code above to solve this problem. Here is the pseudocode after modification:
 
 ```
-
-/\*\*
-
-- Return the length of the shortest path between root and target node.
-  \*/
-  int BFS(Node root, Node target) {
-  Queue<Node> queue; // store all nodes which are waiting to be processed
-  Set<Node> visited; // store all the nodes that we've visited
-  int step = 0; // number of steps neeeded from root to current node
-  // initialize
-  add root to queue;
-  add root to visited;
-  // BFS
-  while (queue is not empty) {
-  // iterate the nodes which are already in the queue
-  int size = queue.size();
-  for (int i = 0; i < size; ++i) {
-  Node cur = the first node in queue;
-  return step if cur is target;
-  for (Node next : the neighbors of cur) {
-  if (next is not in visited) {
-  add next to queue;
-  add next to visited;
-  }
-  }
-  remove the first node from queue;
-  }
-  step = step + 1;
-  }
-  return -1; // there is no path from root to target
-  }
-
+/**
+ * Return the length of the shortest path between root and target node.
+ */
+int BFS(Node root, Node target) {
+    Queue<Node> queue;  // store all nodes which are waiting to be processed
+    Set<Node> visited;  // store all the nodes that we've visited
+    int step = 0;       // number of steps neeeded from root to current node
+    // initialize
+    add root to queue;
+    add root to visited;
+    // BFS
+    while (queue is not empty) {
+        // iterate the nodes which are already in the queue
+        int size = queue.size();
+        for (int i = 0; i < size; ++i) {
+            Node cur = the first node in queue;
+            return step if cur is target;
+            for (Node next : the neighbors of cur) {
+                if (next is not in visited) {
+                    add next to queue;
+                    add next to visited;
+                }
+            }
+            remove the first node from queue;
+        }
+        step = step + 1;
+    }
+    return -1;          // there is no path from root to target
+}
 ```
 
 ## first read about graph and connect component of a graph
@@ -1242,35 +1258,34 @@ in this method instead of taking extra visited flag array to keep track of visit
 
 ```
 
-public class Solution {
+class Solution {
+    private int n;
+    private int m;
 
-private int n;
-private int m;
-
-public int numIslands(char[][] grid) {
-int count = 0;
-n = grid.length;
-if (n == 0) return 0;
-m = grid[0].length;
-for (int i = 0; i < n; i++){
-for (int j = 0; j < m; j++)
-if (grid[i][j] == '1') {
-DFSMarking(grid, i, j);
-++count;
-}
-}
-return count;
-}
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        n = grid.length;
+        if (n == 0) return 0;
+        m = grid[0].length;
+        for (int i = 0; i < n; i++){
+            for (int j = 0; j < m; j++)
+                if (grid[i][j] == '1') {
+                    DFSMarking(grid, i, j);
+                    ++count;
+                    }
+            }
+        return count;
+    }
 
 private void DFSMarking(char[][] grid, int i, int j) {
-if (i < 0 || j < 0 || i >= n || j >= m || grid[i][j] != '1') return;
-grid[i][j] = '0';
-DFSMarking(grid, i + 1, j);
-DFSMarking(grid, i - 1, j);
-DFSMarking(grid, i, j + 1);
-DFSMarking(grid, i, j - 1);
+    if (i < 0 || j < 0 || i >= n || j >= m || grid[i][j] != '1') return;
+    grid[i][j] = '0';
+    DFSMarking(grid, i + 1, j);
+    DFSMarking(grid, i - 1, j);
+    DFSMarking(grid, i, j + 1);
+    DFSMarking(grid, i, j - 1);
+    }
 }
-
 ```
 
 ### open the lock (imp problem) (REVISE)
@@ -1278,46 +1293,52 @@ DFSMarking(grid, i, j - 1);
 #### using BFS and single queue time complexity around 300 ms
 
 ```
-
 class Solution {
-public int openLock(String[] deadends, String target) {
-Queue<String> q = new LinkedList<>();
-Set<String> deads = new HashSet<>(Arrays.asList(deadends));
-Set<String> visited = new HashSet<>();
-q.offer("0000");
-visited.add("0000");
-int level = 0;
-while(!q.isEmpty()) {
-int size = q.size();
-while(size > 0) {
-String s = q.poll();
-if(deads.contains(s)) {
-size --;
-continue;
-}
-if(s.equals(target)) return level;
-StringBuilder sb = new StringBuilder(s);
-for(int i = 0; i < 4; i ++) {
-char c = sb.charAt(i);
-String s1 = sb.substring(0, i) + (c == '9' ? 0 : c - '0' + 1) + sb.substring(i + 1);
-String s2 = sb.substring(0, i) + (c == '0' ? 9 : c - '0' - 1) + sb.substring(i + 1);
-if(!visited.contains(s1) && !deads.contains(s1)) {
-q.offer(s1);
-visited.add(s1);
-}
-if(!visited.contains(s2) && !deads.contains(s2)) {
-q.offer(s2);
-visited.add(s2);
-}
-}
-size --;
-}
-level ++;
-}
-return -1;
-}
-}
 
+    public int openLock(String[] deadends, String target) {
+
+
+        int[] pow10 = {1, 10, 100, 1000};
+        int[] visit = new int[10000]; // 0: not visited, 1: visited through forward direction, -1: visited through backward direction, 2: deadends
+        for(String dead: deadends) {
+            visit[Integer.parseInt(dead)] = 2;
+        }
+        int src = 0, dest = Integer.parseInt(target), steps = 0, dir = 1;
+        if(visit[src] == 2 || visit[dest] == 2) return -1;
+        if(src == dest) return 0;
+        Queue<Integer> forward = new LinkedList<>(), backward = new LinkedList<>();
+        forward.add(src);
+        visit[src] = 1;
+        backward.add(dest);
+        visit[dest] = -1;
+        while(!forward.isEmpty() && !backward.isEmpty()) {
+            if(forward.size() > backward.size()) {
+                Queue<Integer> tmp = forward; forward = backward; backward = tmp;
+                dir = -dir;
+            }
+            steps++;
+            int size = forward.size();
+            while(size-- > 0) {
+                int cur = forward.poll();
+                for(int p: pow10) {
+                    int d = (cur / p) % 10;
+                    for(int i = -1; i <= 1; i += 2) {
+                        int z = d + i;
+                        z = z == -1 ? 9 : (z == 10 ? 0 : z);
+                        int next = cur + (z - d) * p;
+                        if(visit[next] == -dir) return steps;
+                        if(visit[next] == 0) {
+                            forward.add(next);
+                            visit[next] = dir;
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+}
 ```
 
 ### using bidirectional search
@@ -1394,34 +1415,37 @@ A perfect square is an integer that is the square of an integer; in other words,
 
 this method is better than recursive exponential approach and max n number will be pushed to queue and for each n at max sqrt(n) comparison will be made so time complexity is n \* sqrt(n)
 
+- it is difficult to see this problem as graph traversal prob but if you look carefully then this problem breaks down in to graph rooted at the number itself, now this root can sqrt(n) choices/branches to follow and then the remainder (r = n - (i\*i)) of each choice becomes a node itself which again will have sqrt(r) choices and so on
+  now we can use BFS with queue to solve this prob
+
 ```
 
 class Solution {
 public int numSquares(int n) {
-if(n==1)
-return 1;
-Queue<Integer> q= new LinkedList<>();
-q.add(n);
-Set<Integer> vis = new HashSet<>();
-int steps=0;
-while(!q.isEmpty()){
-int size=q.size();
-steps++;
-while(size-- > 0){
-int node=q.poll();
-for(int i = 1; (i*i) <= node; i++){
-int rem = node - ( i * i);
-if( rem == 0)
-return steps;
-if(!vis.contains(rem)){
-q.add(rem);
-vis.add(rem);
-}
-}
-}
-}
-return -1;
-}
+    if(n==1)
+        return 1;
+    Queue<Integer> q= new LinkedList<>();
+    q.add(n);
+    Set<Integer> vis = new HashSet<>();
+    int steps=0;
+    while(!q.isEmpty()){
+            int size=q.size();
+            steps++;
+            while(size-- > 0){
+                int node=q.poll();
+                for(int i = 1; (i*i) <= node; i++){
+                    int rem = node - ( i * i);
+                    if( rem == 0)
+                        return steps;
+            if(!vis.contains(rem)){
+                q.add(rem);
+                vis.add(rem);
+                }
+            }
+        }
+    }
+    return -1;
+    }
 }
 
 ```
@@ -1794,7 +1818,7 @@ In java, it throws ArrayIndexOutOfBoundException.
 so always get middle like
 `int mid = low + (high – low)/2;` i.e 3 + 5-3/2 = 4
 
-### sqrure root of x using binary search
+### sqaure root of x using binary search
 
 ```
 
@@ -1850,31 +1874,36 @@ ans += increment;
 ## search in a rotated sorted array
 
 https://www.geeksforgeeks.org/search-an-element-in-a-sorted-and-pivoted-array/
+trick to solve such prob is to draw a 2d line graph with index and no now you will see line going upwards and then downwards at pivot and then upwards again
+
+now based on this graph you can deduce your binary search conditions
+
+- first check if mid element itself is the target if return it
+- then check if low till mid elements are sorted in array if so then further check if target lies inside the bound of low and mid of array is so then Binary search for low ,mid-1 else targets lies outside bounds and search for right half
+- now if low till mid is not sorted then that means in between we have a pivot but mid to high will be sorted so check if element is inside the bounds of mid to high if so element is in right half else left half
 
 ```
-
 class Solution {
-public int search(int[] nums, int target) {
-return bSearch(nums,0,nums.length-1,target);
+    public int search(int[] nums, int target) {
+       return bSearch(nums,0,nums.length-1,target);
 
+    }
+    int bSearch(int[] nums,int l, int h, int target){
+        if(l > h)
+            return -1;
+        int mid = l + (h - l)/2;
+        if(nums[mid] == target)
+            return mid;
+        if(nums[l] <= nums[mid] ){
+            if(target >= nums[l] && target <= nums[mid] )
+                return bSearch(nums,l, mid-1,target);
+            return bSearch(nums,mid + 1, h, target);
+        }
+        if(target >= nums[mid] && target <= nums[h])
+            return bSearch(nums,mid+1,h,target);
+        return bSearch(nums,l,mid-1,target);
+    }
 }
-int bSearch(int[] nums,int l, int h, int target){
-if(l > h)
-return -1;
-int mid = l + (h - l)/2;
-if(nums[mid] == target)
-return mid;
-if(nums[l] <= nums[mid] ){
-if(target >= nums[l] && target <= nums[mid] )
-return bSearch(nums,l, mid-1,target);
-return bSearch(nums,mid + 1, h, target);
-}
-if(target >= nums[mid] && target <= nums[h])
-return bSearch(nums,mid+1,h,target);
-return bSearch(nums,l,mid-1,target);
-}
-}
-
 ```
 
 ## template 2
@@ -1925,7 +1954,7 @@ public class Solution extends VersionControl {
 #### iterative
 
 - discuss better sol in TC
-- The only scenario left is where isBadVersion(mid) \Rightarrow true isBadVersion(mid)⇒true. This tells us that mid may or may not be the first bad version, but we can tell for sure that all versions after midmid can be discarded. Therefore we set right = midright=mid as the new search space of interval [left,mid][left,mid] (inclusive).
+- The only scenario left is where isBadVersion(mid) -> true isBadVersion(mid)⇒true. This tells us that mid may or may not be the first bad version, but we can tell for sure that all versions after midmid can be discarded. Therefore we set right = midright=mid as the new search space of interval [left,mid][left,mid] (inclusive).
 
 ```
 /* The isBadVersion API is defined in the parent class VersionControl.
@@ -2195,7 +2224,7 @@ class Solution {
             int mid = left + (right-left) / 2;
             if (nums[mid] == target) {
                 int temp = mid;
-                while(mid >= left && nums[mid] == target) mid--;
+                while(mid >= left && nums[mid] == target)   mid--;
                 res[0] = mid+1;
                 mid = temp;
                 while(mid < right && nums[mid] == target) mid++;
@@ -2675,6 +2704,20 @@ class Solution {
 ## 2-pointer technique
 
 ### Array Partition
+
+max of min(a,b) will be when array is sorted then simply pair the adjacent elements in pair
+
+```
+class Solution {
+    public int arrayPairSum(int[] nums) {
+        Arrays.sort(nums);
+        int sum = 0;
+        for(int i = 0; i < nums.length; i += 2)
+            sum += nums[i];
+        return sum;
+    }
+}
+```
 
 ### two sum II (sorted array)
 
@@ -3695,7 +3738,7 @@ TC O(N) SC O(1) since O(26) is constant
 ```
 class Solution {
     public int firstUniqChar(String s) {
-        Map<Character, Integer> seen = new HashMap<>();
+        Map<Character, Integer> seen = new LinkedHashMap<>();
         for(int i = 0; i < s.length(); i++){
             char c = s.charAt(i);
             if(seen.containsKey(c))
@@ -4573,3 +4616,357 @@ class Solution {
     }
 }
 ```
+
+### is binary tree balanced
+
+- ideally below sol is correct but not optimal For the current node root, calling height() for its left and right children actually has to access all of its children, thus the complexity is O(N). We do this for each node in the tree, so the overall complexity of isBalanced will be O(N^2) in worst case(skewed binary tree and full binary tree). This is a top down approach.
+- height function time complexity is O(n) and in first sol we are calling height multiple times i.e for each node in tree from main function so it is not optimal while in second sol we are calling height function only once from mail function
+  simply by having a flag to keep track of any unbalanced node in tree
+- check for other approaches from discuss https://leetcode.com/explore/learn/card/introduction-to-data-structure-binary-search-tree/143/appendix-height-balanced-bst/1027/discuss/35691/The-bottom-up-O(N)-solution-would-be-better
+
+#### non optimal sol TC O(n^2)
+
+```
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+       if(root == null)
+           return true;
+        int lh = height(root.left);
+        int rh = height(root.right);
+        return (Math.abs(lh - rh) <= 1) && isBalanced(root.left) && isBalanced(root.right);
+    }
+
+    int height(TreeNode root){
+        if(root == null)
+            return 0;
+
+        return 1 + Math.max(height(root.left), height(root.right));
+    }
+}
+```
+
+#### optimal sol TC O(n) SC O(n)
+
+```
+class Solution {
+    private boolean result = true;
+    public boolean isBalanced(TreeNode root) {
+        if(root == null)
+           return result;
+        height(root);
+        return result;
+    }
+
+    int height(TreeNode root){
+        if(root == null || !result)
+            return 0;
+        int lh = height(root.left);
+        int rh = height(root.right);
+        if(Math.abs(lh - rh) > 1)
+            result = false;
+
+        return 1 + Math.max(lh, rh);
+    }
+}
+```
+
+### convert sorten int array to BST TC O(n) SC(n) for recursion
+
+- since the array is sorted we can assume the root at the middle and know with sorted property of array we know all elements left of middle are part of left subtree for the node and elements to the right of middle are part of right subtree so algorithm is
+  - terminal conition is low > high for case where there is only one element left and low and high are same
+  - make the middle as root
+  - root.left = recurse for(nums, low, mid - 1)
+  - root.right = recurse for(nums,mid + 1, high)
+  - return root
+
+```
+class Solution {
+    public TreeNode sortedArrayToBST(int[] nums) {
+        int low = 0, high = nums.length - 1;
+        return helper(nums, low, high);
+    }
+    TreeNode helper(int[] nums,int low,int high){
+        if(low > high)
+            return null;
+        int mid = low + (high - low)/2;
+        TreeNode root = new TreeNode(nums[mid]);
+        root.left = helper(nums, low, mid - 1);
+        root.right = helper(nums, mid + 1, high);
+        return root;
+    }
+}
+```
+
+# sliding window
+
+## Longest Substring with K Distinct Characters
+
+- https://practice.geeksforgeeks.org/problems/longest-k-unique-characters-substring0853/1/#(submitted on GFG)
+- https://write.geeksforgeeks.org/improve-post/3992063
+- https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/(premium)
+
+### SOL : trick is to use hashmap with char and their freq to keep k unique char and keep expanding and shrinking window till map is size is k exactly
+
+- https://designgurus.org/path-player?courseid=grokking-the-coding-interview&unit=grokking-the-coding-interview_1628541009794_1Unit
+
+```
+class Solution {
+    public int longestkSubstr(String s, int k) {
+        Map<Character, Integer> map =  new HashMap<>();
+        if (s == null || s.length() == 0 || s.length() < k)
+            return -1;
+
+        int len = s.length(), winStart = 0, longest = -1;
+        for(int i = 0; i < len; i++ ){
+            char end = s.charAt(i);
+            map.put(end, map.getOrDefault(end, 0) + 1);
+            if(map.size() == k){
+                longest = Math.max(longest, i - winStart + 1);
+            }
+            while(map.size() > k){
+                char beg = s.charAt(winStart);
+                map.put(beg, map.get(beg) - 1);
+                if(map.get(beg) == 0 )
+                    map.remove(beg);
+                winStart++;
+            }
+
+        }
+         return longest;
+    }
+}
+```
+
+# sorting
+
+## merge sort TC O(nlogn) SC(n)
+
+Time complexity of Merge Sort is O(nLogn) in all 3 cases (worst, average and best) as merge sort always divides the array into two halves and takes linear time to merge two halves.
+Auxiliary Space: O(n)
+
+- divide and conquer techqnique where we keep breaking the array in 2 halves until both halv become atomic and then perform merge on 2 halves
+- for merging we take extra space of length r - l + 1 in each call stack
+- we compare elements from first array and second array and put in extra array in increasing order
+- finally we copy the elements from extra/buffer array to orig array using the start/low pointer
+
+```
+class Solution
+{
+    void merge(int arr[], int l, int m, int r)
+    {    int[] merged = new int[r - l + 1];
+         int idx1 = l, idx2 = m + 1;
+         int k = 0;
+         while(idx1 <= m && idx2 <= r){
+             if(arr[idx1] <= arr[idx2]){
+                 merged[k++] = arr[idx1++];
+             }
+             else{
+                 merged[k++] = arr[idx2++];
+             }
+         }
+         while(idx1 <= m){
+             merged[k++] = arr[idx1++];
+         }
+         while(idx2 <= r){
+             merged[k++] = arr[idx2++];
+         }
+         for(int i = 0,j = l; i < merged.length; i++, j++)
+            arr[j] = merged[i];
+    }
+    void mergeSort(int arr[], int l, int r)
+    {
+        if(l < r)
+        {
+            int mid =  l + (r - l)/2;
+            mergeSort(arr, l , mid);
+            mergeSort(arr, mid + 1, r);
+            merge(arr, l , mid, r);
+        }
+    }
+}
+```
+
+### Applications of Merge Sort:
+
+- Merge Sort is useful for sorting linked lists in O(nLogn) time. In the case of linked lists, the case is different mainly due to the difference in memory allocation of arrays and linked lists. Unlike arrays, linked list nodes may not be adjacent in memory. Unlike an array, in the linked list, we can insert items in the middle in O(1) extra space and O(1) time. Therefore, the merge operation of merge sort can be implemented without extra space for linked lists.
+
+- In arrays, we can do random access as elements are contiguous in memory. Let us say we have an integer (4-byte) array A and let the address of A[0] be x then to access A[i], we can directly access the memory at (x + i\*4). Unlike arrays, we can not do random access in the linked list. Quick Sort requires a lot of this kind of access. In a linked list to access i’th index, we have to travel each and every node from the head to i’th node as we don’t have a continuous block of memory. Therefore, the overhead increases for quicksort. Merge sort accesses data sequentially and the need of random access is low.
+
+## quick sort
+
+quick sort is not stable and in place sorting
+
+- explore 3-way quicksort for handling duplicates(TODO)
+- quick sort optimlization (TODO)
+- https://www.geeksforgeeks.org/quick-sort/?ref=lbp
+
+### using end index as the pivot
+
+```
+class Solution
+{
+    //Function to sort an array using quick sort algorithm.
+    static void quickSort(int arr[], int low, int high)
+    {
+        if(low >= high)
+        return;
+        int pivot = partition(arr, low, high);
+        quickSort(arr, low, pivot - 1);
+        quickSort(arr, pivot + 1, high);
+    }
+    static int partition(int arr[], int low, int high)
+    {
+        int mid = high;
+        int i = low - 1;
+        for(int j = low; j < arr.length; j++){
+            if(arr[j] < arr[mid]){
+                i++;
+                swap(arr, i, j);
+            }
+        }
+        swap(arr, i + 1, mid);
+        return i + 1;
+    }
+    static void swap(int[] arr,int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
+
+
+```
+
+#### Time taken by QuickSort, in general, can be written as following.
+
+T(n) = T(k) + T(n-k-1) + \theta (n)
+
+The first two terms are for two recursive calls, the last term is for the partition process. k is the number of elements which are smaller than pivot.
+
+- The worst case occurs when the partition process always picks greatest or smallest element as pivot. If we consider above partition strategy where last element is always picked as pivot, the worst case would occur when the array is already sorted in increasing or decreasing order.
+  Following is recurrence for worst case.
+
+- T(n) = T(0) + T(n-1) + \theta (n)which is equivalent to T(n) = T(n-1) + \theta (n) The solution of above recurrence is (n2).
+
+- The best case occurs when the partition process always picks the middle element as pivot. Following is recurrence for best case.
+
+- T(n) = 2T(n/2) + \theta (n) which is O(nlogn) and average is also O(nlogn)
+
+### if we use middle element as pivot then partition algo is bit different
+
+- there we need to us e 2 pointers left and right and we will keep incrementing left till we find an element > pivot and keep decrementing right till we find an element < pivot till left index < right index
+- and do swaping
+
+- https://stackoverflow.com/questions/27886150/quick-sort-with-middle-element-as-pivot
+
+## quick sort vs merge sort
+
+- choose merge sort for sorting linkedlist since merge sort require less random access than quick sort and most of the time data is accessed sequentially
+- we can insert element in middle in O(1) extra space and O(1) extra time in merge operation of merge sort
+
+- choose quicksort for sorting array since quicksort requires a lot of random access
+- and in array anyhow we can not insert element in middle in O(1) time and space so no considerable benefit of using merge sort.
+- Quick Sort is also a cache friendly sorting algorithm as it has good locality of reference when used for arrays.
+
+## importance of stability of sorting
+
+- https://www.geeksforgeeks.org/stability-in-sorting-algorithms/
+
+## heap sort (TODO)
+
+- https://www.geeksforgeeks.org/heap-sort/?ref=lbp
+- check heap DS from tech dose
+
+# my calendar II
+
+- here double booking is allowed but not triple booking
+- https://leetcode.com/problems/my-calendar-ii
+
+### Inuition Algo brute force sol TC O(n^2) SC O(n)
+
+- Maintain a list of bookings and a list of overlaps/double bookings. When booking a new event [start, end), if it conflicts with a double booking, it will have a triple booking and be invalid.
+  and we have to store only overlapped part in the overlaps booking since a booking is triple booking if it overlaps with any booking in overlapping list
+  e.g we book [10, 20] [10, 40] [5, 15] in order
+  now overlapping list will be having [10, 20] after [10, 40] book and now when [5, 15] it has to be checked for triple booking i.e so we need to compare it with overlapped section of the booking only i.e 10, 20 in our case if instead of 5, 15 we had 20, 40 coming this is fine since it overlaps with only 10, 40 and not 10, 20 so we store the intersection part only in overlapped list
+
+```
+class MyCalendarTwo {
+   List<int[]> booking;
+   List<int[]> overlaps;
+    public MyCalendarTwo() {
+        booking = new ArrayList<>();
+        overlaps = new ArrayList<>();
+    }
+
+    public boolean book(int start, int end) {
+
+       for(int[] ol: overlaps){
+           if(start < ol[1] && end > ol[0])
+               return false;
+       }
+
+       for(int[] b: booking){
+           if(start < b[1] && end > b[0])
+                // this is an imp trick here we only have to store the overlapping part in overlap list
+               overlaps.add(new int[]{Math.max(start, b[0]), Math.min(end, b[1])});
+       }
+
+       booking.add(new int[] {start, end});
+       return true;
+    }
+}
+
+```
+
+### boundary Count Intuition Algo
+
+however this sol is not able to return the bookings data
+
+- We will consider 'start' time as +1 and 'end' time as -1
+
+  - If we currently only have 'start' and 'end' time
+    - The sum between them will equal to 0, which will balance out
+    - Now, if we add an overlap between the 'start/end' time we will have the following
+      - s0, s1, e0, e1
+    - Then the sum will be
+      - 1 2 1 0
+    - Since, there is an overlap, we can see that our highest sum is equal to 2
+  - We can continue this approach to 3 or more overlaps
+    - Example:
+      - s0, s1, s2, e0, e1, e3
+      - 1 2 3 2 1 0
+    - In this case, our sum has reached 3 and we have found our triple booking
+
+  When booking a new event [start, end), count delta[start]++ and delta[end]--. When processing the values of delta in sorted order of their keys, the running sum active is the number of events open at that time. If the sum is 3 or more, that time is (at least) triple booked.
+
+```
+class MyCalendarTwo {
+    TreeMap<Integer, Integer> delta;
+
+    public MyCalendarTwo() {
+        delta = new TreeMap();
+    }
+
+    public boolean book(int start, int end) {
+        delta.put(start, delta.getOrDefault(start, 0) + 1);
+        delta.put(end, delta.getOrDefault(end, 0) - 1);
+
+        int active = 0;
+        for (int d: delta.values()) {
+            active += d;
+            if (active >= 3) {
+                delta.put(start, delta.get(start) - 1);
+                delta.put(end, delta.get(end) + 1);
+                if (delta.get(start) == 0)
+                    delta.remove(start);
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+#### TC n\* (4logn + n) = O(n^2) SC O(n)
+
+4 logn for 4 put operation and n for delta traverse so booke function TC is O(n) for n calls to book it is O(n^2)
