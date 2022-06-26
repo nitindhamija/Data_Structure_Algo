@@ -177,6 +177,17 @@
       - [non optimal sol TC O(n^2)](#non-optimal-sol-tc-on2)
       - [optimal sol TC O(n) SC O(n)](#optimal-sol-tc-on-sc-on)
     - [convert sorten int array to BST TC O(n) SC(n) for recursion](#convert-sorten-int-array-to-bst-tc-on-scn-for-recursion)
+  - [n-ary tree](#n-ary-tree)
+    - [preorder traversal of 3-ary tree](#preorder-traversal-of-3-ary-tree)
+      - [recursive sol TC O(n) [SC (n) to check]](#recursive-sol-tc-on-sc-n-to-check)
+      - [iterative sol TC O(n) SC(n)](#iterative-sol-tc-on-scn)
+    - [postoreder traversal of n-ary tree](#postoreder-traversal-of-n-ary-tree)
+      - [recursive sol](#recursive-sol-1)
+      - [iterative sol TC o(n) SC(n)](#iterative-sol-tc-on-scn-1)
+    - [level order traversal of n-ary tree](#level-order-traversal-of-n-ary-tree)
+  - [Binary Tree](#binary-tree-1)
+    - [isSymmetric tree prob](#issymmetric-tree-prob)
+      - [bottom up recursive sol](#bottom-up-recursive-sol)
 - [sliding window](#sliding-window)
   - [Longest Substring with K Distinct Characters](#longest-substring-with-k-distinct-characters)
     - [SOL : trick is to use hashmap with char and their freq to keep k unique char and keep expanding and shrinking window till map is size is k exactly](#sol--trick-is-to-use-hashmap-with-char-and-their-freq-to-keep-k-unique-char-and-keep-expanding-and-shrinking-window-till-map-is-size-is-k-exactly)
@@ -187,6 +198,7 @@
     - [using end index as the pivot](#using-end-index-as-the-pivot)
       - [Time taken by QuickSort, in general, can be written as following.](#time-taken-by-quicksort-in-general-can-be-written-as-following)
     - [if we use middle element as pivot then partition algo is bit different](#if-we-use-middle-element-as-pivot-then-partition-algo-is-bit-different)
+    - [QuickSort Tail Call Optimization (Reducing worst case space to Log n )](#quicksort-tail-call-optimization-reducing-worst-case-space-to-log-n-)
   - [quick sort vs merge sort](#quick-sort-vs-merge-sort)
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
@@ -4697,6 +4709,184 @@ class Solution {
 }
 ```
 
+## n-ary tree
+
+- tree having atmost n chillder is n-ary tree binary tree is a type of n-ary tree
+- inorder does not make sense for n-ary tree and is not practical though can be done with some trick
+- preorder, postorder and level-order make sense for n-ary tree and is practical
+
+### preorder traversal of 3-ary tree
+
+- https://leetcode.com/explore/learn/card/n-ary-tree/130/traversal/925/
+
+#### recursive sol TC O(n) [SC (n) to check]
+
+- Time complexity: O(n)
+- also using linked list is better
+
+```
+/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public List<Node> children;
+
+    public Node() {}
+
+    public Node(int _val) {
+        val = _val;
+    }
+
+    public Node(int _val, List<Node> _children) {
+        val = _val;
+        children = _children;
+    }
+};
+*/
+
+class Solution {
+
+    public List<Integer> preorder(Node root) {
+        List<Integer> res =  new ArrayList<>();
+        preOrderRec(res, root);
+        return res;
+    }
+
+    public void preOrderRec(List<Integer> res, Node root){
+        if(root == null)
+            return;
+        res.add(root.val);
+        for(Node child: root.children){
+            preOrderRec(res, child);
+        }
+    }
+}
+```
+
+#### iterative sol TC O(n) SC(n)
+
+- Time complexity: O(n)
+- Space complexity: O(n), worst case is when 2 levels only, first level contains only the root, all other nodes is the children who is in 2nd level. The max elements in stack is n - 1:
+- also add operation of both arraylist and linkedlist takes constant time O(1) but using linked list is better than arraylist since rehashing occurs in arraylist on reaching threshold capacity and in java linkedlist is doubly linkedlist which maintains both head and tail and add operation O(1)
+
+```
+class Solution {
+
+    public List<Integer> preorder(Node root) {
+        List<Integer> res = new LinkedList<>();
+        if(root == null)
+            return res;
+        Deque<Node> stack = new ArrayDeque<>();
+        stack.push(root);
+
+        while(!stack.isEmpty()){
+            root = stack.pop();
+            res.add(root.val);
+            int size = root.children.size();
+            for(int i = size - 1; i >= 0; i--)
+               stack.push(root.children.get(i));
+        }
+        return res;
+    }
+}
+```
+
+### postoreder traversal of n-ary tree
+
+#### recursive sol
+
+```
+class Solution {
+    List<Integer> res = new LinkedList<>();
+    public List<Integer> postorder(Node root) {
+         if(root == null)
+            return res;
+        for(Node child: root.children){
+            postorder(child);
+        }
+        res.add(root.val);
+       return res;
+    }
+}
+```
+
+#### iterative sol TC o(n) SC(n)
+
+```
+class Solution {
+    public List<Integer> postorder(Node root) {
+        List<Integer> res = new LinkedList<>();
+        if(root == null)
+            return res;
+        Deque<Node> stack = new ArrayDeque<>();
+        stack.push(root);
+
+        while(!stack.isEmpty()){
+            root = stack.pop();
+            res.add(root.val);
+            for(Node child: root.children)
+                stack.push(child);
+        }
+        Collections.reverse(res);
+        return res;
+    }
+}
+```
+
+### level order traversal of n-ary tree
+
+TC O(n) SC O(n)
+
+```
+class Solution {
+    public List<List<Integer>> levelOrder(Node root) {
+        List<List<Integer>> res = new LinkedList<>();
+        if(root == null)
+            return res;
+
+        Queue<Node> q = new LinkedList<>();
+        q.offer(root);
+
+        while(!q.isEmpty()){
+            List<Integer> levelList = new ArrayList();
+            int size = q.size();
+            for(int i = 0; i < size; i++){
+                Node temp = q.poll();
+                levelList.add(temp.val);
+                for(Node child: temp.children)
+                    q.offer(child);
+            }
+            res.add(levelList);
+        }
+        return res;
+    }
+}
+
+```
+
+## Binary Tree
+
+### isSymmetric tree prob
+
+#### bottom up recursive sol
+
+TC O(n) SC O(n)
+
+```
+class Solution {
+
+    public boolean isSymmetric(TreeNode root) {
+    return root == null || isMirror(root.left, root.right);
+    }
+    boolean isMirror(TreeNode left, TreeNode right){
+        if(left == null && right == null) return true;
+        if(left == null || right == null) return false;
+        if(left.val != right.val) return false;
+        return isMirror(left.left, right.right) && isMirror(left.right, right.left);
+    }
+}
+```
+
 # sliding window
 
 ## Longest Substring with K Distinct Characters
@@ -4794,7 +4984,7 @@ class Solution
 
 ## quick sort
 
-quick sort is not stable and in place sorting
+quick sort is not stable and in place sorting but it uses the recursion stack which in worst case(already sorted) could be O(n) so it is not completely in place
 
 - explore 3-way quicksort for handling duplicates(TODO)
 - quick sort optimlization (TODO)
@@ -4837,6 +5027,8 @@ class Solution
 
 ```
 
+if you use first element as pivot index then partition logic is diff having 2 points left and right
+
 #### Time taken by QuickSort, in general, can be written as following.
 
 T(n) = T(k) + T(n-k-1) + \theta (n)
@@ -4858,6 +5050,54 @@ The first two terms are for two recursive calls, the last term is for the partit
 - and do swaping
 
 - https://stackoverflow.com/questions/27886150/quick-sort-with-middle-element-as-pivot
+
+### QuickSort Tail Call Optimization (Reducing worst case space to Log n )
+
+- https://www.geeksforgeeks.org/quicksort-tail-call-optimization-reducing-worst-case-space-log-n/
+- a recursive function can be tail call optimized if recursive call is the last statement of the function
+- so we can apply tail call optimization on quicksort to reduce the space complexity
+- partition function is in place but we have recursion call stack, a simple implementation of QuickSort makes two calls to itself and in worst case requires O(n) space on function call stack.
+- check what is tail call elimination https://www.geeksforgeeks.org/tail-call-elimination/
+
+so for quick sort we can apply this tail call optimization as below
+
+```
+  static void quickSort(int arr[], int low, int high)
+    {
+        while(low < high)
+        {
+            int pivot = partition(arr, low, high);
+            quickSort(arr, low, pivot - 1);
+            low = pivot + 1;
+        }
+    }
+```
+
+Although we have reduced number of recursive calls, the above code can still use O(n) auxiliary space in worst case. In worst case, it is possible that array is divided in a way that the first part always has n-1 elements. For example, this may happen when last element is choses as pivot and array is sorted in increasing order.
+
+- We can optimize the above code to make a recursive call only for the smaller part after partition.
+- Reference:
+  http://www.cs.nthu.edu.tw/~wkhon/algo08-tutorials/tutorial2b.pdf
+
+```
+  static void quickSort(int arr[], int low, int high)
+    {
+        while(low < high)
+        {
+            int pivot = partition(arr, low, high);
+            if(pivot - low < high - pivot){
+                quickSort(arr, low, pivot - 1);
+                low = pivot + 1;
+            }
+            else{
+                quickSort(arr, pivot + 1, high)
+                high = pivot - 1;
+            }
+        }
+    }
+```
+
+In the above code, if left part becomes smaller, then we make recursive call for left part. Else for the right part. In worst case (for space), when both parts are of equal sizes in all recursive calls, we use O(Log n) extra space.
 
 ## quick sort vs merge sort
 
