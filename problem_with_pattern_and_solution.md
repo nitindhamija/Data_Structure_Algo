@@ -148,6 +148,9 @@
     - [GFG clean sol using the same approach](#gfg-clean-sol-using-the-same-approach)
 - [tree](#tree)
   - [Binary Tree](#binary-tree)
+    - [isSymmetric tree prob](#issymmetric-tree-prob)
+      - [bottom up recursive sol](#bottom-up-recursive-sol)
+      - [iterative solution](#iterative-solution)
   - [is Valid BST](#is-valid-bst)
     - [intuitive sol with upper and lower limits](#intuitive-sol-with-upper-and-lower-limits)
     - [inorder traversal sol](#inorder-traversal-sol)
@@ -185,9 +188,10 @@
       - [recursive sol](#recursive-sol-1)
       - [iterative sol TC o(n) SC(n)](#iterative-sol-tc-on-scn-1)
     - [level order traversal of n-ary tree](#level-order-traversal-of-n-ary-tree)
-  - [Binary Tree](#binary-tree-1)
-    - [isSymmetric tree prob](#issymmetric-tree-prob)
-      - [bottom up recursive sol](#bottom-up-recursive-sol)
+    - [Maximum Depth of N-ary Tree](#maximum-depth-of-n-ary-tree)
+      - [bottom up recursive sol](#bottom-up-recursive-sol-1)
+      - [top down recursive sol](#top-down-recursive-sol)
+      - [iterative sol](#iterative-sol-2)
 - [sliding window](#sliding-window)
   - [Longest Substring with K Distinct Characters](#longest-substring-with-k-distinct-characters)
     - [SOL : trick is to use hashmap with char and their freq to keep k unique char and keep expanding and shrinking window till map is size is k exactly](#sol--trick-is-to-use-hashmap-with-char-and-their-freq-to-keep-k-unique-char-and-keep-expanding-and-shrinking-window-till-map-is-size-is-k-exactly)
@@ -4092,6 +4096,70 @@ Is there any difference in terms of Extra Space?
 - Extra Space required for Level Order Traversal is O(w) where w is maximum width of Binary Tree. In level order traversal, queue one by one stores nodes of different level.
 - Extra Space required for Depth First Traversals is O(h) where h is maximum height of Binary Tree. In Depth First Traversals, stack (or function call stack) stores all ancestors of a node.
 
+### isSymmetric tree prob
+
+#### bottom up recursive sol
+
+TC O(n) SC O(n)
+
+```
+class Solution {
+
+    public boolean isSymmetric(TreeNode root) {
+    return root == null || isMirror(root.left, root.right);
+    }
+    boolean isMirror(TreeNode left, TreeNode right){
+        if(left == null && right == null) return true;
+        if(left == null || right == null) return false;
+        if(left.val != right.val) return false;
+        return isMirror(left.left, right.right) && isMirror(left.right, right.left);
+    }
+}
+```
+
+#### iterative solution
+
+- main logic is we can use queue and put right and left children of two nodes in opposite order i.e
+  ```
+     q.offer(left.left);
+     q.offer(right.right);
+     q.offer(left.right);
+     q.offer(right.left);
+  ```
+
+TC O(n) SC(n)
+
+```
+class Solution {
+
+    public boolean isSymmetric(TreeNode root) {
+        if(root == null)
+         return true;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root.left);
+        q.offer(root.right);
+        while(!q.isEmpty()){
+            TreeNode left = q.poll();
+            TreeNode right = q.poll();
+            if(left == null && right == null)
+                continue;
+
+            if((left == null && right != null) || (left != null && right == null))
+                return false;
+
+            if(left.val != right.val)
+                return false;
+
+                q.offer(left.left);
+                q.offer(right.right);
+                q.offer(left.right);
+                q.offer(right.left);
+         }
+        return true;
+    }
+}
+```
+
 ## is Valid BST
 
 - https://leetcode.com/problems/validate-binary-search-tree/
@@ -4864,28 +4932,64 @@ class Solution {
 
 ```
 
-## Binary Tree
-
-### isSymmetric tree prob
+### Maximum Depth of N-ary Tree
 
 #### bottom up recursive sol
 
-TC O(n) SC O(n)
+TC O(n) SC O(n) in worst case of skewed n-ary tree as there will be n - 1 call stack
+
+- main logic is to extend the idea applied to binary tree to n-ary tree for finding max depth i.e a node depth is 1 + max(depth of it's children)
+- this is bottom up recursive approach as children depth helps up finding the depth of the tree
 
 ```
 class Solution {
 
-    public boolean isSymmetric(TreeNode root) {
-    return root == null || isMirror(root.left, root.right);
+    public int maxDepth(Node root) {
+        if(root == null)
+            return 0;
+        int depth = 0;
+        for(Node child : root.children){
+            depth = Math.max(maxDepth(child), depth);
+        }
+        return depth + 1;
     }
-    boolean isMirror(TreeNode left, TreeNode right){
-        if(left == null && right == null) return true;
-        if(left == null || right == null) return false;
-        if(left.val != right.val) return false;
-        return isMirror(left.left, right.right) && isMirror(left.right, right.left);
+
+}
+```
+
+#### top down recursive sol
+
+TC O(n) SC O(n) in worst case of skewed n-ary tree as there will be n - 1 call stack
+
+- here we check if assume current root node depth as 1 then this info can be passed down to it's children and using this children will know their length and in similar fashion children of children will know their length and when we hit the leaf node we update the gloabal ans with max depth, once we have traversed the complete tree we will have our ans with max depth.
+- this is top down approach
+
+```
+class Solution {
+    int ans = 0;
+    public int maxDepth(Node root) {
+        if(root == null)
+            return 0;
+       maxDep(root, 1);
+     return ans;
+    }
+    void maxDep(Node node, int depth){
+
+        if(isLeafNode(node))
+           ans = Math.max(ans, depth);
+        for(Node child: node.children){
+            maxDep(child, depth + 1);
+        }
+    }
+    boolean isLeafNode(Node node){
+        return node.children == null || node.children.size() == 0;
     }
 }
 ```
+
+#### iterative sol
+
+- main logic is simply do a level order BFS traversal using quueu and keep count of levels/depth
 
 # sliding window
 
