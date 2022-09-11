@@ -81,6 +81,8 @@
   - [spiral traverse of matrix](#spiral-traverse-of-matrix)
   - [pascal triange](#pascal-triange)
   - [pascal triange II](#pascal-triange-ii)
+    - [iterative sol](#iterative-sol-1)
+    - [recursive sol (TLE but with memoization it is ok)](#recursive-sol-tle-but-with-memoization-it-is-ok)
   - [Add Binary](#add-binary)
   - [Implement strStr()](#implement-strstr)
     - [sliding window my sol with TC O(m \* (m - n)) SC O(n)](#sliding-window-my-sol-with-tc-om--m---n-sc-on)
@@ -174,7 +176,7 @@
     - [inorder/preorder using morris traversal(TODO)](#inorderpreorder-using-morris-traversaltodo)
     - [Lowest Common Ancestor of a Binary Search Tree](#lowest-common-ancestor-of-a-binary-search-tree)
       - [using recursion](#using-recursion)
-      - [iterative sol](#iterative-sol-1)
+      - [iterative sol](#iterative-sol-2)
     - [contains duplicate III](#contains-duplicate-iii)
     - [is binary tree balanced](#is-binary-tree-balanced)
       - [non optimal sol TC O(n^2)](#non-optimal-sol-tc-on2)
@@ -191,7 +193,21 @@
     - [Maximum Depth of N-ary Tree](#maximum-depth-of-n-ary-tree)
       - [bottom up recursive sol](#bottom-up-recursive-sol-1)
       - [top down recursive sol](#top-down-recursive-sol)
-      - [iterative sol](#iterative-sol-2)
+      - [iterative sol](#iterative-sol-3)
+  - [trie](#trie)
+    - [application of trie](#application-of-trie)
+    - [comparison with balanced tree and hashmap (very IMP)](#comparison-with-balanced-tree-and-hashmap-very-imp)
+    - [Add and Search Word - Data structure design (IMP)](#add-and-search-word---data-structure-design-imp)
+    - [LC 667 map sum pairs](#lc-667-map-sum-pairs)
+      - [brute force](#brute-force)
+      - [trie solution(optimal)](#trie-solutionoptimal)
+    - [replace words](#replace-words)
+    - [TODO design search autocomplete system (IMP) Hard](#todo-design-search-autocomplete-system-imp-hard)
+    - [word search ||](#word-search-)
+      - [using DFS (though correct but not optimal Time limit exceeds)](#using-dfs-though-correct-but-not-optimal-time-limit-exceeds)
+    - [Maximum XOR of Two Numbers in an Array](#maximum-xor-of-two-numbers-in-an-array)
+      - [brtute force is O(n^2) with 2 loops](#brtute-force-is-on2-with-2-loops)
+      - [using trie](#using-trie)
 - [sliding window](#sliding-window)
   - [Longest Substring with K Distinct Characters](#longest-substring-with-k-distinct-characters)
     - [SOL : trick is to use hashmap with char and their freq to keep k unique char and keep expanding and shrinking window till map is size is k exactly](#sol--trick-is-to-use-hashmap-with-char-and-their-freq-to-keep-k-unique-char-and-keep-expanding-and-shrinking-window-till-map-is-size-is-k-exactly)
@@ -210,6 +226,12 @@
   - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
   - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
     - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+- [bitwise operator](#bitwise-operator)
+- [recursion](#recursion)
+  - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
+  - [search in a 2 d matrix](#search-in-a-2-d-matrix)
+  - [backtracking and pruning](#backtracking-and-pruning)
+    - [N queen problem](#n-queen-problem)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -612,30 +634,30 @@ public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
 - }
   \*/
   class Solution {
-  public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
-  ListNode dummy= new ListNode(-1);
-  ListNode newList=dummy;
-  while(list1!=null && list2!=null){
-  if(list1.val<=list2.val)
-  {
-  newList.next=list1;
-  list1=list1.next;
-  }
-  else
-  {
-  newList.next=list2;
-  list2=list2.next;
-  }
-  newList=newList.next;
-  }
-  if(list1!=null){
-  newList.next=list1;
-  }
-  if(list2!=null){
-  newList.next=list2;
-  }
-  return dummy.next;
-  }
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode dummy= new ListNode(-1);
+        ListNode newList=dummy;
+        while(list1!=null && list2!=null){
+            if(list1.val<=list2.val)
+                {
+                    newList.next=list1;
+                    list1=list1.next;
+                }
+            else
+                {
+                    newList.next=list2;
+                    list2=list2.next;
+                }
+            newList=newList.next;
+        }
+    if(list1!=null){
+      newList.next=list1;
+    }
+    if(list2!=null){
+          newList.next=list2;
+    }
+        return dummy.next;
+    }
   }
 ```
 
@@ -664,12 +686,12 @@ It is guaranteed that the list represents a number that does not have leading ze
   \*/
   class Solution {
   public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-  var h1=l1;
-  var h2=l2;
-  ListNode p1=null;
-  ListNode p2=null;
-  int c=0;
-  int carry=0;
+    var h1=l1;
+    var h2=l2;
+    ListNode p1=null;
+    ListNode p2=null;
+    int c=0;
+    int carry=0;
   while(l1!=null || l2!=null){
 
               var sum = SumLinkedList(l1!=null?l1.val:0,l2!=null?l2.val:0,carry);
@@ -725,12 +747,12 @@ public Node child;
 _/
 
 class Solution {
-static Node last;
-public Node flatten(Node head) {
-if(head==null)
-return null;
-last=head;
-var next=head.next;
+    static Node last;
+    public Node flatten(Node head) {
+        if(head==null)
+            return null;
+        last=head;
+        var next=head.next;
 
         if(head.child!=null){
             head.next=flatten(head.child);
@@ -2283,6 +2305,34 @@ https://leetcode.com/explore/learn/card/binary-search/137/conclusion/982/discuss
 }
 ```
 
+sol with new test cases added of leetcode (2.00000, Integer.MIN) and (-1.00000, Integer.MIN)
+
+```
+class Solution {
+    public double myPow(double x, int n) {
+       if(n == Integer.MIN_VALUE)
+                n += 2;
+        if(n > 0)
+            return helper(x, n);
+        else
+            return 1/helper(x, -n);
+
+    }
+
+    double helper(double x, int n){
+         if(n == 0)
+            return 1;
+        return (n % 2 == 0) ? myPow(x*x, n/2) : x * myPow(x*x, n/2);
+    }
+}
+
+for those struggling to understand the overflow case why we need to add n += 2 in case Integer.MIN_VALUE
+
+Integer.MIN_VALUE = - Integer.MIN_VALUE due to overflow i.e min -> -2^31 max 2^31 - 1 so -min = 2^31 which overflows resulting in min
+second if you add only +1 then it changes from even to odd case so another case will fail (-1.00000 , min)
+so adding +2 saves us from overflow
+```
+
 ### Find Smallest Letter Greater Than Target
 
 https://leetcode.com/explore/learn/card/binary-search/137/conclusion/977/
@@ -2546,6 +2596,8 @@ class Solution {
 - using pattern O(rowindex) exta space TC O(n^2)
 - https://leetcode.com/explore/learn/card/array-and-string/204/conclusion/1171/
 
+### iterative sol
+
 ```
 public List<Integer> getRow(int rowIndex) {
       Integer[] result =  new Integer[rowIndex + 1];
@@ -2556,6 +2608,51 @@ public List<Integer> getRow(int rowIndex) {
           result[j] += result[j - 1];
       return Arrays.asList(result);
     }
+```
+
+### recursive sol (TLE but with memoization it is ok)
+
+```
+class Solution {
+    public List<Integer> getRow(int rowIndex) {
+        var res = new ArrayList<Integer>();
+        for(int j = 0; j <= rowIndex; j++)
+           res.add(pascal(rowIndex, j));
+     return res;
+    }
+
+    int pascal(int i, int j){
+        if(i == j || j == 0)
+            return 1;
+        return pascal(i - 1, j - 1) + pascal(i - 1, j);
+    }
+}
+```
+
+above sol is not good since duplicate calculations are done recursively to avoid that use memoization and with TLE is avoided
+
+```
+class Solution {
+    Map<String,Integer> cache = new HashMap<>();
+
+    public List<Integer> getRow(int rowIndex) {
+        var res = new ArrayList<Integer>();
+        for(int j = 0; j <= rowIndex; j++)
+           res.add(pascal(rowIndex, j));
+        return res;
+    }
+
+    int pascal(int i, int j){
+        if(i == j || j == 0)
+            return 1;
+        String key = Integer.toString(i) + Integer.toString(j);
+        if(cache.containsKey(key))
+            return cache.get(key);
+        int res = pascal(i - 1, j - 1) + pascal(i - 1, j);
+        cache.put(key,res);
+        return res;
+    }
+}
 ```
 
 ```
@@ -4961,7 +5058,7 @@ class Solution {
 
 TC O(n) SC O(n) in worst case of skewed n-ary tree as there will be n - 1 call stack
 
-- here we check if assume current root node depth as 1 then this info can be passed down to it's children and using this children will know their length and in similar fashion children of children will know their length and when we hit the leaf node we update the gloabal ans with max depth, once we have traversed the complete tree we will have our ans with max depth.
+- here we check if assume current root node depth as 1 then this info can be passed down to it's children and using this children will know their depth and in similar fashion children of children will know their depth and when we hit the leaf node we update the gloabal ans with max depth, once we have traversed the complete tree we will have our ans with max depth.
 - this is top down approach
 
 ```
@@ -4990,6 +5087,537 @@ class Solution {
 #### iterative sol
 
 - main logic is simply do a level order BFS traversal using quueu and keep count of levels/depth
+
+## trie
+
+- https://leetcode.com/problems/implement-trie-prefix-tree/
+- https://leetcode.com/problems/implement-trie-prefix-tree/solution/
+
+```
+class TrieNode {
+    final int N = 26;
+    TrieNode[] links = new TrieNode[N];
+    boolean isWordEnd = false;
+
+    boolean containsKey(char c){
+        return links[c - 'a'] != null;
+    }
+    void put(char c, TrieNode node){
+        links[c - 'a'] = node;
+    }
+    TrieNode getNode(char c){
+        return links[c - 'a'];
+    }
+    boolean isEnd(){
+        return isWordEnd;
+    }
+    void setEnd(){
+        isWordEnd = true;
+    }
+}
+
+class Trie {
+    TrieNode root;
+
+    public Trie() {
+        this.root = new TrieNode();
+    }
+    // time complexity O(m) m -> length of word
+    // space complexity O(m) -> m new nodes to create in worst case
+    public void insert(String word) {
+        TrieNode curr = this.root;
+        char[] words = word.toCharArray();
+        for(char c : words){
+            if(!curr.containsKey(c)){
+                curr.put(c, new TrieNode());
+            }
+            curr = curr.getNode(c);
+        }
+        curr.setEnd();
+    }
+    // TC o(m) SC O(1)
+    public boolean search(String word) {
+        TrieNode curr = this.root;
+        char[] words = word.toCharArray();
+        for(char c: words){
+
+            if(!curr.containsKey(c))
+                return false;
+            curr = curr.getNode(c);
+        }
+        return curr.isEnd();
+    }
+    // TC o(m) SC O(1)
+    public boolean startsWith(String prefix) {
+        char[] words = prefix.toCharArray();
+        TrieNode curr = this.root;
+        for(char c: words){
+
+            if(!curr.containsKey(c))
+                return false;
+            curr = curr.getNode(c);
+        }
+        return true;
+    }
+}
+
+```
+
+### application of trie
+
+is very efficient data structure used to for retrieval of retrieval of a key in a dataset of strings
+
+- autocomplete,
+- spell checker,
+- boggle game,
+- t9 predictive text on nokia 300 or similar phones with keypad,
+- ip routing (longest prefix matching)
+
+### comparison with balanced tree and hashmap (very IMP)
+
+There are several other data structures, like balanced trees and hash tables, which give us the possibility to search for a word in a dataset of strings. Then why do we need trie? Although hash table has O(1) time complexity for looking for a key, it is not efficient in the following operations :
+
+- Finding all keys with a common prefix.
+- Enumerating a dataset of strings in lexicographical order.
+- another reason why trie outperforms hash table, is that as hash table increases in size, there are lots of hash collisions and the search time complexity could deteriorate to O(n), where n is the number of keys inserted. Trie could use less space compared to Hash Table when storing many keys with the same prefix. In this case using trie has only O(m) time complexity, where m is the key length.
+- Searching for a key in a balanced tree costs O(mlogn) time complexity.
+
+### Add and Search Word - Data structure design (IMP)
+
+https://leetcode.com/explore/learn/card/trie/148/practical-application-i/1052/
+
+```
+class Node {
+     Node[] links;
+    private boolean isWordEnd;
+    Node(){
+        links = new Node[26];
+        isWordEnd = false;
+    }
+    boolean containsKey(char c){
+        return links[c - 'a'] != null;
+    }
+
+    void put(char c, Node n){
+        links[c - 'a'] = n;
+    }
+
+    Node getNode(char c){
+        return links[c - 'a'];
+    }
+
+    void setEnd(){
+        isWordEnd = true;
+    }
+
+    boolean isEnd(){
+        return isWordEnd;
+    }
+}
+
+class WordDictionary {
+    Node root;
+    public WordDictionary() {
+        root = new Node();
+    }
+
+    public void addWord(String word) {
+        Node curr = this.root;
+        char[] words = word.toCharArray();
+        for(char c : words){
+            if(!curr.containsKey(c))
+                curr.put(c, new Node());
+            curr = curr.getNode(c);
+        }
+        curr.setEnd();
+    }
+
+    public boolean search(String word) {
+       char[] words = word.toCharArray();
+       return isMatch(words, 0, this.root);
+    }
+    // trick is when we encounter . we need to check the next char in the array and terminal cond is when index is array length
+    boolean isMatch(char[] words,int index, Node node){
+        if(index == words.length)
+            return node.isEnd();
+        if(words[index] == '.'){
+            for(int i = 0; i < node.links.length; i++ ){
+                if(node.links[i] != null && isMatch(words, index + 1, node.links[i]))
+                    return true;
+            }
+        }else
+            return node.links[words[index] - 'a'] != null && isMatch(words, index + 1, node.links[words[index] - 'a']);
+        return false;
+    }
+}
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
+ * boolean param_2 = obj.search(word);
+ */
+```
+
+### LC 667 map sum pairs
+
+- https://leetcode.com/problems/map-sum-pairs/
+- https://www.youtube.com/watch?v=Z7dkugscqLA
+
+#### brute force
+
+- simply use hashmap to store key value pairs then iterate over hashmap and sum the val of all entry matching the prefix.
+- TC for insert is O(1) and for sum is O(n\*k) n is no of entries in map and k is length of key.
+- SC is O(n)
+
+#### trie solution(optimal)
+
+- since this problem deals with prefix we can use trie here
+- main trick is to add value of key to every prefix node of key while inserting the key value pairs e.g (apple, 3)
+- a , ap, app, appl, apple are all prefixes of key apple so we will put val 3 for every prefix node while constructing this trie
+- now sum function is straight forward search prefix and return the last node val as that will be having the sum of all key's val matching prefix
+- also the problem says, If the key already existed, the original key-value pair will be overridden to the new one. e.g
+- apple , 3
+- app, 2,
+- ap -> 5
+- app, 1
+- ap -> 4
+- in the above example (app, 1) overrides existing key, value pair (app, 2) so now search ap should return 4 instead 6 so we need subtract old value and add new value i.e but with trie implmentation we don't know keep track of old key,val pair so we will need another DS i.e hashmap to keep track of actual key, val pair, actual value to be added should be (val - map.getOrDefault(key, 0))
+
+```
+class Node {
+    Map<Character, Node> links;
+    int val;
+    private boolean isWordEnd;
+    Node(){
+        links = new HashMap<>();
+        isWordEnd = false;
+        val = 0;
+    }
+
+    void setEnd(){
+        isWordEnd = true;
+    }
+
+    boolean isEnd(){
+        return isWordEnd;
+    }
+    void setVal(int value){
+        val = value;
+    }
+    int getVal(){
+        return val;
+    }
+}
+
+class MapSum {
+    Node root;
+    Map<String, Integer> map;
+
+    public MapSum() {
+        root = new Node();
+        map = new HashMap<>();
+    }
+
+    public void insert(String key, int value) {
+        Node curr = root;
+        char[] arr = key.toCharArray();
+        int delta = value - map.getOrDefault(key, 0);
+        map.put(key, value);
+        curr.val += delta;
+
+      for(char c : arr){
+          curr.links.putIfAbsent(c, new Node());
+          curr = curr.links.get(c);
+          curr.val += delta;
+      }
+    }
+
+    public int sum(String prefix) {
+        Node curr = root;
+        char[] arr = prefix.toCharArray();
+        for(char c : arr){
+            if(!curr.links.containsKey(c))
+                return 0;
+            curr = curr.links.get(c);
+        }
+        return curr.val;
+    }
+}
+
+```
+
+- TC for insert is O(k) k is key length and for sum is O(p) p is the length of prefix
+- SC is O(n \* k) for n no of key, value pair and k is avg length of key
+
+### replace words
+
+brite force Intuitive
+
+```
+class Solution {
+    public String replaceWords(List<String> dictionary, String sentence) {
+        String[] sen = sentence.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for(String dic: dictionary){
+            for(int i = 0; i < sen.length; i++){
+                if(sen[i].startsWith(dic))
+                    sen[i] = dic;
+            }
+        }
+        return String.join(" ",sen);
+    }
+}
+```
+
+### TODO design search autocomplete system (IMP) Hard
+
+### word search ||
+
+#### using DFS (though correct but not optimal Time limit exceeds)
+
+```
+class Solution {
+    int row, col;
+
+    public List<String> findWords(char[][] board, String[] words) {
+        row = board.length;
+        col = board[0].length;
+        var output = new ArrayList<String>();
+
+        for(String word : words){
+            for(int i = 0; i < row; i++){
+                for(int j = 0; j < col; j++){
+                    if(!output.contains(word) && DFS(board, i , j, word, 0))
+                            output.add(word);
+                    }
+                }
+            }
+        return output;
+        }
+
+    Boolean DFS(char[][] board, int i , int j, String word, int index){
+        if(index == word.length()) return true;
+
+        if( i < 0 || i >= row || j < 0 || j >= col || board[i][j] != word.charAt(index))
+            return false;
+
+        board[i][j] = '#';
+
+       var result = DFS(board, i + 1, j, word, index + 1) ||
+              DFS(board, i - 1, j, word, index + 1) ||
+              DFS(board, i, j + 1, word, index + 1) ||
+              DFS(board, i, j - 1, word, index + 1);
+        board[i][j] = word.charAt(index);
+        return result;
+
+    }
+}
+```
+
+- TC is (N*m N*m * no of words) N*m is for outer loops in main function where for each cell we are checking if the words starts with and then recursive DFS also check for each cell in worst case it N*m for each DFS call so for n no of words it is (N*m N*m * no of words)
+- worst case is all cell having same letter i.e 3\*3 box having a,a,a,a,a,a,a,a,a then dic is aaaaaaaaaaa here length if word is 11 and for each cell we willl traverse the whole board
+- we can use DFS and hashmap to improve the time complexity as instead of doing DFS on each cell we should only test for words starting with letter matching the word i.e for cell with matcing letter in the board
+- check https://www.youtube.com/watch?v=EmvsBM7o-5k
+- DFS + trie will reduce the time complexity (N*M N*M \*length of longest word)
+
+```
+class Node {
+    Node[] links;
+    String word;
+    boolean isEnd;
+
+    Node(){
+        links = new Node[26];
+        //isEnd = false;
+        //word = "";
+    }
+
+    boolean containsKey(char c){
+        return links[c - 'a'] != null;
+    }
+
+    void put(char c, Node node){
+        links[c - 'a'] = node;
+    }
+
+    Node getNext(char c){
+        return links[c - 'a'];
+    }
+    void setWord(String word){
+        this.word = word;
+    }
+
+    String getWord(){
+        return word;
+    }
+
+    void setEnd(boolean flag){
+         isEnd = flag;
+    }
+
+    boolean getEnd(){
+        return isEnd;
+    }
+}
+
+
+class Solution {
+    int row, col;
+    Node root;
+
+    Solution(){
+        root = new Node();
+    }
+
+
+    public List<String> findWords(char[][] board, String[] words) {
+        row = board.length;
+        col = board[0].length;
+        var output = new ArrayList<String>();
+
+        for(String word : words)
+            buildTrie(word);
+
+
+            for(int i = 0; i < row; i++){
+                for(int j = 0; j < col; j++){
+                    DFS(board, i , j, output, root);
+                    }
+                }
+
+        return output;
+    }
+
+    void buildTrie(String word){
+        Node curr = root;
+        char[] arr = word.toCharArray();
+        for(char c: arr){
+            if(!curr.containsKey(c))
+                curr.put(c, new Node());
+            curr = curr.getNext(c);
+        }
+        curr.setEnd(true);
+        curr.setWord(word);
+    }
+
+    void DFS(char[][] board, int i , int j,  List<String> output, Node curr){
+        char c = board[i][j];
+        if(c == '#' || !curr.containsKey(c))
+            return;
+
+        curr = curr.getNext(c);
+
+        if(curr.getEnd())
+        {
+            curr.setEnd(false);
+            output.add(curr.getWord());
+        }
+
+        board[i][j] = '#';
+
+        if(i < row - 1)   DFS(board, i + 1, j,  output, curr);
+        if(i > 0)   DFS(board, i - 1, j, output, curr);
+        if(j < col - 1)   DFS(board, i, j + 1,  output, curr);
+        if(j > 0 )   DFS(board, i, j - 1,  output, curr);
+
+        board[i][j] = c;
+    }
+}
+```
+
+### Maximum XOR of Two Numbers in an Array
+
+refernce - check take y forward trie series youtube channel
+
+#### brtute force is O(n^2) with 2 loops
+
+#### using trie
+
+- main trick is to create a trie of binary bits of every number in array using bit manipulation
+- check if the ith bit is set in a no using (num >> i) & 1
+- for xor to be maximum with a num x the bit of the other no should be opposite from leftmost to rightmost
+
+```
+class Node {
+    Node[] links;
+
+    Node(){
+        links = new Node[2];
+    }
+
+    boolean containsKey(int idx){
+        return links[idx] != null;
+    }
+
+    Node get(int idx){
+        return links[idx];
+    }
+
+    void put(int idx, Node node){
+        links[idx] = node;
+    }
+}
+
+class Trie{
+    Node root;
+
+    Trie(){
+        root = new Node();
+    }
+
+    public void insert(int n){
+        Node curr = root;
+        for(int i = 31; i >= 0 ; i--){
+            int bit = getBit(n, i);
+            if(!curr.containsKey(bit)){
+                curr.put(bit, new Node());
+            }
+            curr = curr.get(bit);
+        }
+    }
+
+   public int getMax(int x){
+        Node curr = root;
+        int res = 0;
+        for(int i = 31; i >= 0; i--){
+            int bit = getBit(x, i);
+            int reqBit = 1 - bit;
+            if(curr.containsKey(reqBit)){
+                res = res | (1 << i);
+                curr = curr.get(reqBit);
+            }else
+                curr = curr.get(bit);
+        }
+        return res;
+    }
+
+    private int getBit(int n, int i){
+        return ((n >> i) & 1);
+    }
+}
+
+class Solution {
+    Trie trie;
+
+    Solution(){
+        trie = new Trie();
+    }
+
+    public int findMaximumXOR(int[] nums) {
+        int max = Integer.MIN_VALUE;
+
+        for(int num : nums){
+            trie.insert(num);
+        }
+
+        for(int num: nums){
+            max = Math.max(max, trie.getMax(num));
+        }
+        return max;
+    }
+}
+```
 
 # sliding window
 
@@ -5314,3 +5942,162 @@ class MyCalendarTwo {
 #### TC n\* (4logn + n) = O(n^2) SC O(n)
 
 4 logn for 4 put operation and n for delta traverse so booke function TC is O(n) for n calls to book it is O(n^2)
+
+# bitwise operator
+
+- https://www.programiz.com/java-programming/bitwise-operators
+
+1's complement is change every 1 to 0 and 0 to 1 in number
+2's complement is adding 1 to 1's complement
+
+The bitwise complement operator is a unary operator (works with only one operand). It is denoted by ~.
+It is important to note that the bitwise complement of any integer N is equal to - (N + 1).
+
+Java Signed Right Shift Operator
+When we shift any number to the right, the least significant bits (rightmost) are discarded and the most significant position (leftmost) is filled with the sign bit.
+
+for calculating signed right shift of -ve number we first have to take 2's complement of binary no and them perform the shift operation.
+
+unsigned right shift operation fills the leftmost position with 0's
+
+# recursion
+
+## time complexity calculation with recursion and memoization
+
+- no of recursive calls will not be always linear( chech fibonaacci recursive call tree, it is 2-ary tree in general it forms n-ary tree) but with memoization it can be made linear,
+- use tail recursion if possible to avoid implicit call stack space
+- duplicate calculation in recursion will occur when we have multiple recursive calls in calculation/recurrance relation e.g fibonacci, pascal triange, climbstairs
+
+## search in a 2 d matrix
+
+- https://leetcode.com/explore/learn/card/recursion-ii/470/divide-and-conquer/2872/
+
+as per master theorem TC is O(mn) = 3T(m/2 * n/2) if it is sqaure matrix then O(n*n) = 3T(n^2/4) + O(1)
+and since it satisfy case 1 of master theorem it can be represented as n^logb(a) TC = O(mn)log4(3)s
+
+```
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int row = matrix.length - 1;
+        int col = matrix[0].length - 1;
+        return search(matrix, target, row, col, 0, 0);
+    }
+
+   boolean search(int[][] matrix, int target, int row, int col, int rowStart, int colStart){
+       if( rowStart > row || colStart > col)
+           return false;
+
+       if(row == rowStart && col == colStart && target != matrix[row][col])
+            return false;
+
+        int pivotR =  rowStart + (row - rowStart)/2;
+        int pivotC = colStart + (col - colStart)/2;
+        if(target == matrix[pivotR][pivotC])
+            return true;
+        else if(target < matrix[pivotR][pivotC])
+            return search(matrix, target, pivotR, pivotC, rowStart, colStart ) ||
+                search(matrix, target, row, pivotC,pivotR + 1, colStart) ||
+                search(matrix, target, pivotR , col, rowStart, pivotC + 1);
+        else
+             return search(matrix, target, row, col, pivotR + 1, pivotC + 1 ) ||
+                search(matrix, target, row, pivotC,pivotR + 1, colStart) ||
+                search(matrix, target, pivotR , col, rowStart, pivotC + 1);
+
+    }
+}
+```
+
+## backtracking and pruning
+
+Backtracking reduced the number of steps taken to reach the final result. This is known as pruning the recursion tree because we don't take unnecessary paths.
+
+### N queen problem
+
+- https://leetcode.com/explore/learn/card/recursion-ii/472/backtracking/2804/
+- https://www.youtube.com/watch?v=i05Ju7AftcM
+
+time complexity is 4TO(n) we can improve this with hashing
+
+```
+class Solution {
+    public int totalNQueens(int n) {
+      int[][] board = new int[n][n];
+      return solveNQueen(0, board, 0, n);
+    }
+
+    int solveNQueen(int col, int[][] board, int count, int n){
+
+        for(int row = 0; row < n; row++){
+            if(isSafe(col, row ,board,count,n)){
+                board[row][col] = 1;
+                if(col + 1  == n)
+                    count++;
+                else
+                    count = solveNQueen(col+1, board,count,n);
+                board[row][col] = 0;
+            }
+        }
+        return count;
+    }
+
+    boolean isSafe(int col, int row, int[][] board, int count, int n){
+        int dupRow = row;
+        int dupCol = col;
+        while(col >= 0 &&  row >= 0){
+            if(board[row][col] == 1) return false;
+            row--;
+            col--;
+        }
+        row = dupRow;
+        col = dupCol;
+        while(col >= 0){
+            if(board[row][col] == 1) return false;
+            col--;
+        }
+        col =  dupCol;
+        while(row < n && col >= 0){
+             if(board[row][col] == 1) return false;
+             row++;
+             col--;
+         }
+       return true;
+    }
+  }
+```
+
+optimized code
+
+```
+class Solution {
+    public int totalNQueens(int n) {
+      int[][] board = new int[n][n];
+      int[] left = new int[n];
+      int[] upperDiag = new int[(2 * n) - 1];
+      int[] lowerDiag = new int[(2 * n) - 1];
+
+      return solveNQueen(0, board, 0, n, left, upperDiag, lowerDiag);
+    }
+
+    int solveNQueen(int col, int[][] board, int count, int n, int[] left, int[] upperDiag, int[] lowerDiag){
+
+        for(int row = 0; row < n; row++){
+            if(left[row] == 0 && lowerDiag[row + col] == 0 && upperDiag[n-1 + col - row] == 0)
+            {
+                board[row][col] = 1;
+                left[row] = 1;
+                lowerDiag[row + col] = 1;
+                upperDiag[n - 1 + col - row] = 1;
+                if(col + 1  == n)
+                    count++;
+                else
+                    count = solveNQueen(col+1, board,count,n, left, upperDiag, lowerDiag);
+                board[row][col] = 0;
+                left[row] = 0;
+                lowerDiag[row + col] = 0;
+                upperDiag[n - 1 + col - row] = 0;
+            }
+        }
+        return count;
+    }
+  }
+```
