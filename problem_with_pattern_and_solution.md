@@ -42,9 +42,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -223,15 +223,23 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
+  - [tail recursion](#tail-recursion)
   - [search in a 2 d matrix](#search-in-a-2-d-matrix)
   - [backtracking and pruning](#backtracking-and-pruning)
     - [N queen problem](#n-queen-problem)
+      - [Explanation](#explanation)
+    - [leetcode 489 : robot room cleaner](#leetcode-489--robot-room-cleaner)
+    - [sudoku solver](#sudoku-solver)
+    - [combinations](#combinations)
+    - [22. Generate Parentheses](#22-generate-parentheses)
+    - [largest area in histogram](#largest-area-in-histogram)
+- [Array Deque](#array-deque)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -239,6 +247,7 @@ keep revisting these problems and algo's to keep it fresh in the memory until yo
 # youtube channel to checkout for leetcode prob
 
 - tech dose (https://www.youtube.com/watch?v=K0NgGYEAkA4)
+- takeuforward by raj vikrmaditya
 - neetcode
 - tushar roy
 
@@ -5964,9 +5973,15 @@ unsigned right shift operation fills the leftmost position with 0's
 
 ## time complexity calculation with recursion and memoization
 
-- no of recursive calls will not be always linear( chech fibonaacci recursive call tree, it is 2-ary tree in general it forms n-ary tree) but with memoization it can be made linear,
+- no of recursive calls will not be always linear( chech fibonaacci recursive call tree, it is 2-ary tree in general it forms n-ary tree) but with memoization it can be made linear
 - use tail recursion if possible to avoid implicit call stack space
 - duplicate calculation in recursion will occur when we have multiple recursive calls in calculation/recurrance relation e.g fibonacci, pascal triange, climbstairs
+
+## tail recursion
+
+- https://leetcode.com/explore/featured/card/recursion-i/256/complexity-analysis/2374/
+- Tail recursion is a recursion where the recursive call is the final instruction in the recursion function. And there should be only one recursive call in the function.
+- with tail recursion system call stack reuse the space allocated for earlier recursive call since in tail recursion, we know that as soon as we return from the recursive call we are going to immediately return as well, so we can skip the entire chain of recursive calls returning and return straight to the original caller. That means we don't need a call stack at all for all of the recursive calls, which saves us space.
 
 ## search in a 2 d matrix
 
@@ -6065,39 +6080,246 @@ class Solution {
   }
 ```
 
-optimized code
+#### Explanation
+
+- we only need to search left and lower diagnol and upper diagnol direction since for any value of col queens are filled till previous cols, so we only need to look in these directions
+  and so when you draw the board and you can see for any queen put at (i, j) (i+j) gives us the lower diagnal traversal and n-1 + j - i gives us upper diagonal and we can use hashing to avoid cheking every position in whole left, lower, upper diagonal and do this in constant time O(1) and als this way we don't need to keep the board[][]
 
 ```
 class Solution {
     public int totalNQueens(int n) {
-      int[][] board = new int[n][n];
-      int[] left = new int[n];
-      int[] upperDiag = new int[(2 * n) - 1];
-      int[] lowerDiag = new int[(2 * n) - 1];
+      var left = new boolean[n];
+      var upperDiag = new boolean[(2 * n) - 1];
+      var lowerDiag = new boolean[(2 * n) - 1];
 
-      return solveNQueen(0, board, 0, n, left, upperDiag, lowerDiag);
+      return solveNQueen(0,  n, left, upperDiag, lowerDiag);
     }
 
-    int solveNQueen(int col, int[][] board, int count, int n, int[] left, int[] upperDiag, int[] lowerDiag){
-
+    int solveNQueen(int col, int n, boolean[] left, boolean[] upperDiag, boolean[] lowerDiag){
+      if(col == n)
+          return 1;
+        int count = 0;
         for(int row = 0; row < n; row++){
-            if(left[row] == 0 && lowerDiag[row + col] == 0 && upperDiag[n-1 + col - row] == 0)
+            if(!left[row] && !lowerDiag[row + col] && !upperDiag[n-1 + col - row])
             {
-                board[row][col] = 1;
-                left[row] = 1;
-                lowerDiag[row + col] = 1;
-                upperDiag[n - 1 + col - row] = 1;
-                if(col + 1  == n)
-                    count++;
-                else
-                    count = solveNQueen(col+1, board,count,n, left, upperDiag, lowerDiag);
-                board[row][col] = 0;
-                left[row] = 0;
-                lowerDiag[row + col] = 0;
-                upperDiag[n - 1 + col - row] = 0;
+                left[row] = true;
+                lowerDiag[row + col] = true;
+                upperDiag[n - 1 + col - row] = true;
+
+                count += solveNQueen(col+1, n, left, upperDiag, lowerDiag);
+
+                left[row] = false;
+                lowerDiag[row + col] = false;
+                upperDiag[n - 1 + col - row] = false;
             }
         }
         return count;
     }
   }
 ```
+
+if(col == n) check can be placed outside loop like the backtracking template by having a global static var in the class
+reference below
+
+- https://aaronice.gitbook.io/lintcode/backtracking/n-queens-ii
+
+### leetcode 489 : robot room cleaner
+
+- https://zhenchaogan.gitbook.io/leetcode-solution/leetcode-489-robot-room-cleaner
+
+```
+void cleanRoom(Robot robot){
+    set<pair<int, int>> visited;
+    robotClean(robot, visited, 0, 0, 0);
+}
+
+robotClean(Robot robot, set<pair<int,int>> visited, int i , int j, int dir){
+    robot.clean();
+    visited.insert({i,j});
+    pair<int,int> dirs[4] = {{-1,0},{1,0},{0,1},{0,-1}};
+    for(int k = 0; k < 4; k++){
+        int new_i = i + dirs[k].first;
+        int new_j = j + dirs[k].second;
+        if(!visisted.contains({new_i,new_j} && robot.move()){
+            robotClean(robot, visited, new_i, new_j, dir);
+            backtrack(robot);
+        }
+        //dir = (dir + 1)%dir;
+        robot.turnRight();
+    }
+}
+
+void backtrack(Robot robot){
+    robot.turnRight();
+            robot.turnRight();
+            robot.move();
+            robot.turnRight();
+            robot.turnRight();
+}
+
+```
+
+### sudoku solver
+
+- https://leetcode.com/explore/learn/card/recursion-ii/472/backtracking/2796/
+- https://www.youtube.com/watch?v=FWAIf_EVUKE
+
+```
+class Solution {
+    public void solveSudoku(char[][] board) {
+        solve(board);
+    }
+
+    boolean solve(char[][] board)  {
+     for(int row = 0; row < board.length; row ++){
+         for(int col = 0; col < board[0].length; col++){
+             if(board[row][col] == '.'){
+                 for(char c = '1'; c <= '9'; c++){
+                     if(isSafe(board, row, col, c)){
+                         board[row][col] = c;
+                         if(solve(board))
+                             return true;
+                         else
+                             board[row][col] ='.';
+                     }
+                 }
+                 return false;
+             }
+         }
+      }
+      return true;
+    }
+    boolean isSafe(char[][] board, int row, int col, char c){
+        for(int i = 0; i < 9; i++){
+            if(board[row][i] == c) return false;
+            if(board[i][col] == c) return false;
+            int subRow =  3 * (row / 3) + i / 3;
+            int subCol =  3 * (col / 3) + i % 3;
+            if(board[subRow][subCol] == c) return false;
+        }
+        return true;
+    }
+}
+```
+
+### combinations
+
+- https://leetcode.com/explore/learn/card/recursion-ii/472/backtracking/2798/
+- https://leetcode.com/explore/learn/card/recursion-ii/472/backtracking/2798/discuss/2580251/Java-backtracking-sol-with-explanation-of-n-k-+-1-performance-improvement
+
+- Change the condition of for-loop to i <= n - k + 1 imporves the performance since it avoid calls which will not add any valid combinations to the final result
+- - Take combine(4, 2) as an example, the program does not need to try the combination starting with 4, because it has been covered by those starting with 1, 2 and 3.The same applies for each sub-problem in the recursions.
+
+- - similary take another example of combine(4,3) the sol does not need to take in to account combination starting with 3 and 4 since they have already been covered by combination starting with 1, 2
+
+feel free to give thumbs up if you like the sol
+
+```
+class Solution {
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> res = new ArrayList<>();
+        helper(new ArrayList<Integer>() , res, 1, n, k);
+        return res;
+    }
+    void helper(List<Integer> list, List<List<Integer>> res,int start, int end, int k){
+
+        if(k == 0){
+            res.add(new ArrayList(list));
+            return;
+        }
+
+        for(int i = start; i <= end - k + 1; i++){
+            list.add(i);
+            helper(list, res, i + 1, end, k - 1);
+            list.remove(list.size() - 1);
+        }
+    }
+}
+```
+
+### 22. Generate Parentheses
+
+- https://leetcode.com/problems/generate-parentheses/
+- base case would be when len of string becomes 2n, trick is to keep on adding "(" till n and then keep on adding ) when count of close ) < open )
+
+```
+class Solution {
+    public List<String> generateParenthesis(int n) {
+        List<String> res = new ArrayList<>();
+        backtrack(new StringBuilder(),res,0,0, n);
+        return res;
+    }
+
+    void backtrack(StringBuilder sb,List<String> res,int open, int close, int n){
+        if(sb.length() == n*2){
+            res.add(sb.toString());
+            return;
+        }
+
+        if(open < n){
+            sb.append("(");
+            backtrack(sb, res, open+1,close, n);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        if(close < open){
+            sb.append(")");
+            backtrack(sb, res, open, close+1, n);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+}
+```
+
+### largest area in histogram
+
+- https://leetcode.com/explore/learn/card/recursion-ii/507/beyond-recursion/2901/
+- https://www.youtube.com/watch?v=X0X6G-eWgQ8
+- https://www.youtube.com/watch?v=jC_cWLy7jSI
+
+Time complexity is O(4n) and space complexity is O(4n)
+
+- trick is to find the left smaller and right smaller for a bar at index i, that way max area for the bar is (rs - ls + 1 ) \* bar height, so the naive solution will be do this for every element in the array so TC will be O(n^2) + O(n^2) + O(n) = O(n^2)
+- to optimize TC compute the left & right smaller array using stack check the youtube link for how to calculate the LS and RS array
+- below sol uses multiple passes i.e O(4n) 2n for loop and 2n stack operation for push/pop further with another observation it can be done in single pass but that is hard to understand and to explain so avoid that unless interviewer ask for further optimizatation, for that refer the youtube video
+- - Note: + 1 -> for adjust 0 based index
+
+```
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        var n = heights.length;
+        var leftSmaller = new int[n];
+        var rightSmaller = new int[n];
+        var stack = new ArrayDeque<Integer>();
+        var rstack = new ArrayDeque<Integer>();
+        var maxArea = 0;
+        for(int i = 0; i < n; i++){
+            while(!stack.isEmpty() && heights[stack.peek()] >= heights[i]){
+                stack.pop();
+            }
+            if(stack.isEmpty()) leftSmaller[i] = 0;
+            else leftSmaller[i] = stack.peek() + 1;
+            stack.push(i);
+        }
+
+        for(int i = n - 1; i >= 0 ; i--){
+            while(!rstack.isEmpty() && heights[rstack.peek()] >= heights[i]){
+                rstack.pop();
+            }
+            if(rstack.isEmpty()) rightSmaller[i] = n - 1;
+            else rightSmaller[i] = rstack.peek() - 1;
+            rstack.push(i);
+            maxArea = Math.max(maxArea, (rightSmaller[i] - leftSmaller[i] + 1) * heights[i]);
+        }
+        return maxArea;
+    }
+}
+```
+
+# Array Deque
+
+- Array Double Ended Queue or Array Deck
+- The ArrayDeque in Java provides a way to apply resizable-array in addition to the implementation of the Deque interface.
+- Array deques have no capacity restrictions and they grow as necessary to support usage.
+  They are not thread-safe
+- ArrayDeque class is likely to be faster than Stack when used as a stack and faster than LinkedList when used as a queue
+- null elements not allowed
