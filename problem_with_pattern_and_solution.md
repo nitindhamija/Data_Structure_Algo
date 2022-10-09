@@ -1,4 +1,6 @@
 - [youtube channel to checkout for leetcode prob](#youtube-channel-to-checkout-for-leetcode-prob)
+- [IMP DataStructure to know for writing programs during interviews](#imp-datastructure-to-know-for-writing-programs-during-interviews)
+  - [ArrayDeque](#arraydeque)
 - [Linked List](#linked-list)
   - [to detect cycle/loop in linked list](#to-detect-cycleloop-in-linked-list)
   - [circular linked list applications](#circular-linked-list-applications)
@@ -239,7 +241,16 @@
     - [combinations](#combinations)
     - [22. Generate Parentheses](#22-generate-parentheses)
     - [largest area in histogram](#largest-area-in-histogram)
-- [Array Deque](#array-deque)
+    - [permutations](#permutations)
+      - [using boolean array to improve TC(easy to understand & explain)](#using-boolean-array-to-improve-tceasy-to-understand--explain)
+    - [Letter Combinations of a Phone Number](#letter-combinations-of-a-phone-number)
+    - [The Skyline Problem](#the-skyline-problem)
+      - [improvements by using treemap](#improvements-by-using-treemap)
+- [patterns](#patterns)
+  - [2 pointer](#2-pointer)
+    - [2 sum BST (daily challange)](#2-sum-bst-daily-challange)
+      - [using inorder traversal of BST and 2 pointer](#using-inorder-traversal-of-bst-and-2-pointer)
+      - [optimization here we traverse the BST 2 times so TC O(2n) however we can use BST property to do this in single traversal](#optimization-here-we-traverse-the-bst-2-times-so-tc-o2n-however-we-can-use-bst-property-to-do-this-in-single-traversal)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -250,6 +261,17 @@ keep revisting these problems and algo's to keep it fresh in the memory until yo
 - takeuforward by raj vikrmaditya
 - neetcode
 - tushar roy
+
+# IMP DataStructure to know for writing programs during interviews
+
+## ArrayDeque
+
+- Array Double Ended Queue or Array Deck
+- The ArrayDeque in Java provides a way to apply resizable-array in addition to the implementation of the Deque interface.
+- Array deques have no capacity restrictions and they grow as necessary to support usage.
+  They are not thread-safe
+- ArrayDeque class is likely to be faster than Stack when used as a stack and faster than LinkedList when used as a queue
+- null elements not allowed
 
 # Linked List
 
@@ -6026,6 +6048,8 @@ class Solution {
 
 Backtracking reduced the number of steps taken to reach the final result. This is known as pruning the recursion tree because we don't take unnecessary paths.
 
+- https://leetcode.com/explore/learn/card/recursion-ii/507/beyond-recursion/2903/discuss/18239/A-general-approach-to-backtracking-questions-in-Java-(Subsets-Permutations-Combination-Sum-Palindrome-Partioning)
+
 ### N queen problem
 
 - https://leetcode.com/explore/learn/card/recursion-ii/472/backtracking/2804/
@@ -6315,11 +6339,328 @@ class Solution {
 }
 ```
 
-# Array Deque
+### permutations
 
-- Array Double Ended Queue or Array Deck
-- The ArrayDeque in Java provides a way to apply resizable-array in addition to the implementation of the Deque interface.
-- Array deques have no capacity restrictions and they grow as necessary to support usage.
-  They are not thread-safe
-- ArrayDeque class is likely to be faster than Stack when used as a stack and faster than LinkedList when used as a queue
-- null elements not allowed
+- https://leetcode.com/explore/learn/card/recursion-ii/507/beyond-recursion/2903/
+- list.contains() is O(n) operation to do this in O(1) time we can use additional boolean array or use swaping logic( check discuss section), we can also use hashset but using boolean array is better
+
+```
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+
+        backtrack(nums, new ArrayList<Integer>(), res);
+        return res;
+    }
+
+    void backtrack(int[] nums, List<Integer> list,List<List<Integer>> res){
+        if(list.size() == nums.length){
+            res.add(new ArrayList(list));
+            return;
+        }
+        for(int i = 0; i < nums.length; i++){
+            if(isValid(list, i, nums)){
+               list.add(nums[i]);
+               backtrack(nums, list, res);
+               list.remove(list.size()-1);
+            }
+        }
+    }
+    boolean isValid(List<Integer> list, int i, int[] nums){
+        return !list.contains(nums[i]);
+    }
+}
+```
+
+#### using boolean array to improve TC(easy to understand & explain)
+
+```
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+
+        backtrack(nums, new ArrayList<Integer>(),new boolean[nums.length], res);
+        return res;
+    }
+
+    void backtrack(int[] nums, List<Integer> list, boolean[] used, List<List<Integer>> res){
+        if(list.size() == nums.length){
+            res.add(new ArrayList(list));
+            return;
+        }
+        for(int i = 0; i < nums.length; i++){
+            if(used[i]) continue;
+               list.add(nums[i]);
+               used[i] = true;
+               backtrack(nums, list, used, res);
+               list.remove(list.size() - 1);
+               used[i] = false;
+        }
+    }
+}
+```
+
+### Letter Combinations of a Phone Number
+
+- https://leetcode.com/explore/learn/card/recursion-ii/507/beyond-recursion/2905
+- use backtracking and keypad map or an array / iterative sol uses queue FIFO
+
+```
+class Solution {
+    private static final String[] KEY_PAD = { "", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz" };
+    public List<String> letterCombinations(String digits) {
+        var res = new ArrayList<String>();
+        if(digits.length() == 0)
+            return res;
+        backtrack(digits, 0 ,new StringBuilder(),res);
+        return res;
+    }
+    void backtrack(String digits, int idx, StringBuilder temp, List<String> res){
+        if(idx == digits.length()){
+            res.add(new String(temp));
+            return;
+        }
+        char[] keys = KEY_PAD[digits.charAt(idx) - '0'].toCharArray();
+
+        for(char c : keys){
+            temp.append(c);
+            backtrack(digits, idx + 1, temp, res);
+            temp.deleteCharAt(temp.length() - 1);
+        }
+    }
+}
+```
+
+### The Skyline Problem
+
+- https://leetcode.com/explore/learn/card/recursion-ii/507/beyond-recursion/3006/
+- https://leetcode.com/explore/learn/card/recursion-ii/507/beyond-recursion/3006/discuss/61192/Once-for-all-explanation-with-clean-Java-code(O(n2)time-O(n)-space)
+- Intution:
+- if we consider the start and end coardinates of all buildings and then sort them on start coardinates
+- a starting point(x,y) will either be overshadowed by other buildings or will overshadow them and to know this we will have keep track of all buildings heights and find max height building if needed also when you reach end point(x,y) this building will no longer impact others i.e shadowing so we need to remove it from list so add, find max , remove these operation can be done efficiently in maxheap or BST so we can use priority queue here however remove operation in PQ is O(n) so use treemap remove O(log(n)) to improve TC
+
+- Algorithm
+
+```
+for position in sorted(all start points and all end points)
+       if this position is a start point
+              add its height
+       else if this position is a end point
+              delete its height
+       compare current max height with previous max height, if different, add
+       current position together with this new max height to our result, at the
+       same time, update previous max height to current max height;
+```
+
+```
+class Node {
+    int x;
+    int y;
+    Node(int start, int height){
+        x = start;
+        y = height;
+    }
+}
+
+class Solution {
+    public List<List<Integer>> getSkyline(int[][] buildings) {
+     List<Node> nodes = new ArrayList();
+     List<List<Integer>> res = new ArrayList();
+        for(int[] b: buildings){
+            nodes.add(new Node(b[0], -b[2]));
+            nodes.add(new Node(b[1], b[2]));
+        }
+
+        Collections.sort(nodes,(a, b) -> {
+           if(a.x != b.x)
+               return a.x - b.x;
+            return a.y - b.y;
+        });
+
+        var pq = new PriorityQueue<Integer>(Collections.reverseOrder());
+        pq.offer(0);
+        int prevMax = 0;
+        for(Node node: nodes){
+            if(node.y < 0)
+                pq.offer(-node.y);
+            else
+                pq.remove(node.y);
+            int max = pq.peek();
+            if(prevMax != max){
+                res.add(Arrays.asList(node.x,max));
+                prevMax = max;
+            }
+        }
+        return res;
+    }
+}
+```
+
+#### improvements by using treemap
+
+```
+class Node {
+    int x;
+    int y;
+    Node(int start, int height){
+        x = start;
+        y = height;
+    }
+}
+
+class Solution {
+    public List<List<Integer>> getSkyline(int[][] buildings) {
+     List<Node> nodes = new ArrayList();
+     List<List<Integer>> res = new ArrayList();
+        for(int[] b: buildings){
+            nodes.add(new Node(b[0], -b[2]));
+            nodes.add(new Node(b[1], b[2]));
+        }
+
+        Collections.sort(nodes,(a, b) -> {
+           if(a.x != b.x)
+               return a.x - b.x;
+            return a.y - b.y;
+        });
+
+        var pq = new TreeMap<Integer,Integer>(Collections.reverseOrder());
+        pq.put(0, 1);
+        int prevMax = 0;
+        for(Node node: nodes){
+            if(node.y < 0){
+                int cnt =  pq.getOrDefault(-node.y, 0);
+                pq.put(-node.y, cnt + 1);
+            }
+            else{
+                int cnt =  pq.getOrDefault(node.y, 0);
+                if(cnt == 1)
+                    pq.remove(node.y);
+                else
+                    pq.put(node.y, cnt - 1);
+            }
+
+            int max = pq.firstKey();
+            if(prevMax != max){
+                res.add(Arrays.asList(node.x, max));
+                prevMax = max;
+            }
+        }
+        return res;
+    }
+}
+```
+
+# patterns
+
+## 2 pointer
+
+### 2 sum BST (daily challange)
+
+- https://leetcode.com/problems/two-sum-iv-input-is-a-bst/
+
+#### using inorder traversal of BST and 2 pointer
+
+- first traverse the BST using inorder traversal and store the sorted elements in a arraylist
+- then use 2 pointer to point start and end of the list and keep of checking sum = target else if sum > target --end else start++
+- TC is O(n) SC O(n)
+- using arrayDeque is faster than stack and dequq can be used as FIFO and LIFO so learn how to use and what methods to use for FIFO or LIFO
+
+```
+class Solution {
+    public boolean findTarget(TreeNode root, int k) {
+        var nums = new ArrayList<Integer>();
+        inorder(root, nums);
+        int i = 0;
+        int j = nums.size() - 1;
+        while(i < j){
+            var sum = nums.get(i) + nums.get(j);
+            if(sum == k) return true;
+            else if(sum < k) i++;
+            else j--;
+        }
+        return false;
+    }
+
+    void inorder(TreeNode root, List<Integer> nums){
+        var stack = new ArrayDeque<TreeNode>();
+        while(root != null || !stack.isEmpty()){
+            while(root != null)
+            {
+                stack.addFirst(root);
+                root = root.left;
+            }
+            root = stack.removeFirst();
+            nums.add(root.val);
+            root = root.right;
+        }
+    }
+}
+```
+
+#### optimization here we traverse the BST 2 times so TC O(2n) however we can use BST property to do this in single traversal
+
+- https://leetcode.com/problems/two-sum-iv-input-is-a-bst/discuss/106071/Iterative-solution-with-O(n)-time-O(logn)-space-with-detailed-explanation.-Only-traverse-the-binary-tree-once!!!
+- https://leetcode.com/problems/two-sum-iv-input-is-a-bst/discuss/2683131/Java-sol-with-O(n)-TC-and-O(log-n)-SC-using-single-Traversal
+
+- keep 2 stacks left and right and reach the leftmost and rightmost node in the BST
+- now since duplicate node are not allowed we can loop while(left.val != right.val)
+- rest logic is same as 2 sum above only thing is we have to find predessor and successor of left and right node as we progress so we have to keep the parent nodes in the stack
+- Further the methods could be generalized in to find both pred and succ and leftmost/rightmost node
+
+- TC is O(n) SC O(h) where h is hight of tree so O(log n)
+
+```
+
+class Solution {
+    public boolean findTarget(TreeNode root, int k) {
+        var leftStack = new ArrayDeque<TreeNode>();
+        var rightStack = new ArrayDeque<TreeNode>();
+
+        var left = findLeftMost(root, leftStack);
+        var right = findRightMost(root, rightStack);
+
+        while(left.val != right.val){
+            var sum = left.val + right.val;
+            if(sum == k) return true;
+            else if(sum < k){
+                left = findSuccessor(left.right, leftStack);
+            }else {
+                right = findPredecessor(right.left, rightStack);
+            }
+        }
+        return false;
+    }
+
+    TreeNode findSuccessor(TreeNode left, Deque<TreeNode> leftStack){
+        while(left != null){
+            leftStack.addFirst(left);
+            left = left.left;
+        }
+        return leftStack.pop();
+    }
+
+    TreeNode findPredecessor(TreeNode right, Deque<TreeNode> rightStack){
+         while(right != null){
+            rightStack.addFirst(right);
+            right = right.right;
+        }
+        return rightStack.pop();
+    }
+
+    TreeNode findLeftMost(TreeNode temp, Deque<TreeNode> leftStack){
+       while(temp != null){
+            leftStack.addFirst(temp);
+            temp = temp.left;
+        }
+        return leftStack.pop();
+    }
+
+    TreeNode findRightMost(TreeNode temp, Deque<TreeNode> rightStack){
+          while(temp != null){
+            rightStack.addFirst(temp);
+            temp = temp.right;
+        }
+        return rightStack.pop();
+    }
+}
+```
