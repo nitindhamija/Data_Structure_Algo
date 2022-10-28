@@ -251,6 +251,13 @@
     - [2 sum BST (daily challange)](#2-sum-bst-daily-challange)
       - [using inorder traversal of BST and 2 pointer](#using-inorder-traversal-of-bst-and-2-pointer)
       - [optimization here we traverse the BST 2 times so TC O(2n) however we can use BST property to do this in single traversal](#optimization-here-we-traverse-the-bst-2-times-so-tc-o2n-however-we-can-use-bst-property-to-do-this-in-single-traversal)
+- [graph](#graph)
+  - [BSF traversal](#bsf-traversal)
+  - [DFS traversal](#dfs-traversal)
+  - [no of provices prob](#no-of-provices-prob)
+    - [sol by converting adjacency matrix to list first](#sol-by-converting-adjacency-matrix-to-list-first)
+    - [sol with adjacency matrix](#sol-with-adjacency-matrix)
+  - [flood fill](#flood-fill)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -272,6 +279,7 @@ keep revisting these problems and algo's to keep it fresh in the memory until yo
   They are not thread-safe
 - ArrayDeque class is likely to be faster than Stack when used as a stack and faster than LinkedList when used as a queue
 - null elements not allowed
+- https://docs.oracle.com/javase/7/docs/api/java/util/Deque.html
 
 # Linked List
 
@@ -1258,8 +1266,9 @@ A connected component of an undirected graph is a subgraph in which every two ve
 
 #### using BFS
 
-Time complexity O(m,n) m no of rows and n no of columns
-space complexity O(m,n) for extra visited flag 2d array
+if m = n then
+Time complexity O(n^2) for main for loops and for worst case all 1's BFS traversal will be O(n^2) then for checking 8 neighbors of each node in BFS 8 so total TC = O(n^2) + O(n^2) \* 8
+space complexity O(n^2) for extra visited flag 2d array + O(n^2) for queue worst case where whole matrix is an island with all 1's
 
 ```
 
@@ -1319,6 +1328,24 @@ this.column=column;
 
 }
 
+```
+
+- all 8 neighbor nodes in matrix could be taken as below and then using a for loop of 1 to 8 for r + rDir[i] and c + cDir
+
+```
+            // int[] rDir = {-1, 1, 0, 0, -1, 1, -1, 1};
+            // int[] cDir = {0, 0, -1, 1, -1, 1, 1, -1};
+```
+
+- or it can be taken as
+
+```
+                for(int i = -1; i <= 1; i++){
+                    for(int j = -1; j <= 1; j++){
+                        int nrow = pair.row + i;
+                        int ncol = pair.col + j;
+                    }
+                }
 ```
 
 #### using DFS (flood filling technique)
@@ -6664,3 +6691,240 @@ class Solution {
     }
 }
 ```
+
+# graph
+
+- refer graph seriers by striver on takeuforward channel
+- a graph can have multiple connected components
+
+## BSF traversal
+
+- requires queue to do level order traversal
+- req visisted array to keep check of visited nodes
+- SC is O(n) no of nodes + O(n) check for nodes visited using bool array + O(n) for storing n nodes in queue
+- TC is O(n) for N nodes + O(2E) for loop on adjacecny list of node i.e degree of node so sum of degree of every node = 2 E so TC is O(n +2 E)
+
+```
+//{ Driver Code Starts
+// Initial Template for Java
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+class GFG {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(System.in));
+        int T = Integer.parseInt(br.readLine().trim());
+        while (T-- > 0) {
+            String[] s = br.readLine().trim().split(" ");
+            int V = Integer.parseInt(s[0]);
+            int E = Integer.parseInt(s[1]);
+            ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+            for (int i = 0; i < V; i++) adj.add(i, new ArrayList<Integer>());
+            for (int i = 0; i < E; i++) {
+                String[] S = br.readLine().trim().split(" ");
+                int u = Integer.parseInt(S[0]);
+                int v = Integer.parseInt(S[1]);
+                adj.get(u).add(v);
+                // adj.get(v).add(u);
+            }
+            Solution obj = new Solution();
+            ArrayList<Integer> ans = obj.bfsOfGraph(V, adj);
+            for (int i = 0; i < ans.size(); i++)
+                System.out.print(ans.get(i) + " ");
+            System.out.println();
+        }
+    }
+}
+
+// } Driver Code Ends
+
+
+class Solution {
+    // Function to return Breadth First Traversal of given graph.
+    public ArrayList<Integer> bfsOfGraph(int V, ArrayList<ArrayList<Integer>> adj) {
+        // Code here
+        boolean[] vis = new boolean[V];
+        var res = new ArrayList<Integer>();
+        var q = new ArrayDeque<Integer>();
+        q.offerLast(0);
+        vis[0] = true;
+        BFS(res, adj, q, vis);
+
+        <!-- if graph have multiple connected components
+        for(int i = 0; i < V; i++){
+            if(!vis[i])
+                BFS(res, adj, q, vis);
+        } -->
+        return res;
+    }
+    void BFS(List<Integer> res , ArrayList<ArrayList<Integer>> adj, Deque<Integer> q , boolean[] vis){
+
+        while(!q.isEmpty()){
+            int ele = q.removeFirst();
+            res.add(ele);
+            for(Integer neighbor: adj.get(ele)){
+                if(!vis[neighbor])
+                {
+                    q.offerLast(neighbor);
+                    vis[neighbor] = true;
+                }
+            }
+        }
+    }
+}
+```
+
+## DFS traversal
+
+- uses recursion to do depth traversal
+- req visisted array to keep check of visited nodes
+- TC is O(n) all no of nodes + O(2E) for loop on adjacecny list of node i.e degree of node so sum of degree of every node = 2 E so TC is O(n +2 E)
+- SC is O(n) storing of n nodes + O(n) for visited array + O(n) for n recursive calls in case of skewed graph i.e O(n)
+
+```
+class Solution {
+    // Function to return a list containing the DFS traversal of the graph.
+    public ArrayList<Integer> dfsOfGraph(int V, ArrayList<ArrayList<Integer>> adj) {
+        // Code here
+        var vis = new boolean[V];
+        var res = new ArrayList<Integer>();
+        DFS(res, vis, adj, 0);
+        return res;
+    }
+
+    void DFS(List<Integer> res, boolean[] vis, ArrayList<ArrayList<Integer>> adj, Integer node){
+        res.add(node);
+        vis[node] = true;
+        for(Integer neighbor: adj.get(node)){
+            if(!vis[neighbor])
+                DFS(res, vis, adj, neighbor);
+        }
+    }
+}
+```
+
+## no of provices prob
+
+- https://leetcode.com/problems/number-of-provinces/discuss/2752929/clean-JAVA-sol-with-adjacency-matrix-and-list-both
+- https://leetcode.com/problems/number-of-provinces/
+- https://www.youtube.com/watch?v=ACzkVtewUYA&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=7
+
+### sol by converting adjacency matrix to list first
+
+SC -> O(n) : vis array + O(n) : dfs calls worst case skewed graph + O(n + 2E) adjacency list = O(n)
+TC -> O(nn) for converion to list + O(n) + O(n+2E) = O(nn)
+
+```
+class Solution {
+    public int findCircleNum(int[][] isConnected) {
+        int v = isConnected.length;
+        var adjls = new ArrayList<ArrayList<Integer>>();
+        convertAdjMatrixToList(adjls,isConnected,v);
+        var vis = new int[v];
+        int count = 0;
+        for(int i = 0; i < v; i++){
+            if(vis[i] == 0){
+                DFS(adjls, i, vis);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    void DFS(ArrayList<ArrayList<Integer>> adjls, int i , int[] vis){
+        vis[i] = 1;
+        for(Integer neighbor: adjls.get(i)){
+            if(vis[neighbor] == 0)
+                DFS(adjls, neighbor, vis);
+        }
+    }
+
+    void convertAdjMatrixToList(ArrayList<ArrayList<Integer>> adjls, int[][] isConnected, int v){
+         for(int i = 0; i < v; i++){
+            adjls.add(new ArrayList<Integer>());
+            for(int j = 0; j < v; j++){
+                if(i != j && isConnected[i][j] == 1){
+                    adjls.get(i).add(j);
+                }
+            }
+        }
+    }
+}
+```
+
+### sol with adjacency matrix
+
+SC -> O(n) : vis array + O(n) : dfs calls worst case skewed graph = O(n)
+TC -> O(n) for loop + O(n+2E) for dfs traversal = O(n)
+
+here's my java sol from (leetcode)without converting to Adjacency List
+
+```
+
+class Solution {
+public int findCircleNum(int[][] isConnected) {
+int v = isConnected.length;
+var vis = new boolean[v];
+int count = 0;
+
+        for(int i = 0; i < v; i++){
+            if(!vis[i]){
+                DFS(isConnected, i, vis, v);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    void DFS(int[][] isConnected, int i , boolean[] vis, int v){
+        for(int j = 0; j < v; j++){
+            if(!vis[j] && isConnected[i][j] == 1){
+                vis[j] = true;
+                DFS(isConnected, j, vis,v);
+            }
+        }
+    }
+
+}
+
+```
+
+## flood fill
+
+- https://www.youtube.com/watch?v=C-2_uSRli8o&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=9
+- https://practice.geeksforgeeks.org/problems/flood-fill-algorithm1856/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=flood-fill-algorithm
+
+TC O(n*m*4) SC O(n\*m)
+
+```
+class Solution
+{
+    public int[][] floodFill(int[][] image, int sr, int sc, int newColor)
+    {
+        int icolor = image[sr][sc];
+        DFS(image, sr, sc , icolor, newColor);
+        return image;
+    }
+
+    void DFS(int[][] image, int row, int col,int icolor, int newColor){
+        int[] rDir = {1,-1, 0, 0};
+        int[] cDir = {0, 0, 1, -1};
+        image[row][col] = newColor;
+        for(int i = 0; i < 4; i++){
+            int newr= row + rDir[i];
+            int newc = col + cDir[i];
+            if(isSafe(image, newr, newc, icolor, newColor)){
+                DFS(image, newr, newc, icolor, newColor);
+            }
+        }
+    }
+    boolean isSafe(int[][] image, int newr, int newc, int icolor, int newColor){
+        if(newr >= 0 && newc >= 0 && newr < image.length && newc < image[0].length && image[newr][newc] == icolor && image[newr][newc] != newColor)
+            return true;
+        return false;
+    }
+}
+```
+
+- the check image[newr][newc] == icolor && image[newr][newc] != newColor is important since icolor and newcolor could be same and if not checked then it can result in stackoverflow
