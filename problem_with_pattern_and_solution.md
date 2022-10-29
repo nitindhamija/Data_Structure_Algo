@@ -258,6 +258,8 @@
     - [sol by converting adjacency matrix to list first](#sol-by-converting-adjacency-matrix-to-list-first)
     - [sol with adjacency matrix](#sol-with-adjacency-matrix)
   - [flood fill](#flood-fill)
+  - [rotten oranges](#rotten-oranges)
+  - [detect cycle in undirected graph](#detect-cycle-in-undirected-graph)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -6928,3 +6930,120 @@ class Solution
 ```
 
 - the check image[newr][newc] == icolor && image[newr][newc] != newColor is important since icolor and newcolor could be same and if not checked then it can result in stackoverflow
+
+## rotten oranges
+
+- https://www.youtube.com/watch?v=yf3oUhkvqA0
+- https://practice.geeksforgeeks.org/problems/rotten-oranges2536/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=rotten_oranges
+
+SC - O(n*m) for queue
+TC - TC is O(n*m) because of adding starting points in the queue + O(n*m*4) is because of BSF, if all are fresh orange except 1
+
+```
+class Pair{
+    int row,col,tm;
+    Pair(int row, int col, int time){
+        this.row = row;
+        this.col= col;
+        this.tm = time;
+    }
+}
+
+class Solution
+{
+    //Function to find minimum time required to rot all oranges.
+    public int orangesRotting(int[][] grid)
+    {
+        int n = grid.length;
+        int m = grid[0].length;
+        int[] rdir = {1,0,0,-1 };
+        int[] cdir = {0,1,-1,0 };
+        int minTime = 0;
+        int cntFresh = 0;
+        Queue<Pair> q = new LinkedList<>();
+        for(int r = 0; r < n ; r++){
+            for(int c = 0; c < m ; c++){
+                if(grid[r][c] == 2){
+                    q.add(new Pair(r,c,0));
+                }
+                if(grid[r][c] == 1)
+                    cntFresh++;
+            }
+        }
+        int cnt = 0;
+        while(!q.isEmpty()){
+            var pair = q.peek();
+            minTime = Math.max(minTime, pair.tm);
+            q.remove();
+            for(int i = 0; i < 4; i++){
+               int newr = pair.row + rdir[i];
+               int newc = pair.col + cdir[i];
+
+               if(isFreshOrange(newr,newc,n,m,grid)){
+                   q.add(new Pair(newr, newc, pair.tm + 1));
+                   grid[newr][newc] = 2;
+                   cnt++;
+               }
+            }
+        }
+        return cnt != cntFresh ? -1: minTime;
+    }
+    boolean isFreshOrange(int row, int col, int n, int m , int[][] grid){
+        if(row >= 0 && col >= 0 && row < n && col < m && grid[row][col] == 1)
+            return true;
+        return false;
+    }
+}
+```
+
+## detect cycle in undirected graph
+
+- https://www.youtube.com/watch?v=BPlrALf1LDU
+- https://practice.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=detect-cycle-in-an-undirected-graph
+
+TC - O(v) outer for loop to cover every component in the graph + O(v + 2E) for BFS
+SC - O(v) for queue + O(v) for vis array
+
+```
+class Pair{
+    int node, pnode;
+    Pair(int n, int p){
+        node = n;
+        pnode = p;
+    }
+}
+
+class Solution {
+    // Function to detect cycle in an undirected graph.
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        // Code here
+        boolean[] vis= new boolean[V];
+        for(int i = 0; i < V; i++){
+            if(!vis[i] && BFS(adj, V, i, vis)){
+               return true;
+            }
+        }
+        return false;
+    }
+    boolean BFS(ArrayList<ArrayList<Integer>> adj, int v, int snode,boolean[] vis){
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(snode,-1));
+        vis[snode] = true;
+        while(!q.isEmpty()){
+            var node = q.peek().node;
+            var parent = q.peek().pnode;
+            q.remove();
+            for(Integer adjNode: adj.get(node)){
+                if(!vis[adjNode]){
+                    q.add(new Pair(adjNode, node));
+                    vis[adjNode] = true;
+                }else if(parent != adjNode)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+}
+
+```
