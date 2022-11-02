@@ -260,6 +260,8 @@
   - [flood fill](#flood-fill)
   - [rotten oranges](#rotten-oranges)
   - [detect cycle in undirected graph](#detect-cycle-in-undirected-graph)
+  - [Distance of nearest cell having 1](#distance-of-nearest-cell-having-1)
+  - [Replace O's with X's](#replace-os-with-xs)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -7046,4 +7048,131 @@ class Solution {
 
 }
 
+```
+
+## Distance of nearest cell having 1
+
+- https://www.youtube.com/watch?v=edXdVwkYHF8&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=13
+- https://practice.geeksforgeeks.org/problems/distance-of-nearest-cell-having-1-1587115620/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=distance-of-nearest-cell-having-1
+
+TC -> O(m*n) + O(m*n*4)
+SC -> o(m*n) for vis array + O(m*n) res array + O(m*n) for queue
+
+```
+class Cell {
+    int i, j, distance;
+    Cell(int i, int j, int dis){
+        this.i = i;
+        this.j= j;
+        this.distance = dis;
+    }
+}
+
+class Solution
+{
+    //Function to find distance of nearest 1 in the grid for each cell.
+    public int[][] nearest(int[][] grid)
+    {
+        var n = grid.length;
+        var m = grid[0].length;
+        var vis = new int[n][m];
+        var res = new int[n][m];
+        Queue<Cell> q = new LinkedList<>();
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if(grid[i][j] == 1){
+                    q.add(new Cell(i,j,0));
+                    vis[i][j] = 1;
+                }
+            }
+        }
+        int[] rdir = {1, -1, 0, 0};
+        int[] cdir = {0, 0, 1, -1};
+        while(!q.isEmpty()){
+            var cell = q.peek();
+            var i = cell.i;
+            var j = cell.j;
+            var dis = cell.distance;
+            q.remove();
+            res[i][j] = dis;
+            for(int k = 0; k < 4; k++){
+                var newr = i + rdir[k];
+                var newc = j + cdir[k];
+                if(isValid(newr, newc, n, m, vis)){
+                    q.add(new Cell(newr, newc, dis + 1));
+                    vis[newr][newc] = 1;
+                }
+            }
+        }
+        return res;
+    }
+    boolean isValid(int newr, int newc, int n, int m, int[][] vis){
+        if(newr >= 0 && newr < n && newc >= 0 &&  newc < m && vis[newr][newc] == 0)
+            return true;
+        return false;
+    }
+}
+```
+
+## Replace O's with X's
+
+- https://practice.geeksforgeeks.org/problems/replace-os-with-xs0052/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=replace-os-with-xs
+- https://www.youtube.com/watch?v=BtdgAys4yMk&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=14
+
+TC -> O(n) + O(m) + O(n*m*4) worst case all 'O' then n\*m dfs call will be made and in each dfs call we check 4 neighbors
+
+SC -> O(n*m) vis array + O(n*m) dfs call
+
+```
+class Solution{
+
+    static char[][] fill(int n, int m, char a[][])
+    {
+        var vis = new boolean[n][m];
+
+        int[] rdir = {0,0,1,-1};
+        int[] cdir = {1,-1,0,0};
+        // loop through boundary cells only
+        for(int r = 0; r < n ; r++){
+
+            if(a[r][0] == 'O' && !vis[r][0]){
+                DFS(vis, a, r ,0 , rdir, cdir,n, m);
+            }
+
+            if(a[r][m - 1] == 'O' && !vis[r][m - 1]){
+                DFS(vis, a, r , m - 1, rdir, cdir, n, m);
+            }
+        }
+
+        for(int c = 0; c < m ; c++){
+            if(a[0][c] == 'O' && !vis[0][c]){
+                DFS(vis, a, 0 ,c, rdir, cdir,n, m);
+            }
+
+            if(a[n - 1][c] == 'O' && !vis[n - 1][c]){
+                DFS(vis, a, n - 1 ,c, rdir, cdir, n, m);
+            }
+        }
+
+        for(int row = 0; row < n; row++){
+            for(int col = 0; col < m; col++){
+                if(a[row][col] == 'O' && !vis[row][col])
+                    a[row][col] = 'X';
+            }
+        }
+
+        return a;
+    }
+
+static void DFS(boolean[][] vis, char[][] a,int row, int col, int[] rdir, int[] cdir, int n, int m){
+         vis[row][col] = true;
+         for(int i = 0; i < 4; i++){
+            int newr = row + rdir[i];
+            int newc = col + cdir[i];
+            if(newr >= 0 &&  newr < n && newc >= 0 && newc < m && !vis[newr][newc] && a[newr][newc] == 'O'){
+               DFS(vis, a, newr, newc, rdir, cdir, n, m );
+            }
+         }
+    }
+}
 ```
