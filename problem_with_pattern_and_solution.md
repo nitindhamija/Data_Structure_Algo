@@ -262,6 +262,10 @@
   - [detect cycle in undirected graph](#detect-cycle-in-undirected-graph)
   - [Distance of nearest cell having 1](#distance-of-nearest-cell-having-1)
   - [Replace O's with X's](#replace-os-with-xs)
+  - [no of distinct islands](#no-of-distinct-islands)
+  - [bipartite graph](#bipartite-graph)
+    - [BFS sol](#bfs-sol)
+    - [DFS sol](#dfs-sol)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -7054,6 +7058,7 @@ class Solution {
 
 - https://www.youtube.com/watch?v=edXdVwkYHF8&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=13
 - https://practice.geeksforgeeks.org/problems/distance-of-nearest-cell-having-1-1587115620/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=distance-of-nearest-cell-having-1
+- https://leetcode.com/problems/01-matrix/ (variation of this prob)
 
 TC -> O(m*n) + O(m*n*4)
 SC -> o(m*n) for vis array + O(m*n) res array + O(m*n) for queue
@@ -7118,6 +7123,10 @@ class Solution
 
 - https://practice.geeksforgeeks.org/problems/replace-os-with-xs0052/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=replace-os-with-xs
 - https://www.youtube.com/watch?v=BtdgAys4yMk&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=14
+- https://leetcode.com/problems/surrounded-regions/
+- Intuition is if any cell 'O' is directly or indirectly touched with other 'O' cell which is at boundary then that cell can not be replaced, and boundary 'O' surrounded by all 4 'X' neighbor is not possible so we only need to check 'O' at the boundaries and call the DFS on them all the neighbor 'O' cells of the boundary cell will be visited and marked in the visited array
+  now we unvisited cell if having 'O' can be replaced with 'X' as they will be surrounded by 'X' cell in all four direction.
+- https://leetcode.com/problems/surrounded-regions/discuss/2771720/clean-easy-to-understand-DFS-boundary-sol-using-JAVA-beats-99-
 
 TC -> O(n) + O(m) + O(n*m*4) worst case all 'O' then n\*m dfs call will be made and in each dfs call we check 4 neighbors
 
@@ -7175,4 +7184,140 @@ static void DFS(boolean[][] vis, char[][] a,int row, int col, int[] rdir, int[] 
          }
     }
 }
+```
+
+## no of distinct islands
+
+- https://www.youtube.com/watch?v=7zmgQSJghpo
+- https://practice.geeksforgeeks.org/problems/number-of-distinct-islands/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=number-of-distinct-islands
+
+TC is O(n*m) outer loop + O(n*m*4) DFS + log(n*m) for set insert operation
+SC is O(n*m) vis array + O(n*m) for set
+
+```
+lass Solution {
+
+    int countDistinctIslands(int[][] grid) {
+
+        int m = grid.length;
+        int n = grid[0].length;
+        var vis = new boolean[m][n];
+        var set = new HashSet<ArrayList<String>>();
+        int[] rowD = {0,-1, 1,0};
+        int[] colD = {1,0, 0,-1};
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(!vis[i][j] && grid[i][j] == 1){
+                    var list = new ArrayList<String>();
+                    DFS(i, j, grid, vis, list, i , j, rowD, colD);
+                    set.add(list);
+                }
+            }
+        }
+        return set.size();
+    }
+
+  void  DFS(int i , int j, int[][] grid, boolean[][] vis, List<String> list, int baseR, int baseC, int[] rowD, int[] colD){
+        vis[i][j] = true;
+        int m = grid.length;
+        int n = grid[0].length;
+        list.add(toString(i - baseR, j - baseC));
+        for(int k = 0; k < 4; k++ ){
+                int nrow = rowD[k] + i;
+                int ncol = colD[k]  + j;
+                if(nrow >= 0 && nrow < m && ncol >= 0 && ncol < n && !vis[nrow][ncol] && grid[nrow][ncol] ==1)
+                {
+                    vis[nrow][ncol] = true;
+                    DFS(nrow, ncol, grid, vis, list, baseR, baseC, rowD, colD);
+                }
+        }
+    }
+    private String toString(int r, int c){
+        return Integer.toString(r) + " " + Integer.toString(c);
+    }
+}
+```
+
+## bipartite graph
+
+- https://leetcode.com/problems/is-graph-bipartite/submissions/840844869/
+- https://www.youtube.com/watch?v=-vu34sct1g8&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=17
+- https://practice.geeksforgeeks.org/problems/bipartite-graph/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=bipartite-graph
+
+TC -> O(v) for color init + O(v) for outer for loop + O(v + 2e) BFS
+SC -> O(v) color array + O(v) for queue in worst case
+
+### BFS sol
+
+```
+class Solution
+{
+    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
+    {
+
+        var color = new int[V];
+        for(int i = 0; i < V; i++){
+            color[i] = -1;
+        }
+         for(int i = 0; i < V; i++){
+            if(color[i] == -1 && !BFS(i, adj, color))
+                return false;
+         }
+        return true;
+    }
+
+    boolean BFS(int startNode,  ArrayList<ArrayList<Integer>>adj, int[] color){
+        var q = new LinkedList<Integer>();
+        q.offer(startNode);
+        color[startNode] = 0;
+        while(!q.isEmpty()){
+            int ele = q.peek();
+            q.remove();
+            for(int n: adj.get(ele)){
+                if(color[n] == -1){
+                    color[n] = color[ele] == 0 ? 1 : 0;
+                    q.offer(n);
+                }else if(color[n] == color[ele])
+                  return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+### DFS sol
+
+```
+
+class Solution
+{
+    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
+    {
+        var color = new int[V];
+        for(int i = 0; i < V; i++){
+            color[i] = -1;
+        }
+         for(int i = 0; i < V; i++){
+            if(color[i] == -1 && !DFS(i, color, adj, 0)){
+                return false;
+            }
+         }
+        return true;
+    }
+
+    boolean DFS(int startNode, int[] color, ArrayList<ArrayList<Integer>>adj, int col){
+        color[startNode] = col;
+        for(int node: adj.get(startNode)){
+            if(color[node] == -1){
+                if(!DFS(node, color, adj, 1 - col))
+                    return false;
+            }else if(color[node] == col){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 ```
