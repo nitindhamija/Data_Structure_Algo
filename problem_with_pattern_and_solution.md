@@ -266,6 +266,11 @@
   - [bipartite graph](#bipartite-graph)
     - [BFS sol](#bfs-sol)
     - [DFS sol](#dfs-sol)
+  - [detect cycle in directed graph](#detect-cycle-in-directed-graph)
+  - [Eventual Safe States( variable of cycle deteacted in directed graph)](#eventual-safe-states-variable-of-cycle-deteacted-in-directed-graph)
+  - [topological sort DAG(directed acyclic graph) IMP](#topological-sort-dagdirected-acyclic-graph-imp)
+    - [using BFS (kahn's algorithm)](#using-bfs-kahns-algorithm)
+      - [cycle detected using kahn's algo i.e topo sort](#cycle-detected-using-kahns-algo-ie-topo-sort)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -7288,6 +7293,9 @@ class Solution
 
 ### DFS sol
 
+- TC is O(n) all no of nodes + O(2E) for loop on adjacecny list of node i.e degree of node so sum of degree of every node = 2 E so TC is O(n +2 E)
+- SC is O(n) storing of n nodes + O(n) for color array + O(n) for n recursive calls in case of skewed graph i.e O(n)
+
 ```
 
 class Solution
@@ -7320,4 +7328,216 @@ class Solution
     }
 }
 
+```
+
+## detect cycle in directed graph
+
+- https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=detect-cycle-in-a-directed-graph
+- https://www.youtube.com/watch?v=9twcmtQj4DU&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=19
+
+TC O(V + 2E)
+SC O(2V)
+we can use only one vis array if we mark vis as 1 and path vis as 2 in vis array
+
+```
+class Solution {
+    // Function to detect cycle in a directed graph.
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+        // code here
+        var vis = new int[V];
+        var pathVis = new int[V];
+        for(int i = 0;i < V; i++ ){
+            if(vis[i] == 0 && DFS(i,adj,vis,pathVis))
+                return true;
+        }
+        return false;
+    }
+
+    boolean DFS(int node, ArrayList<ArrayList<Integer>> adj, int[] vis, int[] pathVis){
+        vis[node] = 1;
+        pathVis[node] = 1;
+        for(int n : adj.get(node)){
+            if(vis[n] == 0){
+                if(DFS(n, adj, vis, pathVis))
+                    return true;
+            }else if(pathVis[n] == 1)
+                return true;
+        }
+        pathVis[node] = 0;
+        return false;
+    }
+}
+```
+
+## Eventual Safe States( variable of cycle deteacted in directed graph)
+
+- https://leetcode.com/problems/find-eventual-safe-states/description/
+- https://practice.geeksforgeeks.org/problems/eventual-safe-states/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=eventual-safe-states
+- https://www.youtube.com/watch?v=uRbJ1OF9aYM&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=20
+- we can reduce SC with single vis array but in that case we will not have sorted res and therefore will need to use sorting so not good sol, check leetcode submission for the same
+
+TC is same i.e O(v+2e)
+SC is O(v)
+
+```
+class Solution {
+
+    List<Integer> eventualSafeNodes(int V, List<List<Integer>> adj) {
+
+        // Your code here
+        var vis = new int[V];
+        var pathVis = new int[V];
+        var check = new int[V];
+        var res = new ArrayList<Integer>();
+        for(int i = 0; i < V; i++){
+            if(vis[i] == 0){
+                DFS(i, adj, vis, pathVis,check);
+            }
+        }
+        for(int i = 0; i < V; i++){
+            if(check[i] == 1)
+                res.add(i);
+        }
+        return res;
+    }
+
+    boolean DFS(int node, List<List<Integer>> adj, int[] vis, int[] pathVis, int[] check){
+        vis[node] = 1;
+        pathVis[node] = 1;
+        check[node] = 0;
+        for(int n : adj.get(node)){
+            if(vis[n] == 0){
+                if(DFS(n, adj, vis, pathVis,check))
+                    return true;
+            }else if(pathVis[n] == 1)
+                return true;
+        }
+        // node is safe only if reaches here i.e no cycle from it's adjacent
+        check[node] = 1;
+        pathVis[node] = 0;
+        return false;
+    }
+}
+```
+
+## topological sort DAG(directed acyclic graph) IMP
+
+- https://practice.geeksforgeeks.org/problems/topological-sort/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=topological-sort
+- https://www.youtube.com/watch?v=5lZ0iJMrUMk&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=21
+
+TC O(V+E)
+SC O(V)
+
+- Intuition is once DFS for a node is done that means all nodes following it should be right of it and DFS for all those nodes would already be done in other words terminal nodes would be at rightest in linear order i.e deepest DFS call so when that deepest DFS call is done just put the node in a stack and so on eventually poping from stack will give out linear order
+
+```
+class Solution
+{
+    //Function to return list containing vertices in Topological order.
+    static int[] topoSort(int V, ArrayList<ArrayList<Integer>> adj)
+    {
+        // add your code here
+        var vis = new int[V];
+        var res = new int[V];
+        var stack = new Stack<Integer>();
+        for(int i = 0; i < V; i++){
+            if(vis[i] == 0){
+                DFS(i, adj, vis, stack);
+            }
+        }
+       int i = 0;
+        while(!stack.isEmpty()){
+            var node = stack.pop();
+            res[i++] = node;
+        }
+        return res;
+    }
+
+   static void DFS(int node,ArrayList<ArrayList<Integer>> adj, int[] vis, Stack<Integer> stack){
+        vis[node] = 1;
+        for(int n: adj.get(node)){
+            if(vis[n] == 0){
+                DFS(n, adj, vis, stack);
+            }
+        }
+        stack.push(node);
+    }
+}
+```
+
+### using BFS (kahn's algorithm)
+
+- kahn's algo uses indegree of the DAG to do topo sort
+- Intuition is nodes with lesser indegree will come before higher indegree which will result in topo sort
+
+```
+class Solution
+{
+    //Function to return list containing vertices in Topological order.
+    static int[] topoSort(int V, ArrayList<ArrayList<Integer>> adj)
+    {
+        // add your code here
+        var indeg = new int[V];
+        var res = new int[V];
+        var q = new LinkedList<Integer>();
+         for(int i = 0; i < V; i++){
+             for(int j : adj.get(i))
+                indeg[j]++;
+         }
+
+        for(int i = 0; i < V; i++){
+            if(indeg[i] == 0)
+                q.offer(i);
+        }
+        int i = 0;
+        while(!q.isEmpty()){
+            var node = q.pop();
+            res[i++] = node;
+            for(Integer n: adj.get(node)){
+                indeg[n]--;
+                if(indeg[n] == 0)
+                    q.offer(n);
+            }
+        }
+        return res;
+    }
+}
+```
+
+#### cycle detected using kahn's algo i.e topo sort
+
+- https://www.youtube.com/watch?v=iTBaI90lpDQ&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=23
+- https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=detect-cycle-in-a-directed-graph
+- topo sort is only possible on DAG so if topo sort is not possible for a directed graph then there's a cycle
+
+```
+class Solution {
+    // Function to detect cycle in a directed graph.
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+     // add your code here
+        var indeg = new int[V];
+        int cnt = 0;
+        var q = new LinkedList<Integer>();
+         for(int i = 0; i < V; i++){
+             for(int j : adj.get(i))
+                indeg[j]++;
+         }
+
+        for(int i = 0; i < V; i++){
+            if(indeg[i] == 0)
+                q.offer(i);
+        }
+
+        while(!q.isEmpty()){
+            var node = q.pop();
+            cnt++;
+            for(Integer n: adj.get(node)){
+                indeg[n]--;
+                if(indeg[n] == 0)
+                    q.offer(n);
+            }
+        }
+        return cnt == V ? false: true;
+    }
+}
 ```
