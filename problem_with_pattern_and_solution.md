@@ -271,6 +271,11 @@
   - [topological sort DAG(directed acyclic graph) IMP](#topological-sort-dagdirected-acyclic-graph-imp)
     - [using BFS (kahn's algorithm)](#using-bfs-kahns-algorithm)
       - [cycle detected using kahn's algo i.e topo sort](#cycle-detected-using-kahns-algo-ie-topo-sort)
+  - [Prerequisite Tasks](#prerequisite-tasks)
+    - [Intution](#intution)
+    - [IMP pattern to remember](#imp-pattern-to-remember)
+  - [Course Schedule](#course-schedule)
+  - [G-25. Find Eventual Safe States - BFS - Topological Sort](#g-25-find-eventual-safe-states---bfs---topological-sort)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -7541,3 +7546,125 @@ class Solution {
     }
 }
 ```
+
+## Prerequisite Tasks
+
+- https://practice.geeksforgeeks.org/problems/prerequisite-tasks/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=prerequisite-tasks
+- https://www.youtube.com/watch?v=WAOfKpxYHR8&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=24
+- https://leetcode.com/problems/course-schedule/
+
+### Intution
+
+since the prob has the task relation ship like u -> v i.e u should have done before v and we need to check if all task could be finished respecting this relationship, it is graph prob where we need to check if the graph is DAG i.e directed acyclic graph and we can use toposort to find if the graph is DAG is toposort is feasible then it is a DAG else not
+
+### IMP pattern to remember
+
+- when the prob says some task should happend before other task for N no of task topology sort should be considered
+
+SC (N) TC (N + P)
+
+- TC can be improved by removing the loop for indeg and calculating in the adj list creation look check leetcode sol
+
+```
+class Solution {
+    public boolean isPossible(int N, int[][] prerequisites)
+    {
+        var vis = new int[N];
+        var m = prerequisites.length;
+        var inDeg = new int[N];
+        var adj = new ArrayList<ArrayList<Integer>>();
+        var q = new LinkedList<Integer>();
+
+        for(int i = 0; i < N; i++){
+            adj.add(new ArrayList<Integer>());
+        }
+
+        for(int i = 0; i < m; i++){
+            adj.get(prerequisites[i][1]).add(prerequisites[i][0]);
+        }
+
+        for(int i = 0; i < N; i++){
+            for(int n:  adj.get(i)){
+                inDeg[n]++;
+            }
+        }
+
+        for(int i = 0; i < N; i++){
+            if(inDeg[i] == 0)
+                q.offer(i);
+        }
+        int cnt = 0;
+        while(!q.isEmpty()){
+            var node = q.pop();
+            cnt++;
+            for(int n: adj.get(node)){
+                inDeg[n]--;
+                if(inDeg[n] == 0)
+                    q.offer(n);
+            }
+        }
+
+        return cnt == N ? true: false;
+    }
+
+}
+```
+
+## Course Schedule
+
+- https://www.youtube.com/watch?v=WAOfKpxYHR8&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=24
+- https://practice.geeksforgeeks.org/problems/course-schedule/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=course-schedule
+- https://leetcode.com/problems/course-schedule-ii/submissions/
+
+- Inutution when the prob says some task should happend before other task for N no of task topology sort should be considered
+  SC (N) TC (N + P)
+
+```
+class Solution
+{
+    static int[] findOrder(int n, int m, ArrayList<ArrayList<Integer>> prerequisites)
+    {
+
+        var inDeg = new int[n];
+        var adj = new ArrayList<ArrayList<Integer>>();;
+        var q = new LinkedList<Integer>();
+
+        for(int i = 0; i < n; i++){
+            adj.add(new ArrayList<Integer>());
+        }
+
+        for(int i = 0; i < m; i++){
+            adj.get(prerequisites.get(i).get(1)).add(prerequisites.get(i).get(0));
+        }
+        // could be removed by setting inDeg in above for loop
+        for(int i = 0; i < n; i++){
+            for(int nbr:  adj.get(i)){
+                inDeg[nbr]++;
+            }
+        }
+
+        for(int i = 0; i < n; i++){
+            if(inDeg[i] == 0)
+                q.offer(i);
+        }
+        var res = new int[n];
+        int i = 0;
+        while(!q.isEmpty()){
+            var node = q.pop();
+            res[i++] = node;
+            for(int nbr: adj.get(node)){
+                inDeg[nbr]--;
+                if(inDeg[nbr] == 0)
+                    q.offer(nbr);
+            }
+        }
+        if (i == n) return res;
+        int[] arr = {};
+        return arr;
+    }
+}
+```
+
+## G-25. Find Eventual Safe States - BFS - Topological Sort
+
+- https://www.youtube.com/watch?v=2gtg3VsDGyc&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=2
