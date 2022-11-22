@@ -276,6 +276,10 @@
     - [IMP pattern to remember](#imp-pattern-to-remember)
   - [Course Schedule](#course-schedule)
   - [G-25. Find Eventual Safe States - BFS - Topological Sort](#g-25-find-eventual-safe-states---bfs---topological-sort)
+  - [G-26 Alien Dictionary (leetcode premium) try it's variable on leetcode](#g-26-alien-dictionary-leetcode-premium-try-its-variable-on-leetcode)
+    - [Problem and Intution](#problem-and-intution)
+    - [what if correct order is not possible](#what-if-correct-order-is-not-possible)
+    - [variation of alien dictionary prob (953. Verifying an Alien Dictionary)](#variation-of-alien-dictionary-prob-953-verifying-an-alien-dictionary)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -7668,3 +7672,116 @@ class Solution
 ## G-25. Find Eventual Safe States - BFS - Topological Sort
 
 - https://www.youtube.com/watch?v=2gtg3VsDGyc&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=2
+
+## G-26 Alien Dictionary (leetcode premium) try it's variable on leetcode
+
+- https://practice.geeksforgeeks.org/problems/alien-dictionary/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=alien-dictionary
+- https://www.youtube.com/watch?v=U3N_je7tWAs&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=26
+
+TC O(n\*s + k) SC O(k)
+
+### Problem and Intution
+
+- it is given the dic is sorted as per alien language and k english alphabets are there in N words and we have to find the order of those k words as per this alien dic
+- now this problem requires us to find order of char i.e to check if some char comes before some other char so it seems like a topological sort can be used here. so basically if we can convert these k char in to a DAG then using topo sort we can find the order
+- since dic is sorted to convert this in to a DAG we can compare consecutive words in a loop and create an adj list and then apply topo sort
+
+### what if correct order is not possible
+
+- case 1: ['apple', 'app'] here both string match till shorter length and larger string appears before shorter so not order is not possible
+- case 2: ['abc','bac','ads'] it forms a cyclic dep so not possible
+
+```
+class Solution
+{
+    public String findOrder(String [] dict, int N, int K)
+    {
+        var adj = new ArrayList<ArrayList<Integer>>();
+
+        for(int i = 0; i < K; i++){
+            adj.add(new ArrayList<Integer>());
+        }
+        var inDeg = new int[K];
+        for(int i = 0; i < N - 1 ; i++){
+            var s1 = dict[i];
+            var s2 = dict[i + 1];
+            var len = Math.min(s1.length(), s2.length());
+            for(int j = 0; j < len; j++){
+                var c1 = s1.charAt(j);
+                var c2 = s2.charAt(j);
+                if(c1 != c2){
+                    adj.get(c1 - 'a').add(c2 - 'a');
+                    inDeg[c2 -'a']++;
+                    break;
+                }
+            }
+        }
+        var res = BFS(K, adj, inDeg);
+        String ans ="";
+        for(int j = 0; j < res.length; j++){
+            ans = ans + (char)(res[j] + 'a');
+        }
+        System.out.println(ans);
+        return ans;
+    }
+
+    int[] BFS(int V, ArrayList<ArrayList<Integer>> adj, int[] inDeg){
+        //var inDeg = new int[V];
+
+        var q = new LinkedList<Integer>();
+        // to skip extra for loop calculated inDeg while creating adj list
+        // for(int i = 0; i < V; i++){
+        //     for(int nbr: adj.get(i)){
+        //         inDeg[nbr]++;
+        //     }
+        // }
+        for(int i = 0; i < V; i++){
+            if(inDeg[i] == 0)
+                q.offer(i);
+        }
+        var res = new int[V];
+        int idx = 0;
+        while(!q.isEmpty()){
+            var node = q.pop();
+            res[idx++] = node;
+            for(int nbr: adj.get(node)){
+                inDeg[nbr]--;
+                if(inDeg[nbr] == 0)
+                    q.offer(nbr);
+            }
+        }
+        return res;
+    }
+}
+```
+
+### variation of alien dictionary prob (953. Verifying an Alien Dictionary)
+
+- https://leetcode.com/problems/verifying-an-alien-dictionary/solutions/2840381/simple-java-sol-with-explanation-beats-100/
+- https://leetcode.com/problems/verifying-an-alien-dictionary/solutions/
+
+```
+class Solution {
+    public boolean isAlienSorted(String[] words, String order) {
+        var n = words.length;
+        for(int i = 0; i < n - 1; i++){
+            var s1 = words[i];
+            var s2 = words[i+1];
+            var len = Math.min(s1.length(),s2.length());
+            int k;
+            for( k = 0; k < len; k++){
+                var c1 = s1.charAt(k);
+                var c2 = s2.charAt(k);
+                if(c1 != c2){
+                    if(order.indexOf(c1) > order.indexOf(c2))
+                        return false;
+                    break;
+                }
+            }
+            if(k == len && s1.length() > s2.length())
+                return false;
+        }
+        return true;
+    }
+}
+```
