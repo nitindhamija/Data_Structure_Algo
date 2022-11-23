@@ -280,6 +280,8 @@
     - [Problem and Intution](#problem-and-intution)
     - [what if correct order is not possible](#what-if-correct-order-is-not-possible)
     - [variation of alien dictionary prob (953. Verifying an Alien Dictionary)](#variation-of-alien-dictionary-prob-953-verifying-an-alien-dictionary)
+  - [Shortest path in Directed Acyclic Graph](#shortest-path-in-directed-acyclic-graph)
+    - [Intution](#intution-1)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -7783,5 +7785,89 @@ class Solution {
         }
         return true;
     }
+}
+```
+
+## Shortest path in Directed Acyclic Graph
+
+- https://practice.geeksforgeeks.org/problems/shortest-path-in-undirected-graph/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=direct-acyclic-graph
+- https://www.youtube.com/watch?v=ZUFQfFaU-8U&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=27https://www.youtube.com/watch?v=ZUFQfFaU-8U&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=27
+
+### Intution
+
+finding the shortest path to a vertex is easy if you alredy know the shortest path to all the vertices that precedes it
+processing the vertices in topological order ensures that by the time you get to a vertex you have already processed the vertices that precedes it
+
+in short you get first node in toposort which have 0 indegree or lowest indeg or no node that precedes it so you can say it is your source node and from this source now you can reach next node n and you know for sure that you can reach n only from nodes that precedes it e.g source node here which is already computed
+TC O(N + M) SC O(N + M)
+
+```
+
+class Pair{
+    int key,val;
+    Pair(int key, int val){
+        this.key = key;
+        this.val= val;
+    }
+}
+//User function Template for Java
+class Solution {
+
+	public int[] shortestPath(int N,int M, int[][] edges) {
+		//Code here
+		var n = N;
+		var adj =  new ArrayList<ArrayList<Pair>>();
+
+		for(int i = 0; i < N; i++){
+		    adj.add(new ArrayList<Pair>());
+		}
+		for(int i = 0; i < M; i++){
+		    int u = edges[i][0];
+            int v = edges[i][1];
+            int wt = edges[i][2];
+		    adj.get(u).add(new Pair(v, wt));
+		}
+
+        var vis = new int[n];
+	    var stack = new ArrayDeque<Pair>();
+	    //toposort
+	    for(int i = 0; i < n; i++){
+	        if(vis[i] == 0)
+	            DFS(i, 0 ,adj,stack,vis);
+	    }
+
+        var dist = new int[n];
+        for(int i = 0; i < n; i++){
+            dist[i] = (int)1e9;
+        }
+        int srcNode = 0;
+        dist[srcNode] = 0;
+	    while(!stack.isEmpty()){
+	        var pair = stack.pop();
+	        var u = pair.key;
+	        for(Pair p : adj.get(u)){
+	            var v = p.key;
+	            var wt = p.val;
+	            if(dist[u] + wt < dist[v])
+	                dist[v] = dist[u] + wt;
+	        }
+	    }
+	    for(int i = 0; i < n; i++){
+            if(dist[i] == (int)1e9)
+                dist[i] = -1;
+        }
+		return dist;
+	}
+
+	void DFS(int node,int src, ArrayList<ArrayList<Pair>> adj, ArrayDeque<Pair> stack, int[] vis){
+	    vis[node] = 1;
+	    for(Pair p : adj.get(node)){
+	        var key = p.key;
+	        var val = p.val;
+	        if(vis[key] == 0)
+	            DFS(key, src + val, adj,stack, vis);
+	    }
+	    stack.push(new Pair(node, src));
+	}
 }
 ```
