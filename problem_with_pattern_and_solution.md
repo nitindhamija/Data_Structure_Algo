@@ -253,6 +253,7 @@
       - [optimization here we traverse the BST 2 times so TC O(2n) however we can use BST property to do this in single traversal](#optimization-here-we-traverse-the-bst-2-times-so-tc-o2n-however-we-can-use-bst-property-to-do-this-in-single-traversal)
 - [graph](#graph)
   - [BSF traversal](#bsf-traversal)
+    - [why TC is O( v + E) for BFS and DFS and not O(V\*E)](#why-tc-is-o-v--e-for-bfs-and-dfs-and-not-ove)
   - [DFS traversal](#dfs-traversal)
   - [no of provices prob](#no-of-provices-prob)
     - [sol by converting adjacency matrix to list first](#sol-by-converting-adjacency-matrix-to-list-first)
@@ -282,6 +283,16 @@
     - [variation of alien dictionary prob (953. Verifying an Alien Dictionary)](#variation-of-alien-dictionary-prob-953-verifying-an-alien-dictionary)
   - [Shortest path in Directed Acyclic Graph](#shortest-path-in-directed-acyclic-graph)
     - [Intution](#intution-1)
+  - [Word Ladder I (HARD)](#word-ladder-i-hard)
+    - [Intuition](#intuition)
+  - [Word Ladder II (HARD)](#word-ladder-ii-hard)
+  - [dijkastra shortest path algo](#dijkastra-shortest-path-algo)
+    - [Intution](#intution-2)
+    - [important observation](#important-observation)
+      - [why priority queue min heap is better than using queue](#why-priority-queue-min-heap-is-better-than-using-queue)
+      - [whether set will be better choice than priority queue](#whether-set-will-be-better-choice-than-priority-queue)
+      - [why TC is O(E log V) and not as per O(V + E) for bfs traversal](#why-tc-is-oe-log-v-and-not-as-per-ov--e-for-bfs-traversal)
+    - [using priority queue](#using-priority-queue)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -6726,7 +6737,11 @@ class Solution {
 - requires queue to do level order traversal
 - req visisted array to keep check of visited nodes
 - SC is O(n) no of nodes + O(n) check for nodes visited using bool array + O(n) for storing n nodes in queue
-- TC is O(n) for N nodes + O(2E) for loop on adjacecny list of node i.e degree of node so sum of degree of every node = 2 E so TC is O(n +2 E)
+
+### why TC is O( v + E) for BFS and DFS and not O(V\*E)
+
+- TC is O(n) for traversing the queue as at max n nodes will go in queue +
+  now inner for loop will run for degree of a node and for n nodes it will run for sum of degree of all n nodes in other words inner for loop will run for sum of degree of all nodes times i.e O(2E) so TC is O(n + 2 E) and not O(n \* 2E) since that will mean inner loop will run 2E times for a single node which is wrong
 
 ```
 //{ Driver Code Starts
@@ -7870,4 +7885,205 @@ class Solution {
 	    stack.push(new Pair(node, src));
 	}
 }
+```
+
+## Word Ladder I (HARD)
+
+- https://practice.geeksforgeeks.org/problems/word-ladder/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=word-ladder
+- https://www.youtube.com/watch?v=tRPda0rcf8E&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=29
+
+### Intuition
+
+- brute force is we try replacing first char for all alphabets i.e a to z and then secong char and so on and if we find a match in the word list after replacing any char then we can say it is step one in reaching target and by repeating this process if at any moment our word becomes target then simply return the steps else it is not possible so considering this approach we can see it is level traversal approch so we can apply BFS here
+
+TC wordList.len _ word.len _ 26 _ log n = O(N _ word.len _ 26 _ 1)
+SC O(N)
+
+```
+class Pair {
+    String word;
+    int steps;
+    Pair(String w, int s){
+        word = w;
+        steps = s;
+    }
+}
+class Solution
+{
+    public int wordLadderLength(String startWord, String targetWord, String[] wordList)
+    {
+        // Code here
+        var dis = new HashSet<String>();
+        for(var word: wordList){
+            dis.add(word);
+        }
+        var q = new ArrayDeque<Pair>();
+        q.add(new Pair(startWord, 1));
+        dis.remove(startWord);
+        while(!q.isEmpty()){
+            var pair = q.peek();
+            var word = pair.word;
+            var steps = pair.steps;
+            q.remove();
+            if(word.equals(targetWord))
+                return steps;
+            for(int i = 0; i < word.length(); i++){
+                for(var c = 'a'; c <= 'z'; c++){
+                    var nwordArr =  word.toCharArray();
+                    nwordArr[i] = c;
+                    var nword =  new String(nwordArr);
+                    if(dis.contains(nword)){
+                        q.add(new Pair(nword,steps + 1));
+                        dis.remove(nword);
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+}
+```
+
+## Word Ladder II (HARD)
+
+- https://www.youtube.com/watch?v=DREutrv2XD0&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=30
+- https://practice.geeksforgeeks.org/problems/word-ladder-ii/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=word-ladder-ii
+- leet code TLE with below sol check sol section for technique to avoid TLE (https://leetcode.com/problems/word-ladder-ii/solutions/2421786/c-using-bfs-and-backtracking-no-tle-august2022/)
+
+```
+cla ss Solution
+{
+    public ArrayList<ArrayList<String>> findSequences(String startWord, String targetWord, String[] wordList)
+    {
+        var dis = new HashSet<String>();
+        for(var word: wordList){
+            dis.add(word);
+        }
+        var q = new ArrayDeque<ArrayList<String>>();
+        var usedLevelList = new ArrayList<String>();
+        int level = 0;
+        var tmp = new ArrayList<String>();
+        tmp.add(startWord);
+        q.add(tmp);
+        var ans =  new ArrayList<ArrayList<String>>();
+        while(!q.isEmpty()){
+            var list = q.pop();
+            var word = list.get(list.size() - 1);
+
+            if(word.equals(targetWord)){
+                if(ans.size() == 0){
+                    ans.add(list);
+                }else if( ans.get(0).size() == list.size())
+                    ans.add(list);
+            }
+            if(list.size() > level){
+                level++;
+                 for(var w : usedLevelList)
+                    dis.remove(w);
+            }
+
+
+            for(var i = 0; i < word.length(); i++){
+                for(var c = 'a'; c <= 'z'; c++){
+                    var repWord = word.toCharArray();
+                    repWord[i] = c;
+                    var rep = new String(repWord);
+                    if(dis.contains(rep)){
+                        usedLevelList.add(rep);
+                        list.add(rep);
+                        var temp = new ArrayList<>(list);
+                        q.add(temp);
+                        list.remove(list.size() - 1);
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+}
+```
+
+## dijkastra shortest path algo
+
+- https://www.youtube.com/watch?v=V6H1qAeB-l4&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=31
+- https://practice.geeksforgeeks.org/problems/implementing-dijkstra-set-1-adjacency-matrix/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=implementing-dijkstra-set-1-adjacency-matrix
+- does not work in graph having -ve weight as it will go on reducing weight on an infinite loop
+
+### Intution
+
+### important observation
+
+#### why priority queue min heap is better than using queue
+
+- we can use queue also to solve this but using queue will cover all possible path not just the shortest path while using priority queue we only have to traverse only shortest possible paths that is because pq min heap will keep shortest distance vertex at the top so in distance array for a vertex we will be putting shortest possible dis first from the source and now when it tries to reach the same vertex from other possible path it will take more dis and hence it will never be put in queue to traverse.
+
+#### whether set will be better choice than priority queue
+
+- well using set we can remove the existing pair from the queue if better option is found, so that the existing pair traversal can be avoided but again remove operation takes O(log n) time so it depends upon the graph and can be certainly said that using set will be better
+- removal from priority queue is not possible (remove() removes the top element from queue)
+
+#### why TC is O(E log V) and not as per O(V + E) for bfs traversal
+
+- refer https://www.youtube.com/watch?v=3dINsjyfooY&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=33
+- for bfs traversal we don't repeat again from a visited vertex i.e all vertex are visited only once using a vis array that means putting all vertex once in queue so O(V) so while loop will run O(v) times, while in case of shortest path we may visit a vertex multiple times via possible paths with shorter distance assuming worst case while loop may run approx O(V^2) times and add/remove op on priority queue is log(heap-size)
+
+inner for loop will not run 2E times here since here max degree of each node could be v - 1 in worst case i.e a dense graph i.e every node has connected to every other node and if it keeps on finding shorter path on each check then it will keep on adding that vertex to queue and that is how the heap size will grow to O(V^2) so
+
+TC = O(v) + O(pop from queue + degree + push to queue)
+TC = O(v) _ O(log(heap-size) + degree + log(heap-size)
+TC = O(v) _ O(log(heap-size) (1 + degree))
+TC = O(v) _ O(log(heap-size) (1 + V - 1))
+TC = O(v^2) _ O(log(heap-size))
+TC = O(v^2) _ O(log(V^2))
+TC = O(v^2) _ O(2log(V))
+E is total no of edges i.e v\*(v-1) = v^2
+TC = O(E) _ O(2log(V))
+TC = O(E _ log(V))
+
+### using priority queue
+
+```
+class Pair{
+    int v;
+    int w;
+    Pair(int v, int w){
+        this.v = v;
+        this.w = w;
+    }
+}
+
+class Solution
+{
+    //Function to find the shortest distance of all the vertices
+    //from the source vertex S.
+    static int[] dijkstra(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj, int S)
+    {
+        // Write your code here
+        var dis = new int[V];
+        for(var i = 0; i < V; i++){
+            dis[i] = Integer.MAX_VALUE - 4;
+            // dis[i] = (int)(1e9);
+        }
+        var pq = new PriorityQueue<Pair>((p1, p2) -> p1.w - p2.w);
+        pq.offer(new Pair(S,0));
+        dis[S] = 0;
+
+        while(!pq.isEmpty()){
+            var p = pq.peek();
+            pq.remove();
+            var w = p.w;
+            var v = p.v;
+            for(var list : adj.get(v)){
+                var nv = list.get(0);
+                var nw = list.get(1);
+                if(w + nw < dis[nv]){
+                    dis[nv] = w + nw;
+                    pq.offer(new Pair(nv , dis[nv]));
+                }
+            }
+        }
+        return dis;
+    }
+}
+
 ```
