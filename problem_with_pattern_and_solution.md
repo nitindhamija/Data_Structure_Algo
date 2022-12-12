@@ -293,6 +293,12 @@
       - [whether set will be better choice than priority queue](#whether-set-will-be-better-choice-than-priority-queue)
       - [why TC is O(E log V) and not as per O(V + E) for bfs traversal](#why-tc-is-oe-log-v-and-not-as-per-ov--e-for-bfs-traversal)
     - [using priority queue](#using-priority-queue)
+  - [Shortest Distance in a Binary Maze](#shortest-distance-in-a-binary-maze)
+    - [Inutition](#inutition)
+    - [why to not to use priority queue here](#why-to-not-to-use-priority-queue-here)
+    - [complexity](#complexity)
+  - [Path With Minimum Effort](#path-with-minimum-effort)
+  - [Cheapest Flights Within K Stops](#cheapest-flights-within-k-stops)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -8086,4 +8092,215 @@ class Solution
     }
 }
 
+```
+
+## Shortest Distance in a Binary Maze
+
+- https://practice.geeksforgeeks.org/problems/shortest-path-in-a-binary-maze-1655453161/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=shortest-path-in-a-binary-maze
+- https://www.youtube.com/watch?v=U5Mw4eyUmw4&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=35
+- https://leetcode.com/problems/shortest-path-in-binary-matrix/submissions/857073839/
+- https://leetcode.com/problems/shortest-path-in-binary-matrix/solutions/2893928/using-dijkstra-s-shortest-path-algo-in-java-with-explanation/
+
+### Inutition
+
+- since the prob say find the shortest path in a binary maze we can apply dijkasta algo for shortest path
+
+### why to not to use priority queue here
+
+taking priority queue is useless here since moving to different direction incurs constant distance i.e 1 unit.
+
+### complexity
+
+TC = O(m*n) + O(m*n*4) = O(m*n)
+SC = O(m*n) + O(m*n) = O(m \*n)
+
+```
+class Pair {
+    int dis,  x,  y;
+    Pair(int _dis, int _x, int _y){
+        dis= _dis;
+        x = _x;
+        y = _y;
+    }
+}
+
+class Solution {
+
+    int shortestPath(int[][] grid, int[] source, int[] destination) {
+
+        if(source[0] == destination[0] && source[1] == destination[1]) return 0;
+        var m = grid.length;
+        var n = grid[0].length;
+        var dis = new int[m][n];
+        for(int[] row: dis){
+            Arrays.fill(row, Integer.MAX_VALUE - 3);
+        }
+        var srcX = source[0];
+        var srcY = source[1];
+
+        var destX = destination[0];
+        var destY = destination[1];
+        var q =  new ArrayDeque<Pair>();
+        dis[srcX][srcY] = 0;
+        q.offer(new Pair(0, srcX, srcY));
+
+        int[] dirX = {1,-1, 0, 0};
+        int[] dirY = {0, 0, 1, -1};
+        while(!q.isEmpty()){
+            var pair = q.peek();
+            q.remove();
+            var nodeDis = pair.dis;
+            var nodeX = pair.x;
+            var nodeY = pair.y;
+
+            if(nodeX == destX && nodeY == destY)
+                return nodeDis;
+            for(var i = 0; i < 4; i++){
+                var newx = dirX[i] + nodeX;
+                var newy = dirY[i] + nodeY;
+                if(isSafe(newx, newy, m, n, dis, grid, nodeDis)){
+                    dis[newx][newy] = nodeDis + 1;
+                    q.offer(new Pair(nodeDis + 1, newx, newy));
+                }
+            }
+        }
+        return -1;
+    }
+
+    boolean isSafe(int newx, int newy , int row, int col,int[][] dis,int[][] grid, int nodeDis){
+        if(newx >= 0 && newx < row && newy >=0 && newy < col && grid[newx][newy] == 1 && nodeDis + 1 < dis[newx][newy])
+            return true;
+        return false;
+    }
+
+}
+
+```
+
+## Path With Minimum Effort
+
+- https://www.youtube.com/watch?v=0ytpZyiZFhA&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=36
+- https://practice.geeksforgeeks.org/problems/path-with-minimum-effort/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=path-with-minimum-effort
+- https://leetcode.com/problems/path-with-minimum-effort/submissions/
+  TC O(E log v) here E is edge and v is vertices here v is n*m so edge are four dir of each vertex n*m*4 O(n*m *4 log(n*m))
+  SC O(n\*m)
+
+```
+class Pair{
+    int diff,  row,  col;
+    Pair(int _diff, int _row, int _col){
+        diff = _diff;
+        row = _row;
+        col = _col;
+    }
+}
+
+class Solution {
+
+    int MinimumEffort(int heights[][]) {
+
+        var rows = heights.length;
+        var cols = heights[0].length;
+        var dis = new int[rows][cols];
+        for(int[] row: dis){
+            Arrays.fill(row, Integer.MAX_VALUE - 4);
+        }
+        var pq = new PriorityQueue<Pair>((x,y) -> x.diff - y.diff);
+        pq.offer(new Pair(0,0,0));
+        dis[0][0] = 0;
+        int[] dirx = {0,0,1,-1};
+        int[] diry = {1,-1,0, 0};
+        while(!pq.isEmpty()){
+            var pair = pq.peek();
+            pq.remove();
+            var nodediff = pair.diff;
+            var nodex = pair.row;
+            var nodey = pair.col;
+            /* here this check can not be put inside the for loop while inserting in pq since there could be another path with better effort
+            also the reason we are stopping here and not further considering other paths is because the effort found at this step will be mininum since we are using min heap of efforts in pq so even if we consider other paths min effort will be >= this effort
+            */
+           if(nodex == rows - 1 && nodey == cols - 1)    return nodediff;
+
+            for(int i = 0; i < 4; i++){
+                var newx = nodex + dirx[i];
+                var newy = nodey + diry[i];
+
+                if(newx >= 0 && newx < rows && newy >= 0 && newy < cols){
+                    var neweffort = Math.max(Math.abs(heights[nodex][nodey] - heights[newx][newy]),nodediff);
+
+                    if(neweffort < dis[newx][newy]){
+                        dis[newx][newy] = neweffort;
+                        pq.offer(new Pair(neweffort, newx, newy));
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+}
+```
+
+## Cheapest Flights Within K Stops
+
+- https://practice.geeksforgeeks.org/problems/cheapest-flights-within-k-stops/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=cheapest-flights-within-k-stops
+- https://www.youtube.com/watch?v=9XybHVqTHcQ&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=37
+
+TC is not Elog v since we are not using priority queue so it is E which flights.size() i.e m\*n
+
+```
+class Tuple{
+    int price,  node,  stops;
+    Tuple(int _stops, int _node, int _price){
+        price = _price;
+        node = _node;
+        stops = _stops;
+    }
+}
+
+class Solution {
+
+    public int CheapestFLight(int n,int flights[][],int src,int dst,int k) {
+        // Code here
+
+        var rows = flights.length;
+        var cols = flights[0].length;
+        var dis = new int[n];
+        Arrays.fill(dis, Integer.MAX_VALUE);
+
+        var q = new ArrayDeque<Tuple>();
+        q.offer(new Tuple(0,src,0));
+        dis[src] = 0;
+
+        var adj = new ArrayList<ArrayList<Pair>>();
+
+        for(int i = 0; i < n; i++){
+            adj.add(new ArrayList<Pair>());
+        }
+
+        for(int i = 0; i < rows; i++){
+            adj.get(flights[i][0]).add(new Pair(flights[i][1], flights[i][2]));
+        }
+
+
+        while(!q.isEmpty()){
+            var tuple = q.peek();
+            q.remove();
+            var stops = tuple.stops;
+            var node = tuple.node;
+            var price = tuple.price;
+            if(stops > k) continue;
+            for(var pair : adj.get(node)){
+                var adjNode = pair.node;
+                var edgeWeight = pair.edWeight;
+
+                if(stops <= k  && price + edgeWeight < dis[adjNode]){
+                        dis[adjNode] = price + edgeWeight;
+                        q.offer(new Tuple(stops + 1, adjNode, dis[adjNode]));
+                }
+            }
+        }
+
+        if(dis[dst] != Integer.MAX_VALUE ) return dis[dst]; else return -1;
+    }
+}
 ```
