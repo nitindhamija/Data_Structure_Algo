@@ -91,6 +91,8 @@
     - [normal TC O(m \* n) SC O(1)](#normal-tc-om--n-sc-o1)
   - [to check KMP optimze sol TC O(m + n) SC O(n)](#to-check-kmp-optimze-sol-tc-om--n-sc-on)
   - [longest common prefix](#longest-common-prefix)
+  - [Longest Palindromic Substring](#longest-palindromic-substring)
+    - [Inuition](#inuition)
   - [2-pointer technique](#2-pointer-technique)
     - [Array Partition](#array-partition)
     - [two sum II (sorted array)](#two-sum-ii-sorted-array)
@@ -289,6 +291,7 @@
   - [dijkastra shortest path algo](#dijkastra-shortest-path-algo)
     - [Intution](#intution-2)
     - [important observation](#important-observation)
+      - [why can not be applied to graph having -ve weights](#why-can-not-be-applied-to-graph-having--ve-weights)
       - [why priority queue min heap is better than using queue](#why-priority-queue-min-heap-is-better-than-using-queue)
       - [whether set will be better choice than priority queue](#whether-set-will-be-better-choice-than-priority-queue)
       - [why TC is O(E log V) and not as per O(V + E) for bfs traversal](#why-tc-is-oe-log-v-and-not-as-per-ov--e-for-bfs-traversal)
@@ -299,6 +302,21 @@
     - [complexity](#complexity)
   - [Path With Minimum Effort](#path-with-minimum-effort)
   - [Cheapest Flights Within K Stops](#cheapest-flights-within-k-stops)
+  - [Minimum Multiplications to reach End](#minimum-multiplications-to-reach-end)
+  - [Number of Ways to Arrive at Destination](#number-of-ways-to-arrive-at-destination)
+    - [Intution](#intution-3)
+  - [bellman ford algorithm ( use it for -ve weights or cycle where dijkstra does not work else use Dijkstra since TC is better in Dijkstra)](#bellman-ford-algorithm--use-it-for--ve-weights-or-cycle-where-dijkstra-does-not-work-else-use-dijkstra-since-tc-is-better-in-dijkstra)
+    - [Algorithm](#algorithm)
+    - [why n-1 iteration](#why-n-1-iteration)
+    - [how to detect negative cycle](#how-to-detect-negative-cycle)
+  - [Floyd Warshal Algorithm( diff from dijkstra / bellman ford) - multi source shortest path algorithm - helps to detect -ve cycle as well](#floyd-warshal-algorithm-diff-from-dijkstra--bellman-ford---multi-source-shortest-path-algorithm---helps-to-detect--ve-cycle-as-well)
+  - [mininum spanning tree (MST)](#mininum-spanning-tree-mst)
+  - [prim's algorithm to find MST](#prims-algorithm-to-find-mst)
+  - [disjoint set very IMP [REVISE]](#disjoint-set-very-imp-revise)
+    - [Problem - why the need of disjoin set DS](#problem---why-the-need-of-disjoin-set-ds)
+    - [disjoin data structure](#disjoin-data-structure)
+    - [algorithm for union by rank (u, v)](#algorithm-for-union-by-rank-u-v)
+    - [why connect smaller component to larger one and not the other way round](#why-connect-smaller-component-to-larger-one-and-not-the-other-way-round)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -2909,6 +2927,45 @@ class Solution {
                 break;
         }
         return prefix;
+    }
+}
+```
+
+## Longest Palindromic Substring
+
+- https://leetcode.com/problems/longest-palindromic-substring/description/
+- key point to note here is why even and odd is needed i.e one expand aroung one letter and the other around two letter because center of even string will be both middle characters so we need to check both cases
+
+### Inuition
+
+keep checking for 1 and 2 letter string palindrom and Expand around it's center and keep track of longest substr
+
+```
+class Solution {
+    public String longestPalindrome(String s) {
+        if(s == null || s.length() <= 1 ) return s;
+        var len = s.length();
+        var longestSubStr = "";
+        var longestLen = 0;
+        for(var i = 0; i < len ; i++){
+            var odd = expandAroundCenter(s, i, i);
+            if(odd.length() > longestSubStr.length()){
+                longestSubStr = odd;
+            }
+            var even = expandAroundCenter(s, i, i + 1);
+            if(even.length() > longestSubStr.length()){
+                longestSubStr = even;
+            }
+        }
+        return longestSubStr;
+    }
+
+   private String expandAroundCenter(String str, int left, int right){
+        while(left >= 0 && right < str.length() && str.charAt(left) == str.charAt(right)){
+            left--;
+            right++;
+        }
+        return str.substring(left + 1,right);
     }
 }
 ```
@@ -8019,6 +8076,11 @@ cla ss Solution
 
 ### important observation
 
+#### why can not be applied to graph having -ve weights
+
+if we have -ve weights/cycle in graph th en dijkstra might result in queue never being empty and hence TLE consider a DAG graph
+![](./img/cycle_DG.JPG) and try dijkstra on it
+
 #### why priority queue min heap is better than using queue
 
 - we can use queue also to solve this but using queue will cover all possible path not just the shortest path while using priority queue we only have to traverse only shortest possible paths that is because pq min heap will keep shortest distance vertex at the top so in distance array for a vertex we will be putting shortest possible dis first from the source and now when it tries to reach the same vertex from other possible path it will take more dis and hence it will never be put in queue to traverse.
@@ -8248,6 +8310,14 @@ class Solution {
 TC is not Elog v since we are not using priority queue so it is E which flights.size() i.e m\*n
 
 ```
+class Pair{
+   int edWeight, node;
+   Pair(int _node, int _price){
+       edWeight = _price;
+       node = _node;
+   }
+
+}
 class Tuple{
     int price,  node,  stops;
     Tuple(int _stops, int _node, int _price){
@@ -8301,6 +8371,394 @@ class Solution {
         }
 
         if(dis[dst] != Integer.MAX_VALUE ) return dis[dst]; else return -1;
+    }
+}
+```
+
+## Minimum Multiplications to reach End
+
+- https://practice.geeksforgeeks.org/problems/minimum-multiplications-to-reach-end/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=minimum-multiplications-to-reach-end
+
+```
+class Pair {
+    int node, dis;
+    Pair(int _dis, int _node){
+        dis=_dis;
+        node=_node;
+    }
+}
+
+class Solution {
+    int minimumMultiplications(int[] arr, int start, int end) {
+
+        // Your code here
+        int mod = 100000;
+        var dis = new int[mod + 1];
+        Arrays.fill(dis,Integer.MAX_VALUE);
+        var q = new LinkedList<Pair>();
+        q.offer(new Pair(0,start));
+        dis[start%mod] = 0;
+
+        while(!q.isEmpty()){
+            var pair = q.peek();
+            q.remove();
+            var steps = pair.dis;
+            var node = pair.node;
+
+            for(int n : arr){
+                int newNum = (node * n) % mod;
+                if(newNum == end)   return steps + 1;
+                if(steps + 1 < dis[newNum]){
+                    dis[newNum] = steps + 1;
+                    q.offer(new Pair(steps + 1,newNum));
+                }
+            }
+        }
+        return -1;
+    }
+}
+
+
+```
+
+## Number of Ways to Arrive at Destination
+
+- https://practice.geeksforgeeks.org/problems/number-of-ways-to-arrive-at-destination/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=/number-of-ways-to-arrive-at-destination
+- https://www.youtube.com/watch?v=_-0mx0SmYxA&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=39
+- https://leetcode.com/problems/number-of-ways-to-arrive-at-destination/submissions/861080580/
+
+### Intution
+
+- using Dijkstra to find shortest path
+- Well, dijkistra to rescue. Using dijkistra we can keep shortest path by keep relaxing the edges. (Cormen lingo).
+  Catch is, whenver you find a better way to reach a particular vertex update the number of ways we can reach this vertex same as number of ways we can reach parent vertex.
+- If we arrive at a vetrex, with same time from parent, we will add the parent's number of ways to the current vertex's number of ways i.e line dp[v[0]]+=dp[u] in the code
+
+TC same as Dijkstra E log V + V for ways and dist initial setup i.e M\*logN + N
+SC at most M pair in pq + ways dist array so M + N
+
+```
+class Pair{
+    int first, second;
+    Pair(int _first,int _second){
+        first = _first;
+        second = _second;
+    }
+}
+
+
+class Solution {
+
+    static int countPaths(int n, List<List<Integer>> roads) {
+        // Your code here
+        var dist = new int[n];
+        var ways = new int[n];
+        var adjL = new ArrayList<ArrayList<Pair>>();
+
+        for(int i = 0; i < n; i++){
+            dist[i] = Integer.MAX_VALUE;
+            adjL.add(new ArrayList<Pair>());
+        }
+
+        for(var road: roads){
+            adjL.get(road.get(0)).add(new Pair(road.get(2),road.get(1)));
+            adjL.get(road.get(1)).add(new Pair(road.get(2),road.get(0)));
+        }
+        var pq = new PriorityQueue<Pair>((x,y) -> x.first - y.first);
+        pq.offer(new Pair(0, 0));
+        dist[0] = 0;
+        ways[0] = 1;
+        var mod = (int)(1e9 + 7);
+        while(!pq.isEmpty()){
+            var pair = pq.peek();
+            var dis = pair.first;
+            var node = pair.second;
+            pq.remove();
+
+            for(var adj : adjL.get(node)){
+                var adjW = adj.first;
+                var adjNode = adj.second;
+
+                if(dis + adjW < dist[adjNode]) {
+                    pq.offer(new Pair(dis + adjW, adjNode));
+                    dist[adjNode] = dis + adjW;
+                    ways[adjNode] = ways[node];
+                }else if(dis + adjW == dist[adjNode]){
+                    ways[adjNode] = (ways[adjNode]  + ways[node]) % mod;
+                }
+            }
+        }
+        return ways[n-1];
+    }
+}
+
+
+```
+
+## bellman ford algorithm ( use it for -ve weights or cycle where dijkstra does not work else use Dijkstra since TC is better in Dijkstra)
+
+- https://www.youtube.com/watch?v=0vVofAhAYjc&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=40
+- https://practice.geeksforgeeks.org/problems/distance-from-the-source-bellman-ford-algorithm/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=distance-from-the-source-bellman-ford-algorithm
+
+- can be applied to DG i.e Directed Graph if Undirected graph is given need to convert to DG to apply Bellman fort
+- if any graph has path weight less than 0 then it has -ve cycle
+-
+
+### Algorithm
+
+- edges can be given any order
+- relax all the edges n-1 times sequentially i.e
+
+  ```
+   if(dist[u] + wt < dist[v])
+      dist[v] = dist[u] + w
+  ```
+
+  if(dist[u] == infinity) you can ignore as this node has not been reached yet
+
+### why n-1 iteration
+
+in a graph of n nodes, in worst case , you will take n-1 edges to reach from first to last node and thereby we iterate for n-1 iterations
+in the image below you can see in first iteration we get min dis of node 1 and then in second iteration we get min dis of node 2 and so on till n-1 iteration
+![](img/n-1_itr.jpg)
+
+### how to detect negative cycle
+
+we know that with n-1 iteration we get shortest dis for each node from source i.e dis array will have shortest dis for each node but if we again do relaxation nth time and if dis array gets updated i.e we found the shortest distance for a node then this means it is -ve cycle because in -ve cycle on each iteration some value keeps on decreasing
+
+TC O(V\*E)
+SC O(V)
+
+```
+class Solution {
+    static int[] bellman_ford(int V, ArrayList<ArrayList<Integer>> edges, int S) {
+        // Write your code here
+        var dist = new int[V];
+        for(int i = 0 ;i < V; i++){
+            dist[i] = (int)(1e8);
+        }
+        dist[S] = 0;
+        for(int i = 0; i < V - 1 ; i++){
+         relaxEdges(edges, dist);
+        }
+        if(relaxEdges(edges,dist)) return new int[]{-1};
+        return dist;
+    }
+
+    static boolean relaxEdges(ArrayList<ArrayList<Integer>> edges, int[] dist) {
+        var isRelaxed = false;
+          for(var edge: edges){
+               var u = edge.get(0);
+               var v = edge.get(1);
+               var wt = edge.get(2);
+
+               if(dist[u] != (int)(1e8) && dist[u] + wt < dist[v]){
+                   dist[v] = dist[u] + wt;
+                   isRelaxed = true;
+               }
+           }
+        return isRelaxed;
+    }
+}
+```
+
+## Floyd Warshal Algorithm( diff from dijkstra / bellman ford) - multi source shortest path algorithm - helps to detect -ve cycle as well
+
+- https://www.youtube.com/watch?v=YbY8cVwWAvw&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=41
+
+- go via every vertex from source to dest
+  ![](img/floyd_warshal.jpg)
+
+```
+ dist[i][j] = min(dist[i][j], dist[i][via] + dist[via][j])
+```
+
+simple brute force O(N^3) TC
+check video for sol if needed
+
+## mininum spanning tree (MST)
+
+- https://www.youtube.com/watch?v=ZSPjZuZWCME&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=43
+  given a undirected graph of n nodes and m edges
+
+- spanning tree is n nodes with n-1 edges and all nodes are reachable from each other.
+- min spanning tree (MST) is a spanning tree having min path weight
+
+## prim's algorithm to find MST
+
+- https://practice.geeksforgeeks.org/problems/minimum-spanning-tree/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=minimum-spanning-tree
+- https://www.youtube.com/watch?v=mJcZjjKzeqk&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=44
+  TC is O(E log E) + O(E log E)
+  SC is O(E)
+
+```
+class Pair{
+    int first,second;
+    Pair(int _first,int _second){
+        first = _first;
+        second = _second;
+    }
+}
+
+class Tuple{
+    int first, second, third;
+    Tuple(int _first,int _second,int _third){
+        first = _first;
+        second =_second;
+        third = _third;
+    }
+}
+class Solution
+{
+    //Function to find sum of weights of edges of the Minimum Spanning Tree.
+    static int spanningTree(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj)
+    {
+        // Add your code here
+
+        var pq = new PriorityQueue<Tuple>((t1,t2) -> t1.first - t2.first);
+        var mst = new ArrayList<Pair>();
+        var vis = new int[V];
+        pq.offer(new Tuple(0, 0,-1));
+        int sum = 0;
+        //E log E + E log E for inner adj list loop
+        while(!pq.isEmpty()){
+            var min = pq.peek();
+            var weight = min.first;
+            var node = min.second;
+            var parent = min.third;
+            pq.remove();
+            if(vis[node] == 0){
+                sum += weight;
+                vis[node] = 1;
+                if(parent != -1)
+                    mst.add(new Pair(parent,node));
+                for(var pair : adj.get(node)){
+                    var wt = pair.get(1);
+                    var adjNode = pair.get(0);
+                    if(vis[adjNode] == 0)
+                        pq.offer(new Tuple(wt,adjNode, node));
+                }
+            }
+        }
+        return sum;
+    }
+}
+
+```
+
+## disjoint set very IMP [REVISE]
+
+- https://www.youtube.com/watch?v=aBxjDBC4M1U&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=45
+
+### Problem - why the need of disjoin set DS
+
+- in a graph with multiple components if at any point you need to know if 2 nodes i.e node 3 and node 7 belong to the same component, we will probably use BFS/DFS to check that which is ok but it takes O(V + E) times now we can improve on this and find this in constant O(1) time by using disjoint set data structure
+- Also it is generally used in dynamic graph i.e graph with changing configuration
+- union will connect edges and can be implemented via rank or size, union by size is intuitive and preferred
+- as shown below after union of (6, 7) we checked is 4 & 1 belongs to same component and ds give no with const time
+- and next when you do rest of union and then ask the same question, this time ds will give you yes in O(1)
+
+![](img/ds1.jpg)
+
+### disjoin data structure
+
+```
+    rank array;
+    parent array;
+    size array; (preferred)
+    findUltimateParent(int node);
+    unionByRank(int u, int v);
+```
+
+### algorithm for union by rank (u, v)
+
+- find ultimate parent of u and v say pu, pv
+- compare the rank of pu and pv
+- connect smaller component to larger component
+
+### why connect smaller component to larger one and not the other way round
+
+![](img/ds.jpg)
+
+- to keep the height of tree minimum if we connect larger to smaller height/rank increases and hence
+- more node will take more time to compute ultimate parent if we connect larger to smaller component before path compression
+
+```
+class DisjointSet {
+    var rank = new ArrayList<Integer>();
+    var size = new ArrayList<Integer>();
+    var parent = new ArrayList<Integer>();
+    DisjointSet(int n){
+        for(int i = 0; i <= n; i++){
+            rank.add(0);
+            size.add(1);
+            parent.add(i);
+        }
+    }
+
+    public int findUParent(int node){
+        if(node == parent.get(node)) return node;
+        var up = findUParent(parent.get(node));
+        parent.set(node, up);
+        return parent.get(node);
+    }
+
+    public void unionByRank(int u , int v){
+        ulp_u = findUParent(u);
+        ulp_v = findUParent(v);
+        if(ulp_u == upl_v) return;
+
+        rank_u = rank.get(ulp_u);
+        rank_v = rank.get(ulp_v);
+        if(rank_u < rank_v){
+            parent.set(ulp_u, ulp_v);
+        }else if( rank_u > rank_v){
+            parent.set(rank_v, rank_u);
+        }else{
+            parent.set(rank_v, rank_u);
+            var r = rank.get(rank_u)
+            rank.set(rank_u, r + 1);
+        }
+    }
+
+/* ideally don't have both union by size and rank in disjoint DS here to understand i have added both here and by size is more intuitive and preferred way */
+
+      public void unionBySize(int u , int v){
+        ulp_u = findUParent(u);
+        ulp_v = findUParent(v);
+        if(ulp_u == upl_v) return;
+
+        size_u = size.get(ulp_u);
+        size_v = size.get(ulp_v);
+        if(size_u < size_v){
+            parent.set(ulp_u, ulp_v);
+            size.set(ulp_v, size_v + size_u);
+        }else{
+            parent.set(size_v, size_u);
+            size.set(ulp_u, size_u + size_v);
+        }
+    }
+}
+
+class Main{
+    public static void main(String[] args){
+        DisjointSet ds = new DisjointSet(7);
+        ds.unionByRank(1, 2);
+        ds.unionByRank(2, 3);
+        ds.unionByRank(4, 5);
+        ds.unionByRank(6, 7);
+        ds.unionByRank(5, 6);
+
+        if(ds.findUParent(3) ==  ds.findUParent(7)){
+            System.out.println("Same");
+        }else
+            System.out.println("Not Same");
+        ds.unionByRank(3, 7);
+
+           if(ds.findUParent(3) ==  ds.findUParent(7)){
+            System.out.println("Same");
+        }else
+            System.out.println("Not Same");
     }
 }
 ```
