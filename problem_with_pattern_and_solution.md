@@ -328,6 +328,13 @@
   - [Accounts Merge - DSU (HARD)](#accounts-merge---dsu-hard)
     - [Intuition](#intuition-2)
     - [Complexity](#complexity-1)
+  - [no of island II (DSU) online queries](#no-of-island-ii-dsu-online-queries)
+    - [Inution](#inution-3)
+    - [complexity](#complexity-2)
+  - [making a large island (HARD)](#making-a-large-island-hard)
+    - [Inutition](#inutition-1)
+    - [Approach](#approach)
+    - [Complexity](#complexity-3)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -9034,5 +9041,156 @@ class Solution {
 
 
   }
+}
+```
+
+## no of island II (DSU) online queries
+
+- https://www.youtube.com/watch?v=Rn6B-Q4SNyA&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=50
+- https://practice.geeksforgeeks.org/problems/number-of-islands/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=number-of-islands
+
+### Inution
+
+- online queries turn this prob in to a dynamic graph so this indicates we need to use Disjoint set data structure here
+- we can assume n * m nodes from numbered from 0 to n*m - 1
+- since in DSU we need simple node numbers so we can use below formula to map coardinates to node no
+  ```
+  op(row,col) = row*m +col;
+  e.g node (2,1) = 2*5 + 1 = node 11
+  ```
+- keep increasing the count for unvisited node and then perform check for adjacent node in 4 dir and keep on decreasing count for every adjacent 1 which is not already connected i.e (ulp_u != ulp_v)  
+  ![](img/island.jpg)
+
+### complexity
+
+- Time complexity: O(n*m) + o(k*4 *8*alpha) ~ O(n\*m)
+
+- Space complexity: O(n\*m)
+
+```
+class Solution {
+
+    public List<Integer> numOfIslands(int rows, int cols, int[][] operators) {
+        //Your code here
+        var vis = new int[rows][cols];
+        var ds = new DisjointSet(rows*cols);
+        var ans = new ArrayList<Integer>();
+        int cnt = 0;
+        var rdir = new int[]{0,0,1,-1};
+        var cdir = new int[]{1,-1,0,0};
+        for(var opRow : operators ){
+            var row = opRow[0];
+            var col = opRow[1];
+            if(vis[row][col] == 0){
+                cnt++;
+                vis[row][col] = 1;
+                var u = row * cols + col;
+                for(int i = 0; i < 4; i++){
+                    var adjRow = row + rdir[i];
+                    var adjCol = col + cdir[i];
+                    var v = adjRow * cols + adjCol;
+                    if(isValid(adjRow,adjCol, rows,cols,vis, u, v, ds)){
+                        cnt--;
+                        ds.unionBySize(u, v);
+                    }
+                }
+
+            }
+            ans.add(cnt);
+        }
+        return ans;
+    }
+
+    boolean isValid(int adjRow, int adjCol, int rows, int cols, int[][] vis, int u, int v, DisjointSet ds ){
+     if(adjRow >=0 && adjRow < rows && adjCol >= 0 && adjCol < cols
+     && vis[adjRow][adjCol] == 1 && ds.findUParent(u) != ds.findUParent(v))
+        return true;
+    return false;
+    }
+}
+```
+
+## making a large island (HARD)
+
+- https://practice.geeksforgeeks.org/problems/maximum-connected-group/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=maximum-connected-group
+- https://www.youtube.com/watch?v=lgiz0Oup6gM&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=51
+
+### Inutition
+
+from prob statement it seems like connected component prob and we are asked to change a cell from 0 to 1 to get max component size so basically we will have to try changing 0 to 1 for every 0 in the matrix and find the max component, which data structure comes to mind with changing/dynamic configuration of graph disjoint set data structure
+
+### Approach
+
+![](img/island1.jpg)
+
+- first connect all existing component in the graph using DSU
+- then try brute force for every 0 cell and get max size
+- handle edge case where all cells are already 1 so simply loop through the all cells and compare max with each cell size
+- notice the use of set and ultimate parent it is necessary else you might add same component size twice
+
+### Complexity
+
+- Time complexity: O(n^2 *4) + O(n^2 *4 \* 4) + O(n^2) ~ O(n^2)
+
+- Space complexity: O(n^2)
+
+```
+class Solution {
+
+    public int MaxConnection(int grid[][]) {
+        int n = grid.length;
+        var ds = new DisjointSet(n * n);
+        var rdir = new int[]{0,0,-1,1};
+        var cdir = new int[]{1,-1,0,0};
+        for(var r = 0; r < n; r++){
+            for(var c = 0; c < n; c++ ){
+                if(grid[r][c] == 1){
+                    var u = r * n + c;
+                    for(var i = 0; i < 4; i++){
+                        var adjRow = r + rdir[i];
+                        var adjCol = c + cdir[i];
+                        var v = adjRow * n + adjCol;
+                        if(isValid(adjRow,adjCol,n, grid)){
+                                ds.unionBySize(u, v);
+                        }
+                    }
+                }
+            }
+        }
+
+       int max = 0;
+
+        for(var r = 0; r < n; r++){
+            for(var c = 0; c < n; c++ ){
+                if(grid[r][c] == 0){
+                    var component = new HashSet<Integer>();
+                     for(var i = 0; i < 4; i++){
+                        var adjRow = r + rdir[i];
+                        var adjCol = c + cdir[i];
+                         if(isValid(adjRow,adjCol,n, grid)){
+                             var v = adjRow * n + adjCol;
+                             var ulp_v = ds.findUParent(v);
+                             component.add(ulp_v);
+                         }
+                     }
+                     int compSize = 0;
+                     for(var ulp: component){
+                         compSize += ds.size.get(ulp);
+                     }
+                     max = Math.max(max, compSize + 1);
+                }
+            }
+        }
+
+        for(int cell = 0; cell < n*n ; cell++){
+            max = Math.max(max, ds.size.get(cell));
+        }
+        return max;
+    }
+    boolean isValid(int row, int col, int n, int[][] grid){
+        if(row >= 0 && row < n && col >= 0 && col < n && grid[row][col] == 1)
+            return true;
+        return false;
+    }
 }
 ```
