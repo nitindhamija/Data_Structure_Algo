@@ -44,9 +44,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -227,9 +227,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -311,12 +311,23 @@
     - [how to detect negative cycle](#how-to-detect-negative-cycle)
   - [Floyd Warshal Algorithm( diff from dijkstra / bellman ford) - multi source shortest path algorithm - helps to detect -ve cycle as well](#floyd-warshal-algorithm-diff-from-dijkstra--bellman-ford---multi-source-shortest-path-algorithm---helps-to-detect--ve-cycle-as-well)
   - [mininum spanning tree (MST)](#mininum-spanning-tree-mst)
-  - [prim's algorithm to find MST](#prims-algorithm-to-find-mst)
+    - [prim's algorithm to find MST](#prims-algorithm-to-find-mst)
+      - [Inution](#inution)
+    - [kruskal algorithm to find MST ( disjoint set pre requisite so study that first)](#kruskal-algorithm-to-find-mst--disjoint-set-pre-requisite-so-study-that-first)
+      - [Inution](#inution-1)
   - [disjoint set very IMP [REVISE]](#disjoint-set-very-imp-revise)
     - [Problem - why the need of disjoin set DS](#problem---why-the-need-of-disjoin-set-ds)
     - [disjoin data structure](#disjoin-data-structure)
     - [algorithm for union by rank (u, v)](#algorithm-for-union-by-rank-u-v)
+    - [Time and space complexity](#time-and-space-complexity)
     - [why connect smaller component to larger one and not the other way round](#why-connect-smaller-component-to-larger-one-and-not-the-other-way-round)
+  - [Number of Provinces - Disjoint Set](#number-of-provinces---disjoint-set)
+    - [Inution](#inution-2)
+  - [Number of Operations to Make Network Connected - DSU](#number-of-operations-to-make-network-connected---dsu)
+    - [Intuition](#intuition-1)
+  - [Accounts Merge - DSU (HARD)](#accounts-merge---dsu-hard)
+    - [Intuition](#intuition-2)
+    - [Complexity](#complexity-1)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -8502,7 +8513,7 @@ class Solution {
 
 - can be applied to DG i.e Directed Graph if Undirected graph is given need to convert to DG to apply Bellman fort
 - if any graph has path weight less than 0 then it has -ve cycle
--
+- it is single source shortest path algorithm
 
 ### Algorithm
 
@@ -8584,12 +8595,16 @@ check video for sol if needed
 - spanning tree is n nodes with n-1 edges and all nodes are reachable from each other.
 - min spanning tree (MST) is a spanning tree having min path weight
 
-## prim's algorithm to find MST
+### prim's algorithm to find MST
 
 - https://practice.geeksforgeeks.org/problems/minimum-spanning-tree/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=minimum-spanning-tree
 - https://www.youtube.com/watch?v=mJcZjjKzeqk&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=44
   TC is O(E log E) + O(E log E)
   SC is O(E)
+
+#### Inution
+
+greedy i.e connect the edges with min weight first using min heap, in addition of distance and node, keep track of parent node to know from where we are reaching the node
 
 ```
 class Pair{
@@ -8646,6 +8661,57 @@ class Solution
 
 ```
 
+### kruskal algorithm to find MST ( disjoint set pre requisite so study that first)
+
+- https://www.youtube.com/watch?v=DMnDM_sxVig&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=46
+
+#### Inution
+
+- here we are sorting by weights that will give us smaller weight edges first
+- and initially DSU assumes every node is separate i.e parent[node] == node p and we know if 2 nodes are not connected if ultimate parent ulp_u != ulp_v, we can simply loop through sorted edges and keep on union p,v if they ulp_p != ulp_v
+
+TC O(V+E) + O(ElogE) + O(E*8*alpha)
+SC O(V) + O(E)
+
+```
+class Solution
+{
+    //Function to find sum of weights of edges of the Minimum Spanning Tree.
+    static int spanningTree(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj)
+    {
+        // Add your code here
+      List<Tuple> edges = new ArrayList<Tuple>();
+      // O(V+E)
+      for(int i = 0; i < V; i++ ){
+          for(var list : adj.get(i)){
+              var adjNode = list.get(0);
+              var wt = list.get(1);
+              var node = i;
+              edges.add(new Tuple(wt,node,adjNode));
+          }
+      }
+      DisjointSet ds = new DisjointSet(V);
+      //O(ElogE)
+      Collections.sort(edges);
+
+      var mstWt = 0;
+      //O(E) * O(2* 4* alha)
+      for(var edge: edges){
+          var w = edge.first;
+          var u = edge.second;
+          var v = edge.third;
+          if(ds.findUParent(u) != ds.findUParent(v)){
+              mstWt += w;
+              ds.unionBySize(u, v);
+          }
+      }
+      return mstWt;
+    }
+}
+
+
+```
+
 ## disjoint set very IMP [REVISE]
 
 - https://www.youtube.com/watch?v=aBxjDBC4M1U&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=45
@@ -8655,8 +8721,9 @@ class Solution
 - in a graph with multiple components if at any point you need to know if 2 nodes i.e node 3 and node 7 belong to the same component, we will probably use BFS/DFS to check that which is ok but it takes O(V + E) times now we can improve on this and find this in constant O(1) time by using disjoint set data structure
 - Also it is generally used in dynamic graph i.e graph with changing configuration
 - union will connect edges and can be implemented via rank or size, union by size is intuitive and preferred
-- as shown below after union of (6, 7) we checked is 4 & 1 belongs to same component and ds give no with const time
+- as shown below after union of (6, 7) we checked is 4 & 1 belongs to same component and disjoint ser gives no with const time
 - and next when you do rest of union and then ask the same question, this time ds will give you yes in O(1)
+- pattern to use this DS is dynamic configuration of graph i.e connecting edges of graph and or connected component prob dynamically , whenver there's need of connections/merging happening dynamically
 
 ![](img/ds1.jpg)
 
@@ -8668,26 +8735,32 @@ class Solution
     size array; (preferred)
     findUltimateParent(int node);
     unionByRank(int u, int v);
+    unionBySize(int u, int v);
 ```
 
 ### algorithm for union by rank (u, v)
 
 - find ultimate parent of u and v say pu, pv
-- compare the rank of pu and pv
+- compare the rank or size of pu and pv
 - connect smaller component to larger component
+
+### Time and space complexity
+
+- TC O(E) initializing size and parent array + O(4 \* alhpa) approx O(1) after path compression 4 alpha is because recursive call to find ultimate parent first time after which we have O(1) due to path compression
+- SC O(V) size array + O(v) parent array
 
 ### why connect smaller component to larger one and not the other way round
 
 ![](img/ds.jpg)
 
-- to keep the height of tree minimum if we connect larger to smaller height/rank increases and hence
+- to keep the height of tree minimum we connect smaller to larger component, if we connect larger to smaller height/rank increases and hence
 - more node will take more time to compute ultimate parent if we connect larger to smaller component before path compression
 
 ```
 class DisjointSet {
-    var rank = new ArrayList<Integer>();
-    var size = new ArrayList<Integer>();
-    var parent = new ArrayList<Integer>();
+    List<Integer> rank = new ArrayList<Integer>();
+    List<Integer> size = new ArrayList<Integer>();
+    List<Integer> parent = new ArrayList<Integer>();
     DisjointSet(int n){
         for(int i = 0; i <= n; i++){
             rank.add(0);
@@ -8695,48 +8768,58 @@ class DisjointSet {
             parent.add(i);
         }
     }
-
+    // O(4*alpha) ~ O(1)
     public int findUParent(int node){
         if(node == parent.get(node)) return node;
         var up = findUParent(parent.get(node));
         parent.set(node, up);
         return parent.get(node);
     }
-
+    // O(4*alpha) ~ O(1)
     public void unionByRank(int u , int v){
-        ulp_u = findUParent(u);
-        ulp_v = findUParent(v);
-        if(ulp_u == upl_v) return;
+        var ulp_u = findUParent(u);
+        var ulp_v = findUParent(v);
+        if(ulp_u == ulp_v) return;
 
-        rank_u = rank.get(ulp_u);
-        rank_v = rank.get(ulp_v);
+        var rank_u = rank.get(ulp_u);
+        var rank_v = rank.get(ulp_v);
         if(rank_u < rank_v){
             parent.set(ulp_u, ulp_v);
         }else if( rank_u > rank_v){
             parent.set(rank_v, rank_u);
         }else{
             parent.set(rank_v, rank_u);
-            var r = rank.get(rank_u)
+            var r = rank.get(rank_u);
             rank.set(rank_u, r + 1);
         }
     }
 
-/* ideally don't have both union by size and rank in disjoint DS here to understand i have added both here and by size is more intuitive and preferred way */
-
+    // O(4*alpha) ~ O(1)
       public void unionBySize(int u , int v){
-        ulp_u = findUParent(u);
-        ulp_v = findUParent(v);
-        if(ulp_u == upl_v) return;
+        var ulp_u = findUParent(u);
+        var ulp_v = findUParent(v);
+        if(ulp_u == ulp_v) return;
 
-        size_u = size.get(ulp_u);
-        size_v = size.get(ulp_v);
+        var size_u = size.get(ulp_u);
+        var size_v = size.get(ulp_v);
         if(size_u < size_v){
             parent.set(ulp_u, ulp_v);
             size.set(ulp_v, size_v + size_u);
         }else{
-            parent.set(size_v, size_u);
+            parent.set(ulp_v, ulp_u);
             size.set(ulp_u, size_u + size_v);
         }
+    }
+}
+class Tuple implements Comparable<Tuple> {
+    int first, second, third;
+    Tuple(int _first,int _second,int _third){
+        first = _first;
+        second =_second;
+        third = _third;
+    }
+    public int compareTo(Tuple edge){
+        return this.first - edge.first;
     }
 }
 
@@ -8760,5 +8843,196 @@ class Main{
         }else
             System.out.println("Not Same");
     }
+}
+```
+
+## Number of Provinces - Disjoint Set
+
+- https://www.youtube.com/watch?v=ZGr5nX-Gi6Y&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=47
+- https://practice.geeksforgeeks.org/problems/number-of-provinces/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=number-of-provinces
+
+### Inution
+
+this prob is nothing but connected component prob which i have already solved using DFS/BFS traversals i.e no of connected components
+however here we can use DSU to solve this prob we know that once we union all the edges in a graph using DSU DS we constuct the graph and if there is n diff component after graph is constructed there will n unique ultimate parent, so our task is to simply find the unique unlitmate parent
+
+TC is O(v^2)
+SC is O(2V)
+
+```
+class Solution {
+    static int numProvinces(ArrayList<ArrayList<Integer>> adj, int V) {
+        // code here
+        DisjointSet ds = new DisjointSet(V);
+        int nop = 0;
+        //O(V^2)
+        for(var row = 0; row < V; row++ ){
+            for(var col = 0; col < V; col++){
+                if(row == col) continue;
+                    if(adj.get(row).get(col) == 1){
+                        ds.unionBySize(row, col);
+                    }
+            }
+        }
+        //O(V) * O(1)
+        for(var node = 0; node < V; node++ ){
+            if(ds.parent.get(node) == node) nop++;
+        }
+        return nop;
+    }
+};
+```
+
+## Number of Operations to Make Network Connected - DSU
+
+- https://www.youtube.com/watch?v=FYrl7iz9_ZU&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=48
+
+### Intuition
+
+Observation :
+
+- for connecting n diff components in a graph we need n-1 edges at minimum
+  ![](img/dsu1.jpg)
+- but here question says we have to remove an edge from component and then only we can use this edge to connect other component so how do we decide which edge to remove
+- well while constructing graph using DSU we will check of ultimate parent of u and v and if they are same then that means they are already connected via some other path i.e already part of same component so we can remove the current edge and increase the count of extra edge variable
+- now if we have extraedge >= noOfConnectedComponent - 1 then then ans is noOfConnectedComponent - 1;
+
+```
+class Solution {
+
+    public int Solve(int n, int[][] edge) {
+        // Code here
+        DisjointSet ds = new DisjointSet(n);
+        var extraEdge = 0;
+        //O(m * 4* alpha)
+        for(var row : edge){
+            var u = row[0];
+            var v = row[1];
+            if(ds.findUParent(u) == ds.findUParent(v))
+                extraEdge++;
+            else
+                ds.unionBySize(u, v);
+        }
+        int nc = 0;
+        //O(n)
+        for(var node = 0; node < n; node++){
+            if(ds.parent.get(node) == node) nc++;
+        }
+        var minOp = nc - 1;
+        if(extraEdge >= minOp) return minOp;
+        return -1;
+    }
+}
+```
+
+## Accounts Merge - DSU (HARD)
+
+- https://www.youtube.com/watch?v=FMwpt_aQOGw&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=49
+- https://practice.geeksforgeeks.org/problems/account-merge/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=account-merge
+- https://leetcode.com/problems/accounts-merge/solutions/2953972/clean-java-sol-using-disjoint-set-with-explanation/
+
+### Intuition
+
+![](img/merge.jpg)
+
+- here the prob says to merge the accounts based on common emails so let's see if DSU datastructure can be used here, assume given accounts are numbered as 0,1,2 ... so on till n
+- we loop through the accounts and store the pair(email -> account no(to which email belong)) in a map if pair does not already exist if it already exists then that means we can merge this account to existing one i.e
+
+  ```
+    unionBySize(curr_account, map.get(email))
+  ```
+
+  this way we will have connected accounts having atleast one common email
+
+- now we can loop through the map and created megredMail List for every account by finding their ultimate parent and storing the mail to list of ulitmate parent.
+- sort the merge list before adding it to the ans
+
+### Complexity
+
+- Time complexity: O(n*m) + o(n) + O(m) + O(n*m logm) ~ O(n*m*logm)
+
+- Space complexity: O(n\*m)
+
+```
+class DisjointSet {
+
+    List<Integer> size = new ArrayList<Integer>();
+    List<Integer> parent = new ArrayList<Integer>();
+    DisjointSet(int n){
+        for(int i = 0; i <= n; i++){
+
+            size.add(1);
+            parent.add(i);
+        }
+    }
+    // O(4*alpha) ~ O(1)
+    public int findUParent(int node){
+        if(node == parent.get(node)) return node;
+        var up = findUParent(parent.get(node));
+        parent.set(node, up);
+        return parent.get(node);
+    }
+         public void unionBySize(int u , int v){
+           var ulp_u = findUParent(u);
+        var ulp_v = findUParent(v);
+        if(ulp_u == ulp_v) return;
+
+        var size_u = size.get(ulp_u);
+        var size_v = size.get(ulp_v);
+        if(size_u < size_v){
+            parent.set(ulp_u, ulp_v);
+            size.set(ulp_v, size_v + size_u);
+        }else{
+            parent.set(ulp_v, ulp_u);
+            size.set(ulp_u, size_u + size_v);
+        }
+    }
+}
+class Solution {
+  static List<List<String>> accountsMerge(List<List<String>> accounts) {
+    // code here
+    var map = new HashMap<String, Integer>();
+    var n = accounts.size();
+    DisjointSet ds = new DisjointSet(n);
+    var noOfAcc = accounts.size();
+    for(var u = 0; u < noOfAcc; u++){
+        for(int v = 1; v < accounts.get(u).size(); v++){
+            var mail = accounts.get(u).get(v);
+            var node = map.get(mail);
+            if(node == null)
+                map.put(mail, u);
+            else
+                {
+                    ds.unionBySize(node, u);
+                }
+        }
+    }
+    ArrayList<String>[] mergedMails = new ArrayList[n];
+    for(int i = 0; i < n; i++){
+        mergedMails[i] = new ArrayList<String>();
+    }
+
+    for(var entry : map.entrySet()){
+        var mail = entry.getKey();
+        var val = entry.getValue();
+        var ulp = ds.findUParent(val);
+        mergedMails[ulp].add(mail);
+    }
+
+    List<List<String>> ans = new ArrayList<>();
+    for( int i = 0; i < n; i++){
+        var mailList = mergedMails[i];
+        if(mailList.size() == 0) continue;
+        Collections.sort(mailList);
+        var temp = new ArrayList<String>();
+        temp.add(accounts.get(i).get(0));
+        temp.addAll(mailList);
+        ans.add(temp);
+    }
+   return ans;
+
+
+
+  }
 }
 ```
