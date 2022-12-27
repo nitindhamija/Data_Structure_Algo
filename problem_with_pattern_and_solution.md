@@ -312,9 +312,9 @@
   - [Floyd Warshal Algorithm( diff from dijkstra / bellman ford) - multi source shortest path algorithm - helps to detect -ve cycle as well](#floyd-warshal-algorithm-diff-from-dijkstra--bellman-ford---multi-source-shortest-path-algorithm---helps-to-detect--ve-cycle-as-well)
   - [mininum spanning tree (MST)](#mininum-spanning-tree-mst)
     - [prim's algorithm to find MST](#prims-algorithm-to-find-mst)
-      - [Inution](#inution)
+      - [Intuition](#intuition-1)
     - [kruskal algorithm to find MST ( disjoint set pre requisite so study that first)](#kruskal-algorithm-to-find-mst--disjoint-set-pre-requisite-so-study-that-first)
-      - [Inution](#inution-1)
+      - [Intuition](#intuition-2)
   - [disjoint set very IMP [REVISE]](#disjoint-set-very-imp-revise)
     - [Problem - why the need of disjoin set DS](#problem---why-the-need-of-disjoin-set-ds)
     - [disjoin data structure](#disjoin-data-structure)
@@ -322,19 +322,29 @@
     - [Time and space complexity](#time-and-space-complexity)
     - [why connect smaller component to larger one and not the other way round](#why-connect-smaller-component-to-larger-one-and-not-the-other-way-round)
   - [Number of Provinces - Disjoint Set](#number-of-provinces---disjoint-set)
-    - [Inution](#inution-2)
+    - [Intuition](#intuition-3)
   - [Number of Operations to Make Network Connected - DSU](#number-of-operations-to-make-network-connected---dsu)
-    - [Intuition](#intuition-1)
+    - [Intuition](#intuition-4)
   - [Accounts Merge - DSU (HARD)](#accounts-merge---dsu-hard)
-    - [Intuition](#intuition-2)
+    - [Intuition](#intuition-5)
     - [Complexity](#complexity-1)
   - [no of island II (DSU) online queries](#no-of-island-ii-dsu-online-queries)
-    - [Inution](#inution-3)
+    - [Intuition](#intuition-6)
     - [complexity](#complexity-2)
   - [making a large island (HARD)](#making-a-large-island-hard)
-    - [Inutition](#inutition-1)
+    - [Intuition](#intuition-7)
     - [Approach](#approach)
     - [Complexity](#complexity-3)
+  - [maximum store removal Most Stones Removed with Same Row or Column](#maximum-store-removal-most-stones-removed-with-same-row-or-column)
+  - [Inuituion](#inuituion)
+  - [Strongly Connected Components(SCC) - Kosaraju's Algorithm](#strongly-connected-componentsscc---kosarajus-algorithm)
+    - [Inuition](#inuition-1)
+    - [Kosaraju's Algorithm](#kosarajus-algorithm)
+    - [Complexity](#complexity-4)
+  - [Bridges in Graph - Using Tarjan's Algorithm of time in and low time (HARD)](#bridges-in-graph---using-tarjans-algorithm-of-time-in-and-low-time-hard)
+    - [Inuituion](#inuituion-1)
+  - [articulation point in graph](#articulation-point-in-graph)
+    - [interesting quesion (edge case)](#interesting-quesion-edge-case)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -8609,7 +8619,7 @@ check video for sol if needed
   TC is O(E log E) + O(E log E)
   SC is O(E)
 
-#### Inution
+#### Intuition
 
 greedy i.e connect the edges with min weight first using min heap, in addition of distance and node, keep track of parent node to know from where we are reaching the node
 
@@ -8672,7 +8682,7 @@ class Solution
 
 - https://www.youtube.com/watch?v=DMnDM_sxVig&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=46
 
-#### Inution
+#### Intuition
 
 - here we are sorting by weights that will give us smaller weight edges first
 - and initially DSU assumes every node is separate i.e parent[node] == node p and we know if 2 nodes are not connected if ultimate parent ulp_u != ulp_v, we can simply loop through sorted edges and keep on union p,v if they ulp_p != ulp_v
@@ -8858,7 +8868,7 @@ class Main{
 - https://www.youtube.com/watch?v=ZGr5nX-Gi6Y&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=47
 - https://practice.geeksforgeeks.org/problems/number-of-provinces/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=number-of-provinces
 
-### Inution
+### Intuition
 
 this prob is nothing but connected component prob which i have already solved using DFS/BFS traversals i.e no of connected components
 however here we can use DSU to solve this prob we know that once we union all the edges in a graph using DSU DS we constuct the graph and if there is n diff component after graph is constructed there will n unique ultimate parent, so our task is to simply find the unique unlitmate parent
@@ -9049,7 +9059,7 @@ class Solution {
 - https://www.youtube.com/watch?v=Rn6B-Q4SNyA&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=50
 - https://practice.geeksforgeeks.org/problems/number-of-islands/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=number-of-islands
 
-### Inution
+### Intuition
 
 - online queries turn this prob in to a dynamic graph so this indicates we need to use Disjoint set data structure here
 - we can assume n * m nodes from numbered from 0 to n*m - 1
@@ -9114,8 +9124,9 @@ class Solution {
 
 - https://practice.geeksforgeeks.org/problems/maximum-connected-group/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=maximum-connected-group
 - https://www.youtube.com/watch?v=lgiz0Oup6gM&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=51
+- https://leetcode.com/problems/making-a-large-island/solutions/2955241/clean-java-sol-using-disjoint-set-with-intuition-explanation/
 
-### Inutition
+### Intuition
 
 from prob statement it seems like connected component prob and we are asked to change a cell from 0 to 1 to get max component size so basically we will have to try changing 0 to 1 for every 0 in the matrix and find the max component, which data structure comes to mind with changing/dynamic configuration of graph disjoint set data structure
 
@@ -9191,6 +9202,283 @@ class Solution {
         if(row >= 0 && row < n && col >= 0 && col < n && grid[row][col] == 1)
             return true;
         return false;
+    }
+}
+```
+
+## maximum store removal Most Stones Removed with Same Row or Column
+
+- https://www.youtube.com/watch?v=OwMNX8SPavM&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=52
+- https://practice.geeksforgeeks.org/problems/maximum-stone-removal-1662179442/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=maximum-stone-removal
+
+## Inuituion
+
+![](img/stone.jpg)
+
+- if we connect stones in same row and col for all stones, we get connected components and at max from a connected components we can remove component.size - 1 stones i.e comp size 4 we can remove 4 - 1 = 3 stones
+- so sum of all max stones that can be removed from all components will give the ans
+  ![](img/stone1.jpg)
+  ```
+    total no of stone n = comp1 size x1 + comp2 size x2 + ...
+    n = x1 + x2 + x3 +...
+    max stone that can be removed = x1 - 1 + x2 - 1 + x3 - 1 + ..
+    = (x1 + x2 + x3 ...) - (1 + 1 + 1 ...)
+    = n - (no of components)
+  ```
+- here we need to connect stone cells in same row or col which may not be adjacent so rdir cdir traversal won't work and so we need to consider entire row and col as nodes i.e row 0 as node 0 row 1 as node 1 so on till last row and then col 0 would be 0 + maxrow + 1, this is coardinate shift and we will not connect stones but row and col itself will be connected so that every stone on that row and col gets connected as well
+- we use both set or map to store the rows and cols we don't actually need set since nrow and ncol are unique
+
+![](img/stone3.jpg)
+
+```
+class Solution {
+
+    int maxRemove(int[][] stones, int n) {
+        // Code here
+        int rows = 0, cols = 0;
+        for(var stone : stones){
+             rows = Math.max(rows, stone[0]);
+             cols = Math.max(cols, stone[1]);
+        }
+
+        var ds = new DisjointSet(rows + cols + 1);
+        //var map = new HashMap<Integer,Integer>();
+        var set = new HashSet<Integer>();
+        for(var stone : stones){
+        //for(var i = 0; i < n; i++){
+            // var nrow = stones[i][0];
+            // var ncol = stones[i][1] + rows + 1;
+            var nrow = stone[0];
+            var ncol = stone[1] + rows + 1;
+            ds.unionBySize(nrow, ncol);
+            set.add(nrow);
+            set.add(ncol);
+            // map.put(nrow,1);
+            // map.put(ncol,1);
+        }
+
+        var cnt = 0;
+        for(var val: set){
+            if(ds.findUParent(val) == val) cnt++;
+        }
+        return n - cnt;
+    }
+};
+```
+
+## Strongly Connected Components(SCC) - Kosaraju's Algorithm
+
+- https://www.youtube.com/watch?v=R6uoSjZ2imo&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=53
+- https://practice.geeksforgeeks.org/problems/strongly-connected-components-kosarajus-algo/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=strongly-connected-components-kosarajus-algo
+- only valid for directed graph
+- type of question are no of SCC and print SCC
+
+### Inuition
+
+![](img/scc.jpg)
+
+### Kosaraju's Algorithm
+
+- sort the edge based on finishing time i.e do the DFS and store the vis node in stack so that last node visited will be the first one to put in stack and so last node to put on stack is part of the SCC1 and will be picked first
+- reverse the grahp
+- do the DFS using reverse graph and count DFS calls
+
+### Complexity
+
+- Time complexity: O(V+E) + O(V+E) + O(V+E) ~ O(V+E)
+
+- Space complexity: O(2V) + O(V+E)
+
+```
+class Solution
+{
+    private void dfs(int node, int[] vis,ArrayList<ArrayList<Integer>> adj, ArrayDeque<Integer> stack){
+        vis[node] = 1;
+        for(var adjNode: adj.get(node)){
+            if(vis[adjNode] == 0){
+                dfs(adjNode, vis, adj, stack);
+            }
+        }
+        stack.push(node);
+    }
+
+    private void dfs1(int node, int[] vis,ArrayList<ArrayList<Integer>> adj){
+        vis[node] = 1;
+        for(var adjNode: adj.get(node)){
+            if(vis[adjNode] == 0){
+                dfs1(adjNode, vis, adj);
+            }
+        }
+    }
+    //Function to find number of strongly connected components in the graph.
+    public int kosaraju(int V, ArrayList<ArrayList<Integer>> adj)
+    {
+        //sort the edges in terms of finishing time and store in stack O(V+E)
+        var vis = new int[V];
+        var stack = new ArrayDeque<Integer>();
+        for(var i = 0; i < V; i++){
+            if(vis[i] == 0)
+                dfs(i, vis, adj, stack);
+        }
+
+        // reverse the graph O(V+E)
+        var adjR = new ArrayList<ArrayList<Integer>>();
+        for(var i = 0; i < adj.size(); i++){
+            adjR.add(new ArrayList<Integer>());
+        }
+        for(var i = 0; i < adj.size(); i++){
+            // to reuse the array
+            vis[i] = 0;
+            for(var adjNode: adj.get(i)){
+                adjR.get(adjNode).add(i);
+            }
+        }
+        // do the DFS and count the no of DFS calls to find scc O(V+E)
+        int scc = 0;
+        while(!stack.isEmpty()){
+            var node = stack.pop();
+            if(vis[node] == 0){
+                scc++;
+                dfs1(node, vis, adjR);
+            }
+        }
+        return scc;
+    }
+}
+```
+
+## Bridges in Graph - Using Tarjan's Algorithm of time in and low time (HARD)
+
+- https://www.youtube.com/watch?v=qrAub5z8FeA&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=54
+- https://leetcode.com/problems/critical-connections-in-a-network/description/
+- bridges are the edges on whose removal graph breaks in to 2 or more components
+
+### Inuituion
+
+- DFS with insertion time and lowest insetion time
+  ![](img/bridge.jpg)
+- the reason for not considering parent as adjacent node is because we want to check if this node can be reached via any other path except parent if so then this is not critical connection
+
+- Time complexity: O(V+2E) ~ O(V+E)
+
+- Space complexity: O(3V) + O(V+E) ~ O(V+E)
+
+```
+class Solution {
+private int timer = 1;
+   void DFS(int node,int parent, int[] insTime,int[] lowInsTime, int[] vis, ArrayList<ArrayList<Integer>> adj,List<List<Integer>> critConn){
+        vis[node] = 1;
+        insTime[node] = lowInsTime[node] = timer;
+        timer++;
+        for(var adjNode: adj.get(node)){
+            if(adjNode != parent){
+                if(vis[adjNode] == 0){
+                    DFS(adjNode,node, insTime, lowInsTime, vis, adj, critConn);
+                    if(insTime[node] < lowInsTime[adjNode]){
+                        critConn.add(Arrays.asList(adjNode, node));
+                    }
+                }
+                if(lowInsTime[adjNode] < lowInsTime[node]){
+                    lowInsTime[node] = lowInsTime[adjNode];
+                }
+            }
+        }
+    }
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        var insTime = new int[n];
+        var lowInsTime = new int[n];
+        var vis = new int[n];
+        var adj = new ArrayList<ArrayList<Integer>>();
+        for(var i = 0; i < n; i++){
+            adj.add(new ArrayList<Integer>());
+        }
+
+        for(var conn: connections){
+            adj.get(conn.get(0)).add(conn.get(1));
+            adj.get(conn.get(1)).add(conn.get(0));
+        }
+        List<List<Integer>> critConn = new ArrayList<>();
+        DFS(0,-1, insTime, lowInsTime, vis, adj,critConn);
+        return critConn;
+    }
+}
+```
+
+## articulation point in graph
+
+- https://www.youtube.com/watch?v=j1QDfU21iZk&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=55
+- articulation points are the nodes on whose removal graph breaks in to 2 or more components
+
+- it is similar to bridges prob with some subtle differences
+- here we are not removing nodes and not edges so even if your low = node then it is an articulation point
+  ```
+    if(low[adjNode] >= tin[node] && parent != -1)
+  ```
+- also if the adjacent node is already visited then you don't take lowest of low[node] & low[adjNode] i.e can not take something on top of visited node since you came via that path and if it is removed then you can not go back that's why you instead take the time[adjNode] i.e time of insertion
+  ```
+  low[node] = Math.min(low[node], tin[adjNode]);
+  ```
+- edge case first parent needs to be handled separately as it will always be an articulation point if it has multiple adjacent nodes
+
+  ```
+  if(child > 1 && parent == -1){
+             mark[node] = 1;
+         }
+  ```
+
+### interesting quesion (edge case)
+
+- if we consider a case in which the first parent has more than one child and all its children are interconnected then the first parent should not be the articulation point.
+- just to put in more clear words for this case child count will be 1 only since DFS will visit rest all children after the first one for initial parent and child count is incremented only for non visited adjacent node, so such parents will not be added in result​
+
+```
+class Solution
+{   private int timer = 1;
+    void DFS(int node, int parent, int[] vis,ArrayList<ArrayList<Integer>> adj, int[] tin, int[] low, int[] mark){
+        vis[node] = 1;
+        tin[node] = low[node] = timer;
+        timer++;
+        int child = 0;
+        for(var adjNode: adj.get(node)){
+            if(adjNode != parent){
+                if(vis[adjNode] == 0){
+                    DFS(adjNode, node, vis, adj, tin, low, mark);
+                    low[node] = Math.min(low[node], low[adjNode]);
+                    if(low[adjNode] >= tin[node] && parent != -1){
+                        mark[node] = 1;
+                    }
+                    child++;
+                }
+                else
+                    low[node] = Math.min(low[node], tin[adjNode]);
+            }
+        }
+        if(child > 1 && parent == -1){
+            mark[node] = 1;
+        }
+    }
+
+    //Function to return Breadth First Traversal of given graph.
+    public ArrayList<Integer> articulationPoints(int V,ArrayList<ArrayList<Integer>> adj)
+    {
+        // Code here
+        var vis = new int[V];
+        var tin = new int[V];
+        var low = new int[V];
+        var mark = new int[V];
+        var res = new ArrayList<Integer>();
+        for(var i = 0; i < V; i++){
+            if(vis[i] == 0)
+                DFS(i, -1, vis, adj, tin, low, mark);
+        }
+
+       for(var i = 0; i < V; i++){
+           if(mark[i] == 1){
+               res.add(i);
+           }
+       }
+       if(res.isEmpty()) res.add(-1);
+       return res;
     }
 }
 ```
