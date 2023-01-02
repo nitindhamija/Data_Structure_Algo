@@ -44,9 +44,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -227,9 +227,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -345,6 +345,19 @@
     - [Inuituion](#inuituion-1)
   - [articulation point in graph](#articulation-point-in-graph)
     - [interesting quesion (edge case)](#interesting-quesion-edge-case)
+  - [778. Swim in Rising Water (HARD)](#778-swim-in-rising-water-hard)
+    - [using Dijkstra](#using-dijkstra)
+      - [Intuition](#intuition-8)
+    - [using DS union find(TODO)](#using-ds-union-findtodo)
+- [Dynamic programming](#dynamic-programming)
+  - [memoization](#memoization)
+  - [tabulation](#tabulation)
+  - [to identifying DP problems](#to-identifying-dp-problems)
+  - [general rule for solving dp problems](#general-rule-for-solving-dp-problems)
+  - [Geek/frog Jump](#geekfrog-jump)
+    - [using memoization](#using-memoization)
+    - [using tabulation](#using-tabulation)
+      - [further space optimization](#further-space-optimization)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -9479,6 +9492,197 @@ class Solution
        }
        if(res.isEmpty()) res.add(-1);
        return res;
+    }
+}
+```
+
+## 778. Swim in Rising Water (HARD)
+
+https://leetcode.com/problems/swim-in-rising-water/description/
+
+### using Dijkstra
+
+#### Intuition
+
+- question not very clear but it says You can swim infinite distances in zero time. that means if can reach from cell having higher time to lower time cell in 0 time
+- key thing to note here is once we reach a cell having max value we can move to adjacent cell with 0 time
+- store cell value,x,y i.e time, x, y in pq
+
+```
+class Tuple{
+    int x,y, t;
+    Tuple(int _t, int _x, int _y){
+        t = _t;
+        x = _x;
+        y = _y;
+
+    }
+}
+class Solution {
+    public int swimInWater(int[][] grid) {
+
+        var pq = new PriorityQueue<Tuple>((n1,n2) -> n1.t - n2.t);
+        var n = grid.length;
+        var vis = new int[n][n];
+        var iniVal = grid[0][0];
+        pq.offer(new Tuple(iniVal,0,0));
+        vis[0][0] = 1;
+        var rdir = new int[]{0,0,-1,1};
+        var cdir = new int[]{1,-1,0,0};
+
+        while(!pq.isEmpty()){
+            var tuple = pq.peek();
+            pq.remove();
+            var nodeX = tuple.x;
+            var nodeY = tuple.y;
+            var nTime = tuple.t;
+            for(int i = 0; i < 4; i ++){
+                var newx = nodeX + rdir[i];
+                var newy = nodeY + cdir[i];
+                if(isValid(newx,newy,n,vis)){
+                        var time = Math.max(nTime, grid[newx][newy]);
+                        if( newx ==  n - 1 && newy == n - 1) {
+                            return time;
+                        }
+                        pq.offer(new Tuple(time, newx, newy));
+                        vis[newx][newy] = 1;
+                }
+            }
+        }
+        return 0;
+    }
+    boolean isValid(int row, int col, int n, int[][] vis){
+        if(row >= 0 && col >= 0 && row < n && col < n && vis[row][col] == 0) return true;
+        return false;
+    }
+}
+```
+
+### using DS union find(TODO)
+
+# Dynamic programming
+
+- recursion is prerequisite for DP
+- recurrence relation is relation between diff steps
+
+## memoization
+
+- overlapping subproblems can be solved in const time using memoization
+- use array/map to store the result of subproblems so that it can be used in next overlapping sub problem and recursive calls can be avoided
+- is top down recursion approach i.e you go from top to base case and then backtrack.
+
+## tabulation
+
+- is bottoms up approach i.e iterative with space optimiation if possible
+- you have base case and use that to go to top case hence bottom up case.
+
+## to identifying DP problems
+
+- if prob says count no of all possible ways or best way i.e max(of all ways) or min (of all ways)
+
+## general rule for solving dp problems
+
+- convert the problems in terms of index
+- do all possible stuff on that index acc to the problem statement
+- sum of all possible ways -> count all ways
+- min(of all ways) -> find min
+
+#[](img/dp.JPG)
+
+## Geek/frog Jump
+
+- https://practice.geeksforgeeks.org/problems/geek-jump/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=geek-jump
+
+### using memoization
+
+TC O(n) SC o(n) + O(n)
+
+```
+class Solution{
+    public int minimumEnergy(int arr[],int N){
+        //code here
+        var cache = new int[N+1];
+        Arrays.fill(cache,-1);
+       return minE(arr, N-1, cache);
+    }
+    private int minE(int[] arr,int n, int[] cache){
+        if(n == 0) return 0;
+        if(cache[n] != -1)
+            return cache[n];
+        var left = minE(arr, n - 1, cache) + Math.abs(arr[n] - arr[n-1]);
+        var right = Integer.MAX_VALUE;
+        if(n > 1)
+            right = minE(arr, n - 2, cache) + Math.abs(arr[n] - arr[n-2]);
+        cache[n] = Math.min(left, right);
+        return cache[n];
+    }
+}
+```
+
+```
+  private int minE(int[] arr,int n, int k  int[] cache){
+        if(n == 0) return 0;
+        if(cache[n] != -1)
+            return cache[n];
+        var min = Integer.MAX_VALUE;            
+        for(var i = 1; i <= k; i++ >){
+            if(n - i >= 0)
+                min = Math.min(min, minE(arr, n - i, k, cache) + Math.abs(arr[n] - arr[n - i]));
+        }
+        
+        
+            
+        cache[n] = Math.min(left, right);
+        return cache[n];
+    }
+```
+
+### using tabulation
+
+TC O(n) SC O(n)
+
+```
+class Solution{
+    public int minimumEnergy(int arr[],int N){
+        //code here
+        var cache = new int[N+1];
+        //Arrays.fill(cache,-1);
+        cache[0] = 0;
+        var n = N-1;
+        for(int i = 1; i < N; i++){
+            var left = cache[i - 1] + Math.abs(arr[i] - arr[i-1]);
+            var right = Integer.MAX_VALUE;
+            if(i > 1)
+                right = cache[i - 2] + Math.abs(arr[i] - arr[i-2]);
+            cache[i] = Math.min(left, right);
+         }
+        return cache[N-1];
+    }
+}
+```
+
+#### further space optimization
+
+- we only need prev 2 values so we don't need to store all n result
+  SC O(1)
+
+```
+class Solution{
+    public int minimumEnergy(int arr[],int N){
+        //code here
+        var prev = 0;
+        var prev2 = 0;
+
+        for(int i = 1; i < N; i++){
+            var left = prev + Math.abs(arr[i] - arr[i-1]);
+            var right = Integer.MAX_VALUE;
+            if(i > 1)
+                right = prev2 + Math.abs(arr[i] - arr[i-2]);
+            var curr = Math.min(left, right);
+            prev2 = prev;
+            prev = curr;
+        }
+        return prev;
     }
 }
 ```
