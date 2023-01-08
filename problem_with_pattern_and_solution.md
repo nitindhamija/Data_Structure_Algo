@@ -350,14 +350,35 @@
       - [Intuition](#intuition-8)
     - [using DS union find(TODO)](#using-ds-union-findtodo)
 - [Dynamic programming](#dynamic-programming)
+  - [recursion prerequisite](#recursion-prerequisite)
   - [memoization](#memoization)
   - [tabulation](#tabulation)
-  - [to identifying DP problems](#to-identifying-dp-problems)
+  - [to identifying DP problems VERY IMP](#to-identifying-dp-problems-very-imp)
   - [general rule for solving dp problems](#general-rule-for-solving-dp-problems)
+  - [to conver memoization to tabulation sol](#to-conver-memoization-to-tabulation-sol)
+  - [why not follow greedy approach](#why-not-follow-greedy-approach)
   - [Geek/frog Jump](#geekfrog-jump)
     - [using memoization](#using-memoization)
     - [using tabulation](#using-tabulation)
       - [further space optimization](#further-space-optimization)
+  - [House robber(max sum of non-adjacent elements)](#house-robbermax-sum-of-non-adjacent-elements)
+    - [using memoization](#using-memoization-1)
+    - [using tabulation with space optimization](#using-tabulation-with-space-optimization)
+  - [House robber II](#house-robber-ii)
+  - [Ninja's Training | MUST WATCH for 2D CONCEPTS (IMP)](#ninjas-training--must-watch-for-2d-concepts-imp)
+    - [memoization](#memoization-1)
+    - [tabulation](#tabulation-1)
+  - [Grid Unique Paths | Learn Everything about DP on Grids | ALL TECHNIQUES](#grid-unique-paths--learn-everything-about-dp-on-grids--all-techniques)
+  - [normal rec sol TC is exponential](#normal-rec-sol-tc-is-exponential)
+    - [memoization](#memoization-2)
+    - [tabulation](#tabulation-2)
+      - [space optimization](#space-optimization)
+  - [Minimum Path Sum](#minimum-path-sum)
+    - [using memoization](#using-memoization-2)
+    - [using tabulation with space optimization](#using-tabulation-with-space-optimization-1)
+  - [Minimum/Maximum Falling Path Sum | Variable Starting and Ending Points | DP on Grids](#minimummaximum-falling-path-sum--variable-starting-and-ending-points--dp-on-grids)
+  - [using memoization](#using-memoization-3)
+    - [using tabulation with space optimization](#using-tabulation-with-space-optimization-2)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -9562,6 +9583,10 @@ class Solution {
 
 # Dynamic programming
 
+## recursion prerequisite
+
+- striver's video l6 l7 of recursion series prerequisite for DP series
+
 - recursion is prerequisite for DP
 - recurrence relation is relation between diff steps
 
@@ -9576,7 +9601,7 @@ class Solution {
 - is bottoms up approach i.e iterative with space optimiation if possible
 - you have base case and use that to go to top case hence bottom up case.
 
-## to identifying DP problems
+## to identifying DP problems VERY IMP
 
 - if prob says count no of all possible ways or best way i.e max(of all ways) or min (of all ways)
 
@@ -9588,6 +9613,16 @@ class Solution {
 - min(of all ways) -> find min
 
 #[](img/dp.JPG)
+
+## to conver memoization to tabulation sol
+
+![](img/mem-tab.jpg)
+
+## why not follow greedy approach
+
+- when there is no uniformity i.e in future move down or up value can change(+/-) drastically
+
+![](img/greedy_not.jpg)
 
 ## Geek/frog Jump
 
@@ -9624,14 +9659,14 @@ class Solution{
         if(n == 0) return 0;
         if(cache[n] != -1)
             return cache[n];
-        var min = Integer.MAX_VALUE;            
+        var min = Integer.MAX_VALUE;
         for(var i = 1; i <= k; i++ >){
             if(n - i >= 0)
                 min = Math.min(min, minE(arr, n - i, k, cache) + Math.abs(arr[n] - arr[n - i]));
         }
-        
-        
-            
+
+
+
         cache[n] = Math.min(left, right);
         return cache[n];
     }
@@ -9683,6 +9718,402 @@ class Solution{
             prev = curr;
         }
         return prev;
+    }
+}
+```
+
+## House robber(max sum of non-adjacent elements)
+
+- https://leetcode.com/problems/house-robber/description/
+
+### using memoization
+
+- TC without memoization is O(2^n) since for every element we have to choices that is pick or non pick so for n elements it is O(2^n)
+  but with mem it is reduced to O(N) since overlapping subproblems are solved in const time o(1)
+- SC O(n) mem array + O(n) recursion stack
+
+```
+class Solution {
+    public int rob(int[] nums) {
+        var len = nums.length;
+        var mem = new int[len];
+        Arrays.fill(mem, -1);
+        return robHouse(nums,len - 1 ,mem);
+    }
+
+    int robHouse(int[] nums,int index, int[] mem){
+        if(index == 0) return nums[index];
+        if(index < 0 ) return 0;
+        if(mem[index] != -1) return mem[index];
+        var pick = nums[index];
+        if(index - 2 >= 0) pick += robHouse(nums, index - 2, mem);
+        var notPick = 0 + robHouse(nums, index - 1, mem);
+        mem[index] = Math.max(pick, notPick);
+        return mem[index];
+    }
+}
+```
+
+### using tabulation with space optimization
+
+- TC without memoization is O(2^n) since for every element we have to choices that is pick or non pick so for n elements it is O(2^n)
+  but with mem it is reduced to O(N) since overlapping subproblems are solved in const time o(1)
+- SC O(n) mem array + O(n) recursion stack
+
+```
+class Solution {
+    public int rob(int[] nums) {
+        var len = nums.length;
+        int curr, prev, prev1;
+        prev = nums[0];
+        prev1 = 0;
+
+        for(var i = 1; i < len; i++){
+            var pick = nums[i];
+            if(i-2 >= 0) pick += prev1;
+            var notPick = 0 + prev;
+            curr = Math.max(pick, notPick);
+            prev1 = prev;
+            prev = curr;
+        }
+        return prev;
+    }
+}
+```
+
+## House robber II
+
+- https://leetcode.com/problems/house-robber-ii/description/
+
+similar to house robber prob with only diff being first house is adjacent to last
+
+- same logic can be used to solve this only thing to note here is first and last are always adjacent so ans lies either in 0... n - 2 or 1.. to n-1
+- so just call the same logic with [0... n-2] & [1....n-1] and take the max
+
+## Ninja's Training | MUST WATCH for 2D CONCEPTS (IMP)
+
+- https://www.youtube.com/watch?v=AE39gJYuRog&list=PLgUwDviBIf0pwFf-BnpkXxs0Ra0eU2sJY&index=4
+- https://takeuforward.org/data-structure/dynamic-programming-ninjas-training-dp-7/
+
+### memoization
+
+```
+public class Solution {
+    public static int ninjaTraining(int n, int points[][]) {
+
+        // Write your code here..
+        int[][] mem = new int[n][4];
+        for(int[] row:mem)
+            Arrays.fill(row,-1);
+        return maxPoints(n - 1, 3,  points, mem);
+    }
+     static int maxPoints(int day,int last, int points[][], int[][] mem){
+       if(mem[day][last] != -1) return mem[day][last];
+         if(day == 0){
+            int max = 0;
+            for(int i = 0; i < 3; i++){
+                if(i != last){
+                    max = Math.max(max, points[0][i]);
+                }
+            }
+            mem[day][last] = max;
+            return mem[day][last];
+        }
+
+        int maxi = 0;
+        for(int j = 0; j < 3; j++){
+            if(j != last){
+                int activity_point = points[day][j] + maxPoints(day - 1, j, points, mem);
+                maxi = Math.max(maxi,activity_point);
+            }
+        }
+        mem[day][last] = maxi;
+        return maxi;
+    }
+}
+```
+
+### tabulation
+
+```
+    static int ninjaTraining(int n, int[][] points) {
+
+
+        int prev[] = new int[4];
+        // base cases i.e at day 0 & last 0 to 3
+        prev[0] = Math.max(points[0][1], points[0][2]);
+        prev[1] = Math.max(points[0][0], points[0][2]);
+        prev[2] = Math.max(points[0][0], points[0][1]);
+        //single day case
+        prev[3] = Math.max(points[0][0], Math.max(points[0][1], points[0][2]));
+
+
+        for (int day = 1; day < n; day++) {
+
+            int temp[] = new int[4];
+            for (int last = 0; last < 4; last++) {
+                temp[last] = 0;
+                for (int task = 0; task <= 2; task++) {
+                    if (task != last) {
+                        // here prev[task] is actually points at day - 1 and last = task
+                        temp[last] = Math.max(temp[last], points[day][task] + prev[task]);
+                    }
+                }
+            }
+
+            prev = temp;
+
+        }
+
+        return prev[3];
+    }
+```
+
+## Grid Unique Paths | Learn Everything about DP on Grids | ALL TECHNIQUES
+
+- https://www.youtube.com/watch?v=sdE0A2Oxofw&list=PLgUwDviBIf0pwFf-BnpkXxs0Ra0eU2sJY&index=5
+- https://www.codingninjas.com/codestudio/problems/total-unique-paths_1081470?source=youtube&campaign=striver_dp_videos&utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_dp_videos&leftPanelTab=1
+
+## normal rec sol TC is exponential
+
+O(2^m\*n)
+
+### memoization
+
+TC O(m\*n)
+SC O(m\*n) + O((m-1) + (n-1)) path length rec stack
+
+```
+public class Solution {
+	public static int uniquePaths(int m, int n) {
+		// Write your code here.
+        int[][] mem = new int[m][n];
+        for(int[] row: mem)
+            Arrays.fill(row, -1);
+        return rec(m-1, n-1,mem);
+	}
+
+    static int rec(int m, int n, int[][] mem){
+        if(n < 0 || m < 0) return 0;
+        if(m == 0 && n == 0){
+            return mem[m][n] = 1;
+        }
+        if(mem[m][n] != -1) return mem[m][n];
+        int r = rec(m, n - 1,mem);
+        int d = rec(m - 1, n,mem);
+        mem[m][n] = r+d;
+        return mem[m][n];
+    }
+}
+```
+
+### tabulation
+
+TC O(n*m)
+SC O(m*n)
+
+```
+public static int uniquePaths(int m, int n) {
+		// Write your code here.
+        int[][] dp = new int[m][n];
+
+        for(int i = 0; i < n; i++)
+            dp[0][i] = 1;
+        for(int i = 1; i < m ; i++){
+            for(int j = 0; j < n; j++){
+                int d = i-1 >=0? dp[i - 1][j] :0;
+                int r = j-1 >=0 ? dp[i][j-1]: 0;
+                dp[i][j]= r+d;
+            }
+        }
+        return dp[m-1][n-1];
+    }
+```
+
+#### space optimization
+
+TC O(n\*m)
+SC O(n)
+
+- we need only prev row and prev column cell in the same row
+
+```
+public static int uniquePaths(int m, int n) {
+		// Write your code here.
+
+        int[] prev = new int[n];
+
+
+        for(int i = 0; i < n; i++)
+            prev[i] = 1;
+        for(int i = 1; i < m ; i++){
+            int[] temp = new int[n];
+            for(int j = 0; j < n; j++){
+                int d = i-1 >=0? prev[j] :0;
+                int r = j-1 >=0 ? temp[j-1]: 0;
+                temp[j] = r + d;
+            }
+            prev = temp;
+        }
+        return prev[n-1];
+    }
+```
+
+## Minimum Path Sum
+
+- https://leetcode.com/problems/minimum-path-sum/description/
+- https://www.youtube.com/watch?v=_rgTlyky1uQ&list=PLgUwDviBIf0pwFf-BnpkXxs0Ra0eU2sJY&index=6
+
+### using memoization
+
+TC O(m*n)
+SC O(m*n) + O((m-1) + (n-1)) path length rec stack
+
+```
+class Solution {
+    public int minPathSum(int[][] grid) {
+        var m = grid.length;
+        var n = grid[0].length;
+        if(m == 1 && n == 1) return grid[m-1][n-1];
+        var mem = new int[m][n];
+        for(int[] row: mem){
+            Arrays.fill(row,-1);
+        }
+        return minP(grid, m-1, n-1, mem);
+    }
+
+    int minP(int[][] grid, int m , int n,int[][] mem){
+        if(m == 0 && n == 0)
+            return grid[0][0];
+
+        if(m < 0 || n < 0)
+            return Integer.MAX_VALUE - 200;
+
+        if(mem[m][n] != -1 ) return mem[m][n];
+
+        var upCost = grid[m][n] + minP(grid, m - 1, n, mem);
+        var leftCost = grid[m][n] + minP(grid, m , n - 1, mem);
+        var cost = Math.min(upCost, leftCost);
+
+        return mem[m][n] = cost;
+    }
+}
+```
+
+### using tabulation with space optimization
+
+TC O(m\*n)
+SC O(n)
+
+```
+class Solution {
+    public int minPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if(m == 1 && n == 1) return grid[m-1][n-1];
+        int[] prev = new int[n];
+        int max = (int)(1e9);
+        for(int i = 0; i < m; i++){
+            int[] temp = new int[n];
+            for(int j = 0; j < n ; j++){
+                if(i == 0 && j == 0) {
+                    temp[j] = grid[i][j];
+                    continue;
+                }
+                int downCost = (i-1) >= 0 ? (grid[i][j] + prev[j]):max;
+                int rightCost = (j-1) >= 0 ? (grid[i][j] +  temp[j-1]):max;
+                temp[j] = Math.min(downCost, rightCost);
+            }
+            prev = temp;
+        }
+        return prev[n-1];
+    }
+}
+```
+
+## Minimum/Maximum Falling Path Sum | Variable Starting and Ending Points | DP on Grids
+
+- https://www.youtube.com/watch?v=N_aJ5qQbYA0&list=PLgUwDviBIf0pwFf-BnpkXxs0Ra0eU2sJY&index=7
+- https://leetcode.com/problems/minimum-falling-path-sum/submissions/
+- https://takeuforward.org/data-structure/minimum-maximum-falling-path-sum-dp-12/
+- max can be done in similar fashion just using max instead of min
+
+## using memoization
+
+TC O(m*n)
+SC O(m*n) + O(n) rec stack since we are going up up up i.e no of rows
+
+- also notice we have used the same mem array in exploring all min starting from each cell in first row as there will be overlapping prob in among calls from first row cells
+
+```
+class Solution {
+    public int minFallingPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if(m == 1 && n == 1) return grid[m-1][n-1];
+        var min = Integer.MAX_VALUE;
+        for(int col = n-1; col >= 0; col--){
+            var mem = new int[m][n];
+            for(int[] row: mem){
+                Arrays.fill(row,-1);
+            }
+            min = Math.min(min, rec(grid, m - 1, col, n, mem ));
+        }
+        return min;
+    }
+
+   int rec(int[][] grid, int r, int c, int cols, int[][] mem){
+        if(r < 0 || c < 0 || c >= cols)
+            return (int) (1e9);
+
+        if(r == 0){
+            return grid[r][c];
+        }
+        if(mem[r][c] != -1) return mem[r][c];
+
+        int up = grid[r][c] + rec(grid, r - 1, c, cols,mem);
+        int left = grid[r][c] + rec(grid, r - 1, c - 1,cols,mem);
+        int right = grid[r][c] + rec(grid, r - 1, c + 1,cols,mem);
+        return mem[r][c] = Math.min(up, Math.min(left,right));
+
+    }
+}
+```
+
+### using tabulation with space optimization
+
+TC O(m\*n)
+SC O(n)
+
+```
+class Solution {
+    public int minFallingPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if(m == 1 && n == 1) return grid[m-1][n-1];
+
+        var max = (int)(1e9);
+        var prev = new int[n];
+
+        for(int i = 0; i < m; i++){
+            var curr = new int[n];
+            for(int j = 0; j < n; j++){
+                if(i == 0){
+                     curr[j] = grid[0][j];
+                     continue;
+                }
+                var up = grid[i][j] + prev[j];
+                var leftD = (j-1 >= 0)? grid[i][j] + prev[j-1]: max;
+                var rightD = (j+1 < n)? grid[i][j] + prev[j+1]: max;
+                curr[j] = Math.min(up,Math.min(leftD, rightD));
+            }
+            prev = curr;
+        }
+        var min = prev[0];
+        for(int j = 1; j < n; j++){
+            min = Math.min(min, prev[j]);
+        }
+        return min;
     }
 }
 ```
