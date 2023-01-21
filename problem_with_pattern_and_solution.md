@@ -44,9 +44,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -227,9 +227,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -379,6 +379,18 @@
   - [Minimum/Maximum Falling Path Sum | Variable Starting and Ending Points | DP on Grids](#minimummaximum-falling-path-sum--variable-starting-and-ending-points--dp-on-grids)
   - [using memoization](#using-memoization-3)
     - [using tabulation with space optimization](#using-tabulation-with-space-optimization-2)
+  - [Subset Sum Equals to Target | Identify DP on Subsequences and Ways to Solve them](#subset-sum-equals-to-target--identify-dp-on-subsequences-and-ways-to-solve-them)
+    - [using memoization](#using-memoization-4)
+    - [using tabulation with space optimization](#using-tabulation-with-space-optimization-3)
+  - [DP 15 can partition](#dp-15-can-partition)
+    - [Intution](#intution-4)
+  - [Partition A Set Into Two Subsets With Minimum Absolute Sum Difference | DP on Subsequences](#partition-a-set-into-two-subsets-with-minimum-absolute-sum-difference--dp-on-subsequences)
+    - [optimization](#optimization)
+  - [Count Subsets with Sum K (DP – 17)](#count-subsets-with-sum-k-dp--17)
+    - [Intuition](#intuition-9)
+    - [using tabulation](#using-tabulation-1)
+  - [Count Partitions With Given Difference | Dp on Subsequences](#count-partitions-with-given-difference--dp-on-subsequences)
+    - [Intuition](#intuition-10)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -10114,6 +10126,354 @@ class Solution {
             min = Math.min(min, prev[j]);
         }
         return min;
+    }
+}
+```
+
+## Subset Sum Equals to Target | Identify DP on Subsequences and Ways to Solve them
+
+- subsequence mean sub array/sebset which follows sequence/order
+  i.e arr[1,4,2] here [1,2] is subseq but [2,4] is not as it does not follow order but it is a subset
+- in any subset/subseq prob dp prob try take || not take state IMP
+  ![](img/dp_subseq.jpg)
+
+### using memoization
+
+simple rec sol is having O(2^n) i.e expontential sol
+TC O(n*k)
+SC O(n*k) mem array + O(n) rec stack
+
+```
+public class Solution {
+    public static boolean subsetSumToK(int n, int k, int arr[]){
+        int[][] mem = new int[n][k+1];
+        for(int[] row: mem){
+            Arrays.fill(row, -1);
+        }
+        return recurse(n-1,k,arr, mem);
+    }
+
+    private static boolean recurse(int idx, int target, int[] arr, int[][] mem){
+        if(target == 0) return true;
+        if(idx == 0 && target == arr[idx]) return true;
+        if(idx < 0) return false;
+        if(mem[idx][target] != -1)
+            return mem[idx][target] == 1;
+        boolean notTake =  recurse(idx - 1, target, arr, mem);
+        boolean take = false;
+        if(target >= arr[idx]){
+            take = recurse(idx - 1, target - arr[idx], arr,mem);
+        }
+        mem[idx][target] = (take || notTake) ? 1: 0;
+        return (take || notTake);
+      }
+}
+
+
+```
+
+### using tabulation with space optimization
+
+TC O(n\*k)
+SC O(k)
+
+```
+public class Solution {
+    public static boolean subsetSumToK(int n, int k, int arr[]){
+        boolean[] prev = new boolean[k+1];
+        prev[0] = true;
+        if(arr[0] <= k)
+            prev[arr[0]] = true;
+
+       for(int i = 1; i < n; i++){
+           boolean[] curr = new boolean[k+1];
+           curr[0] = true;
+           for(int target = 1; target <= k; target++){
+               boolean notTake = prev[target];
+               boolean take = false;
+               if(target >= arr[i]){
+                   take = prev[target - arr[i]];
+               }
+               curr[target] = take || notTake;
+           }
+           prev = curr;
+       }
+        return prev[k];
+    }
+```
+
+## DP 15 can partition
+
+![](img/dp_can_partition.JPG)
+
+### Intution
+
+here we have divide the array into 2 subsets such that their sum is equal(s1 == s2) not let's assume array sum is s then from the above condition we can say that s1 = s2 = s/2 so now if we find a subset from the array having a sum of s/2 then definitely sum of remaining elements will be s/2 so essentially this prob boild down to finding a subset having target sum as s/2
+base conditions are if array has only 1 element then it is not possible to partition and if sum of the array is odd then s/2 is not possible i.e s1 != s2
+
+```
+public class Solution {
+	public static boolean canPartition(int[] arr, int n) {
+
+        if(n == 1) return false;
+        int sum = 0;
+        for(int ele: arr)
+            sum+= ele;
+        if(sum % 2 != 0) return false;
+        int target = sum/2;
+        return rec(n-1, target, arr);
+
+	}
+
+    private static boolean rec(int index, int target, int[] arr){
+        boolean[] prev = new boolean[target + 1];
+        prev[0] = true;
+        if(arr[0] <= target)
+           prev[arr[0]] = true;
+
+        for(int i = 1; i < index; i++){
+            boolean[] curr = new boolean[target + 1];
+            curr[0] = true;
+            for(int k = 1; k <= target; k++){
+                boolean notTake = prev[k];
+                boolean take = false;
+
+                if(arr[i] <= k){
+                    take = prev[k - arr[i]];
+                }
+                curr[k] = take || notTake;
+            }
+            prev = curr ;
+        }
+        return prev[target];
+    }
+}
+```
+
+## Partition A Set Into Two Subsets With Minimum Absolute Sum Difference | DP on Subsequences
+
+- https://www.youtube.com/watch?v=GS_OqZb2CWc&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=17
+- https://takeuforward.org/data-structure/partition-set-into-2-subsets-with-min-absolute-sum-diff-dp-16/
+  TC O(n*totalSum) + O(totalSum) + O(n)
+  SC O(2*TotalSum)
+
+```
+import java.util.* ;
+import java.io.*;
+public class Solution {
+	public static int minSubsetSumDifference(int[] arr, int n) {
+		// Write your code here.
+		int totalSum = 0;
+		for(int ele:arr){
+			totalSum += ele;
+		}
+		boolean[] dp = rec(n,totalSum,arr);
+		int min = Integer.MAX_VALUE - 100;
+		for(int i = 0; i <= totalSum; i++){
+			if(dp[i]){
+				int s1 = i;
+				int s2 = totalSum - i;
+				min = Math.min(min,Math.abs(s1-s2));
+			}
+		}
+		return min;
+	}
+
+  private static boolean[] rec(int index, int target, int[] arr){
+        boolean[] prev = new boolean[target + 1];
+        prev[0] = true;
+        if(arr[0] <= target)
+           prev[arr[0]] = true;
+
+        for(int i = 1; i < index; i++){
+            boolean[] curr = new boolean[target + 1];
+            curr[0] = true;
+            for(int k = 1; k <= target; k++){
+                boolean notTake = prev[k];
+                boolean take = false;
+
+                if(arr[i] <= k){
+                    take = prev[k - arr[i]];
+                }
+                curr[k] = take || notTake;
+            }
+            prev = curr ;
+        }
+        return prev;
+    }
+}
+```
+
+### optimization
+
+- s1 and s2 will have cases like 0-9 and 9-0 so we only need to check till totalsum/2 for even and +1 for odd
+
+```
+int check = totalSum % 2 == 0? totalSum/2: totalSum/2+1;
+		/** s1 and s2 will have cases like 0-9 and 9-0
+		so we only need to check till totalsum/2 for even +1 for odd*/
+		for(int s1 = 0; s1 <= check; s1++){
+			if(dp[s1]){
+				min = Math.min(min,Math.abs((totalSum-s1)-s1));
+			}
+		}
+```
+
+- further we start from totalsum/2 then we first dp[i] true will be our ans since diff b/w i & totalSum - i will be minimun in this way and don't need keep min variable and min function
+
+```
+	int min = 0;
+		int check = totalSum % 2 == 0? totalSum/2: totalSum/2+1;
+
+		for(int s1 = check; s1 >= 0; s1--){
+			if(dp[s1]){
+				min = Math.abs((totalSum-s1)-s1);
+				break;
+			}
+		}
+		return min;
+```
+
+## Count Subsets with Sum K (DP – 17)
+
+- https://www.codingninjas.com/codestudio/problems/number-of-subsets_3952532?source=youtube&campaign=striver_dp_videos&utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_dp_videos&leftPanelTab=1
+- https://www.youtube.com/watch?v=ZHyb-A2Mte4&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=18
+
+- why the case [0,0,1] would fail
+
+![](img/dp_count_subset_prob.jpg)
+
+- to solve the case
+  ![](img/dp_count_subset.JPG)
+
+```
+    if(num[0] == 0) prev[0] = 2;
+    else prev[0] = 1;
+    if(num[0] != 0 && num[0] <= tar){
+        prev[num[0]] = 1;
+
+           or
+
+    prev[0] = 1;
+    if(num[0] <= tar){
+    //special case check Intution
+        if(num[0] == 0)
+            prev[num[0]] = 2;
+        else
+            prev[num[0]] = 1;
+    }
+
+```
+
+### Intuition
+
+- special case because when num[0] = 0 then both take and not take will not change target and hence will give 1 and should be taken in account as valid subset
+
+### using tabulation
+
+```
+import java.util.* ;
+import java.io.*;
+public class Solution {
+    public static int findWays(int num[], int tar) {
+        // Write your code here..
+        int len = num.length;
+        int[] prev = new int[tar + 1];
+            prev[0] = 1;
+        if(num[0] <= tar){
+          //special case check Intution
+            if(num[0] == 0)
+                prev[num[0]] = 2;
+            else
+                prev[num[0]] = 1;
+        }
+
+
+        for(int i = 1;i < len; i++ ){
+            int[] curr = new int[tar+1];
+            curr[0] = 1;
+            for(int target = 0; target <= tar; target++ ){
+                int notTake = prev[target];
+                int take = 0;
+                if(num[i] <= target){
+                    take = prev[target - num[i]];
+                }
+                curr[target] = take + notTake;
+            }
+            prev = curr;
+        }
+       return prev[tar];
+
+    }
+}
+```
+
+## Count Partitions With Given Difference | Dp on Subsequences
+
+- https://www.youtube.com/watch?v=zoilQD1kYSg&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=19
+- https://www.codingninjas.com/codestudio/problems/partitions-with-given-difference_3751628?source=youtube&campaign=striver_dp_videos&utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_dp_videos
+
+### Intuition
+
+![](img/dp_part_diff.JPG)
+
+```
+    given
+    s1 = totalsum - s2 and s1 - s2 = d then
+    totalsum - s2 -s2 = d
+    totalsum - d = 2s2
+    s2 = (totalsum - d) / 2
+
+    so the prob boils down to find the count of subsets s2 having target sum as (totalsum - d)/2
+
+    but edge cases are totalsum - d can't be -ve and totalsum - d /2 can't be in decimal i.e s1 and s2 can't be in decimal so check for odd and return 0 such cases
+```
+
+```
+import java.util.* ;
+import java.io.*;
+public class Solution {
+	private static int mod = (int)(1e9)+7;
+	public static int countPartitions(int n, int d, int[] arr) {
+		// Write your code here.
+
+		int totalSum =0;
+		for(int ele:arr)
+			totalSum+=ele;
+
+		int target = totalSum - d;
+		if(target < 0 || target % 2 != 0) return 0;
+		return findWays(arr, target/2);
+	}
+	  private static int findWays(int num[], int tar) {
+        // Write your code here..
+        int len = num.length;
+        int[] prev = new int[tar + 1];
+            prev[0] = 1;
+        if(num[0] <= tar){
+          //special case check Intution
+            if(num[0] == 0)
+                prev[num[0]] = 2;
+            else
+                prev[num[0]] = 1;
+        }
+
+
+        for(int i = 1;i < len; i++ ){
+            int[] curr = new int[tar+1];
+            curr[0] = 1;
+            for(int target = 0; target <= tar; target++ ){
+                int notTake = prev[target];
+                int take = 0;
+                if(num[i] <= target){
+                    take = prev[target - num[i]];
+                }
+                curr[target] = (take + notTake)%mod;
+            }
+            prev = curr;
+        }
+       return prev[tar];
+
     }
 }
 ```
