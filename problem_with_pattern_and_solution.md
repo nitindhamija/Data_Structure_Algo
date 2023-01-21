@@ -391,6 +391,10 @@
     - [using tabulation](#using-tabulation-1)
   - [Count Partitions With Given Difference | Dp on Subsequences](#count-partitions-with-given-difference--dp-on-subsequences)
     - [Intuition](#intuition-10)
+  - [DP 19. 0/1 Knapsack | Recursion to Single Array Space Optimised Approach | DP on Subsequences](#dp-19-01-knapsack--recursion-to-single-array-space-optimised-approach--dp-on-subsequences)
+    - [using memoization](#using-memoization-5)
+    - [using tabulation with space optimization to 2 rows](#using-tabulation-with-space-optimization-to-2-rows)
+      - [further space optimization using only single row](#further-space-optimization-using-only-single-row)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -10426,7 +10430,7 @@ public class Solution {
 
     so the prob boils down to find the count of subsets s2 having target sum as (totalsum - d)/2
 
-    but edge cases are totalsum - d can't be -ve and totalsum - d /2 can't be in decimal i.e s1 and s2 can't be in decimal so check for odd and return 0 such cases
+    but edge cases are totalsum - d can't be -ve and totalsum - d /2 can't be in decimal i.e s1 and s2 can't be fractional so check for odd and return 0 such cases
 ```
 
 ```
@@ -10474,6 +10478,114 @@ public class Solution {
         }
        return prev[tar];
 
+    }
+}
+```
+
+## DP 19. 0/1 Knapsack | Recursion to Single Array Space Optimised Approach | DP on Subsequences
+
+- https://www.youtube.com/watch?v=GqOmJHQZivw&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=20
+- https://www.codingninjas.com/codestudio/problems/0-1-knapsack_920542?source=youtube&campaign=striver_dp_videos&utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_dp_videos
+
+### using memoization
+
+- TC O(n\*w)
+- SC O(n\*w) + o(n)
+
+```
+import java.util.* ;
+import java.io.*;
+
+public class Solution{
+    static int knapsack(int[] weight, int[] value, int n, int maxWeight) {
+        int[][] dp = new int[n][maxWeight+1];
+        for(int[] row:dp){
+            Arrays.fill(row,-1);
+        }
+        return rec(n-1, maxWeight, value, weight, dp);
+
+    }
+
+    private static int rec(int index, int maxWeight,int[] val, int[] wt, int[][] dp){
+        if(maxWeight == 0) return 0;
+        if(index == 0){
+            if(wt[index] <= maxWeight)
+                return val[0];
+            else
+                return 0;
+        }
+        if(index < 0) return 0;
+        if(dp[index][maxWeight] != -1) return dp[index][maxWeight];
+
+        int notPick = rec(index - 1, maxWeight, val, wt, dp);
+        int pick = 0;
+        if(wt[index] <= maxWeight){
+            pick = val[index] + rec(index - 1, maxWeight - wt[index], val, wt, dp);
+        }
+        return dp[index][maxWeight] = Math.max(pick, notPick);
+    }
+}
+```
+
+### using tabulation with space optimization to 2 rows
+
+```
+import java.util.* ;
+import java.io.*;
+
+public class Solution{
+    static int knapsack(int[] weight, int[] value, int n, int maxWeight) {
+
+        int[] prev = new int[maxWeight+1];
+        for(int wt = weight[0] ; wt <= maxWeight; wt++){
+                prev[wt] = value[0];
+        }
+
+        for(int i = 1; i < n ;i++){
+            int[] curr = new int[maxWeight+1];
+            for(int wt = 0; wt <= maxWeight; wt++){
+                int notPick = prev[wt];
+                int pick = Integer.MIN_VALUE;
+                if(weight[i] <= wt){
+                    pick = value[i] + prev[wt - weight[i]];
+                }
+                curr[wt] = Math.max(pick,notPick);
+            }
+            prev = curr;
+        }
+        return prev[maxWeight];
+    }
+}
+```
+
+#### further space optimization using only single row
+
+![](img/dp_knapsack_imp.JPG)
+![](img/dp_knapsack_imp1.JPG)
+
+- as seem from the image and logic we only need values from prev row and also from prev row also wt-weight[i] will be left of wt in prev row
+- so if we start filling from right to left i.e change dir of inner loop then we only need element from prev row left of the curr index so curr index in prev row can be overwritten as it will not be needed
+
+```
+public class Solution{
+    static int knapsack(int[] weight, int[] value, int n, int maxWeight) {
+
+        int[] prev = new int[maxWeight+1];
+        for(int wt = weight[0] ; wt <= maxWeight; wt++){
+                prev[wt] = value[0];
+        }
+
+        for(int i = 1; i < n ;i++){
+            for(int wt = maxWeight; wt >= 0; wt--){
+                int notPick = prev[wt];
+                int pick = Integer.MIN_VALUE;
+                if(weight[i] <= wt){
+                    pick = value[i] + prev[wt - weight[i]];
+                }
+                prev[wt] = Math.max(pick,notPick);
+            }
+        }
+        return prev[maxWeight];
     }
 }
 ```
