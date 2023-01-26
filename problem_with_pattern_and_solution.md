@@ -395,6 +395,18 @@
     - [using memoization](#using-memoization-5)
     - [using tabulation with space optimization to 2 rows](#using-tabulation-with-space-optimization-to-2-rows)
       - [further space optimization using only single row](#further-space-optimization-using-only-single-row)
+  - [min coin/coin change IMP](#min-coincoin-change-imp)
+    - [why does greedy fails](#why-does-greedy-fails)
+    - [multiple use / infinite supply case](#multiple-use--infinite-supply-case)
+    - [using memoization](#using-memoization-6)
+    - [tabulation with space optmization](#tabulation-with-space-optmization)
+  - [target sum 2 IMP](#target-sum-2-imp)
+    - [important observation in this prob](#important-observation-in-this-prob)
+    - [using memoization](#using-memoization-7)
+    - [using partition into 2 subsets with given diff](#using-partition-into-2-subsets-with-given-diff)
+  - [coin change 2](#coin-change-2)
+    - [using memoization](#using-memoization-8)
+    - [using tabulation with space optimization](#using-tabulation-with-space-optimization-4)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -10431,6 +10443,8 @@ public class Solution {
     so the prob boils down to find the count of subsets s2 having target sum as (totalsum - d)/2
 
     but edge cases are totalsum - d can't be -ve and totalsum - d /2 can't be in decimal i.e s1 and s2 can't be fractional so check for odd and return 0 such cases
+
+    and for a[0] == 0  and T == a[0] both take and notTake will not change target so both has to be conisdered and hence return 1+1 =2
 ```
 
 ```
@@ -10586,6 +10600,247 @@ public class Solution{
             }
         }
         return prev[maxWeight];
+    }
+}
+```
+
+## min coin/coin change IMP
+
+- https://leetcode.com/problems/coin-change/description/
+- https://www.codingninjas.com/codestudio/problems/minimum-elements_3843091?leftPanelTab=1
+- https://www.youtube.com/watch?v=myPeWb3Y68A&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=21
+
+### why does greedy fails
+
+![](img/greedy_fail_infinite.JPG)
+
+- as per the example above greedy fails because there's no uniformity in diff of subsequent elements of the array
+- e.g consider the array [1,2,3] and target = 7 here greedy works because diff in consecutive elements is uniform i.e 1
+
+### multiple use / infinite supply case
+
+![](img/dp_multi_use_case.JPG)
+
+- case like where we can use same value multiple times from the array e.g here it is allowed to consider same coin denomination multiple times so here for the take case we can't reduce index since the same value can be reused again
+- and it won't go on infinite loop since for take case target is changing at every step
+
+### using memoization
+
+TC O(n*amount) + O(n*amount)
+SC O(n\*amount) + O(amount) in case of min coin 1
+
+```
+class Solution {
+    private  int max = (int)(1e9);
+    public int coinChange(int[] coins, int amount) {
+           // Write your code here..
+        int n = coins.length;
+        int[][] dp = new int[n][amount+1];
+        for(int[] row: dp){
+            Arrays.fill(row, -1);
+        }
+        int res = rec(n-1,amount, coins,dp);
+        return res==max?-1:res;
+    }
+
+    private  int rec(int index, int target, int[] arr,int[][] dp){
+        if(index == 0){
+            if(target % arr[index] == 0) return target/arr[index];
+            else return max;
+        }
+        if(dp[index][target] != -1){
+            return dp[index][target];
+        }
+
+        int notTake = rec(index - 1, target, arr,dp);
+        int take = max;
+        if(arr[index] <= target){
+            take = 1 + rec(index, target - arr[index],arr,dp);
+        }
+        return dp[index][target]=Math.min(take,notTake);
+    }
+}
+```
+
+### tabulation with space optmization
+
+- here we can not reduce to futher 1 row since both curr and prev row are needed
+- in knapsack prob we only needed values from prev row so it was feasible but here values from both row are needed so for problems with multiple use space optimization to only 2 row is possible
+
+```
+class Solution {
+    private  int max = (int)(1e9);
+    public int coinChange(int[] coins, int amount) {
+           // Write your code here..
+        int[] num = coins;
+        int n = num.length;
+        int x = amount;
+        int[] prev = new int[x+1];
+
+        for(int i = 0; i <= x ; i++){
+            if(i % num[0] == 0)
+                prev[i] = i/num[0];
+            else prev[i] = max;
+        }
+
+        for(int index = 1; index < n; index++){
+            int[] curr = new int[x+1];
+            for(int target = 0; target <= x; target++){
+                int notTake = prev[target];
+                int take = max;
+                if(num[index] <= target){
+                    take = 1 + curr[target- num[index]];
+                }
+                curr[target] = Math.min(take,notTake);
+            }
+            prev = curr;
+        }
+        return prev[x] == max?-1: prev[x];
+    }
+}
+```
+
+## target sum 2 IMP
+
+- https://www.codingninjas.com/codestudio/problems/target-sum_4127362?source=youtube&campaign=striver_dp_videos&utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_dp_videos&leftPanelTab=1
+- https://www.youtube.com/watch?v=b3GD8263-PQ&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=22
+- https://leetcode.com/problems/target-sum/submissions/885637556/
+
+### important observation in this prob
+
+- it is given that target value can be -ve so we can take dp[][] as -ve target value will give array index out of bounds
+- so i took a map<String,Integer> for the memoization to contains keys having -ve target value like ([1,-1,] 5])
+
+### using memoization
+
+```
+import java.util.* ;
+import java.io.*;
+public class Solution {
+    private static int unvis = (int)(1e9);
+    public static int targetSum(int n, int target, int[] arr) {
+        Map<String,Integer> dp = new HashMap<String,Integer>();
+       	return rec(n-1,target,arr,dp);
+    }
+    private static int rec(int index, int target, int[] arr, Map<String,Integer> dp){
+            if(index == 0){
+                if(target == 0 && arr[index] ==0)
+                    return 2;
+                else if(Math.abs(target) == arr[index])
+                    return 1;
+                else
+                    return 0;
+            }
+            String key = index+","+target;
+            if(dp.get(key) != null)
+                return dp.get(key);
+            int plus = rec(index - 1, target + arr[index],arr,dp);
+            int minus = rec(index -1, target - arr[index],arr,dp);
+            int val = plus + minus;
+            dp.put(key, val);
+            return val;
+        }
+    }
+```
+
+### using partition into 2 subsets with given diff
+
+![](img/part_with_diff.JPG)
+
+- https://leetcode.com/problems/target-sum/submissions/
+
+- as seen from the example above the prob is similar to partition with given diff
+  i.e
+
+```
+conside above array s1 = [+3,+2] and s2 = [+1,+1]
+then s1 - s2 = T and s1 + s2 = totalsum
+so T+2s2 = totalsum
+s2 = (totalsum - T)/2
+so the prob is reduced to find all subset having target (totalsum - T)/2.
+
+ now simply call from the earlier done question
+ return countPartitions(nums.length, target, nums);
+```
+
+## coin change 2
+
+- https://www.youtube.com/watch?v=HgyouUi11zk&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=23
+
+### using memoization
+
+```
+import java.util.*;
+
+public class Solution {
+
+	public static long countWaysToMakeChange(int denominations[], int value){
+
+        int[] num = denominations;
+        int n = num.length;
+        int x = value;
+		long[][] dp = new long[n][x+1];
+		 for(long[] row: dp){
+		 	Arrays.fill(row,-1);
+		 }
+		return rec(n-1,x,num,dp);
+
+    }
+
+    private static long rec(int index, int target, int[] arr, long[][] dp){
+		if(target == 0) return 1;
+		if(index == 0){
+			if(target % arr[0] == 0 )
+				return 1;
+			else
+				return 0;
+		}
+		if(dp[index][target] != -1)
+			return dp[index][target];
+
+		long notTake = rec(index - 1, target, arr ,dp);
+		long take = 0;
+		if(arr[index] <= target ){
+			take = rec(index,target - arr[index],arr,dp);
+		}
+		return dp[index][target]=(take + notTake);
+	}
+
+}
+```
+
+### using tabulation with space optimization
+
+```
+import java.util.*;
+
+public class Solution {
+
+	public static long countWaysToMakeChange(int denominations[], int value){
+
+
+        int[] num = denominations;
+        int n = num.length;
+        int x = value;
+        long[] prev = new long[x+1];
+
+		for(int i = 0; i <= x; i++){
+			if(i % num[0] == 0) prev[i] = 1;
+		}
+        for(int index = 1; index < n; index++){
+            long[] curr = new long[x+1];
+			curr[0] = 1;
+            for(int target = 1; target <= x; target++){
+                long notTake = prev[target];
+                long take = 0;
+                if(num[index] <= target){
+                    take = curr[target- num[index]];
+                }
+                curr[target] = take + notTake;
+            }
+            prev = curr;
+        }
+        return prev[x];
     }
 }
 ```
