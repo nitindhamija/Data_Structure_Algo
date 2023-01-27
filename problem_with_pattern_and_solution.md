@@ -407,6 +407,13 @@
   - [coin change 2](#coin-change-2)
     - [using memoization](#using-memoization-8)
     - [using tabulation with space optimization](#using-tabulation-with-space-optimization-4)
+  - [unbounded knapsack](#unbounded-knapsack)
+    - [using memoiation](#using-memoiation)
+    - [using tabulation and 1D array space optimization](#using-tabulation-and-1d-array-space-optimization)
+  - [rod cutting](#rod-cutting)
+  - [using memoization](#using-memoization-9)
+    - [intuition](#intuition-11)
+    - [using tabulation with 1D space optimization](#using-tabulation-with-1d-space-optimization)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -10665,7 +10672,7 @@ class Solution {
 ### tabulation with space optmization
 
 - here we can not reduce to futher 1 row since both curr and prev row are needed
-- in knapsack prob we only needed values from prev row so it was feasible but here values from both row are needed so for problems with multiple use space optimization to only 2 row is possible
+- we can reduce the space used to 1 row only since we only need curr col value from prev and values left of curr row so we can't change dir here since we prev values from curr row but we can overwrite the prev[col] with max of take & nottake
 
 ```
 class Solution {
@@ -10843,4 +10850,148 @@ public class Solution {
         return prev[x];
     }
 }
+```
+
+## unbounded knapsack
+
+- https://www.codingninjas.com/codestudio/problems/unbounded-knapsack_1215029?source=youtube&campaign=striver_dp_videos&utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_dp_videos&leftPanelTab=1
+- https://www.youtube.com/watch?v=OgvOZ6OrJoY&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=24
+
+### using memoiation
+
+TC O(2n*w)
+SC O(n*w) + O(w)
+
+```
+import java.util.* ;
+import java.io.*;
+public class Solution {
+    public static int unboundedKnapsack(int n, int w, int[] profit, int[] weight) {
+        int[][] dp = new int[n][w+1];
+        for(int[] row:dp){
+            Arrays.fill(row, -1);
+        }
+        return rec(n-1,w,profit,weight,dp);
+    }
+    private static int rec(int index, int target, int[] profit, int[] weight, int[][] dp){
+        if(index == 0){
+            return (target/weight[index])*profit[index];
+        }
+        if(dp[index][target] !=-1)
+            return dp[index][target];
+        int notTake = rec(index -1, target, profit, weight,dp);
+        int take = Integer.MIN_VALUE;
+        if(weight[index] <= target){
+            take = profit[index] + rec(index, target- weight[index],profit,weight,dp);
+        }
+        return dp[index][target]=Math.max(take, notTake);
+    }
+}
+
+```
+
+### using tabulation and 1D array space optimization
+
+```
+import java.util.* ;
+import java.io.*;
+public class Solution {
+    public static int unboundedKnapsack(int n, int w, int[] profit, int[] weight) {
+        int[] prev = new int[w+1];
+        for(int i = weight[0]; i <= w; i++){
+            prev[i] = ((int)(i/weight[0]))*profit[0];
+        }
+
+        for(int index = 1; index < n; index++){
+            //int[] curr = new int[w+1];
+            for(int wt = 0;wt <= w;wt++){
+                int notTake = prev[wt];
+                int take = Integer.MIN_VALUE;
+                if(weight[index] <= wt){
+                    take = profit[index] + prev[wt- weight[index]];
+                }
+                prev[wt]=Math.max(take, notTake);
+            }
+            //prev = curr;
+        }
+        return prev[w];
+    }
+}
+
+
+```
+
+## rod cutting
+
+- https://takeuforward.org/data-structure/rod-cutting-problem-dp-24/
+- https://www.codingninjas.com/codestudio/problems/rod-cutting-problem_800284?source=youtube&campaign=striver_dp_videos&utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_dp_videos&leftPanelTab=0
+
+## using memoization
+
+### intuition
+
+- it seems like unbounded knapsack prob
+- also note that here index = 0 is considerd a rol of length 1 and index = 1 is rod of length 2 so index + 1 is the length of rod at index
+  // here index + 1 is len of rod since index is 0 based but as per the prod we have to consider 1 based indexing
+- even if this base case (target == 0) is ommitted still the sol is fine because when target 0 is it will always pick nottake case with index reaching 0 but we can avoid those extra rec calls by checking for it
+- same is applicable to tabulation sol also if you start inner loop from 1 instead of 0 it would work fine.
+
+  TC O(2n*n)
+  SC O(n*n) + o(n)
+
+```
+import java.util.*;
+public class Solution {
+	public static int cutRod(int price[], int n) {
+		int[][] dp = new int[n][n+1];
+		for(int[] row:dp){
+			Arrays.fill(row,-1);
+		}
+		return rec(n-1, n,price,dp);
+	}
+	private static int rec(int index, int target, int[] price, int[][] dp){
+
+        if(target == 0) return 0;
+
+		if(index == 0){
+			return (target*price[0]);
+		}
+		if(dp[index][target] != -1)
+			return dp[index][target];
+		int notTake = rec(index - 1, target, price,dp);
+		int take = Integer.MIN_VALUE;
+        //here index + 1 is len of rod
+		if((index + 1) <= target){
+			take = price[index] + rec(index,target - (index + 1),price,dp);
+		}
+		return dp[index][target]=Math.max(take,notTake);
+
+	}
+}
+```
+
+### using tabulation with 1D space optimization
+
+TC O(n\*n)
+SC O(n)
+
+```
+public class Solution {
+	public static int cutRod(int price[], int n) {
+		int[] prev = new int[n+1];
+		for(int i = 0;i <= n; i++){
+			prev[i] = (i*price[0]);
+		}
+		for(int index = 1; index < n; index++){
+			for(int target = 0; target <= n; target++){
+				int notTake = prev[target];
+				int take = Integer.MIN_VALUE;
+				if(index < target){
+					take = price[index] + prev[target - (index + 1)];
+				}
+				prev[target]=Math.max(take,notTake);
+			}
+		}
+		return prev[n];
+	}
 ```
