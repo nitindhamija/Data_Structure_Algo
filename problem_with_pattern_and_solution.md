@@ -44,9 +44,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -227,9 +227,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -414,6 +414,28 @@
   - [using memoization](#using-memoization-9)
     - [intuition](#intuition-11)
     - [using tabulation with 1D space optimization](#using-tabulation-with-1d-space-optimization)
+  - [Dp 25. Longest Common Subsequence | Top Down | Bottom-Up | Space Optimised | DP on Strings](#dp-25-longest-common-subsequence--top-down--bottom-up--space-optimised--dp-on-strings)
+    - [Intuition](#intuition-12)
+    - [using memoization](#using-memoization-10)
+    - [using tabulation](#using-tabulation-2)
+  - [longest common substring](#longest-common-substring)
+    - [Intuition](#intuition-13)
+  - [longest palindromic subsequence](#longest-palindromic-subsequence)
+    - [Intuition](#intuition-14)
+  - [min insertion to make a string palindromic(LC HARD)](#min-insertion-to-make-a-string-palindromiclc-hard)
+    - [Intuition](#intuition-15)
+    - [without LPS|LCS method](#without-lpslcs-method)
+    - [Approach](#approach-1)
+    - [Complexity](#complexity-5)
+    - [Code](#code)
+  - [Minimum Insertions/Deletions to Convert String | (DP- 30)](#minimum-insertionsdeletions-to-convert-string--dp--30)
+    - [Intuition](#intuition-16)
+  - [DP 31. Shortest Common Supersequence | DP on Strings | LC HARD](#dp-31-shortest-common-supersequence--dp-on-strings--lc-hard)
+    - [Intuition](#intuition-17)
+  - [Distinct Subsequences | 1D Array Optimisation Technique LC HARD](#distinct-subsequences--1d-array-optimisation-technique-lc-hard)
+    - [using memoization](#using-memoization-11)
+    - [using tabulation](#using-tabulation-3)
+    - [1D space optimization](#1d-space-optimization)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -10932,7 +10954,6 @@ public class Solution {
 
 - it seems like unbounded knapsack prob
 - also note that here index = 0 is considerd a rol of length 1 and index = 1 is rod of length 2 so index + 1 is the length of rod at index
-  // here index + 1 is len of rod since index is 0 based but as per the prod we have to consider 1 based indexing
 - even if this base case (target == 0) is ommitted still the sol is fine because when target 0 is it will always pick nottake case with index reaching 0 but we can avoid those extra rec calls by checking for it
 - same is applicable to tabulation sol also if you start inner loop from 1 instead of 0 it would work fine.
 
@@ -10994,4 +11015,431 @@ public class Solution {
 		}
 		return prev[n];
 	}
+```
+
+## Dp 25. Longest Common Subsequence | Top Down | Bottom-Up | Space Optimised | DP on Strings
+
+- https://leetcode.com/problems/longest-common-subsequence/submissions/
+- https://www.youtube.com/watch?v=NPZn9jBrX
+- https://takeuforward.org/data-structure/longest-common-subsequence-dp-25/
+
+### Intuition
+
+- Note: For a string of length n, the number of subsequences will be 2n.
+- here to check the LCS we will have to consider all possibilities of both texts i.e 2^n possiblities and then compare them
+- We would want to try something that can give us the longest common subsequence on the way of generating all subsequences. To generate all subsequences we will use recursion and in the recursive logic we will figure out a way to solve this problem.
+
+### using memoization
+
+TC O(m*n)
+SC O(m*n) + O(m\*n) aux and not n since worst case(no match string of len m and n)
+
+```
+class Solution {
+    public int longestCommonSubsequence(String text1, String text2) {
+        int index1 = text1.length();
+        int index2 = text2.length();
+        int[][] dp = new int[index1][index2];
+        for(int[] row:dp){
+            Arrays.fill(row,-1);
+        }
+        return  rec(index1-1,index2-1,text1,text2,dp);
+    }
+
+    private int rec(int index1, int index2,String text1, String text2, int[][] dp){
+        if(index1 < 0 || index2 < 0)
+            return 0;
+        if(dp[index1][index2] != -1)
+            return dp[index1][index2];
+        if(text1.charAt(index1) == text2.charAt(index2))
+             return 1 + rec(index1-1,index2-1,text1,text2,dp);
+
+        int movIndex2 = rec(index1,index2-1, text1, text2,dp);
+        int movIndex1 = rec(index1-1,index2, text1, text2,dp);
+        return dp[index1][index2] = Math.max( movIndex1, movIndex2);
+
+    }
+}
+```
+
+### using tabulation
+
+TC O(m\*n)
+SC O(2n)
+
+```
+class Solution {
+    public int longestCommonSubsequence(String text1, String text2) {
+        int index1 = text1.length();
+        int index2 = text2.length();
+        int[] prev = new int[index2];
+
+        for(int i = 0; i < index1; i++){
+            int[] curr = new int[index2];
+            for(int j = 0; j < index2; j++){
+                if(text1.charAt(i) == text2.charAt(j)){
+                    curr[j] = 1 + ((i > 0 && j > 0) ? prev[j-1]:0);
+                }else{
+                    int mov1 = (j > 0) ? curr[j-1]:0;
+                    int mov2 = (i > 0)?prev[j]:0;
+                    curr[j] = Math.max(mov1,mov2);
+                }
+
+            }
+            prev = curr;
+        }
+        return prev[index2-1];
+    }
+}
+```
+
+## longest common substring
+
+- https://www.codingninjas.com/codestudio/problems/longest-common-substring_1235207?source=youtube&campaign=striver_dp_videos&utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_dp_videos&leftPanelTab=1
+- https://youtu.be/_wP9mWNPL5w
+
+### Intuition
+
+- it is similar to LCS but here seq should be continuos that means if(S1[i-1] != S2[j-1]), the characters don’t match, therefore the consecutiveness of characters is broken. So we set the cell value (dp[i][j]) as 0.
+- Note: dp[n][m] will not give us the answer; rather the maximum value in the entire dp array will give us the length of the longest common substring. This is because there is no restriction that the longest common substring is present at the end of both the strings.
+
+```
+import java.util.* ;
+import java.io.*;
+public class Solution {
+	public static int lcs(String str1, String str2) {
+		int len1 = str1.length();
+		int len2 = str2.length();
+		int[] prev = new int[len2+1];
+		// commented code is just to show the intent but since in java int[] is initialised to 0 by default don't really need these
+		// for(int i = 0; i <= len2;i++ ){
+		// 	prev[i] = 0;
+		// }
+		int max = 0;
+		for(int ind1 = 1; ind1 <= len1; ind1++){
+			int[] curr = new int[len2+1];
+			//curr[0] = 0;
+			for(int ind2 = 1; ind2 <= len2; ind2++){
+				if(str1.charAt(ind1-1) == str2.charAt(ind2-1)){
+					curr[ind2] = 1 + prev[ind2-1];
+					max = Math.max(max,curr[ind2]);
+				}
+				// else{
+				// 	curr[ind2] = 0;
+				// }
+			}
+			prev = curr;
+		}
+		return max;
+	}
+}
+```
+
+## longest palindromic subsequence
+
+- https://leetcode.com/problems/longest-palindromic-subsequence/
+- https://takeuforward.org/data-structure/longest-palindromic-subsequence-dp-28/
+- https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/solutions/3145678/java-sol-with-intuition-explanation-easy-to-understand-dp-on-strings-lps-lcs/
+
+### Intuition
+
+![](img/lcs_dp.jpg)
+
+```
+class Solution {
+    public int longestPalindromeSubseq(String s) {
+        String s2 = new StringBuilder(s).reverse().toString();
+        return lcs(s,s2);
+    }
+
+    private int lcs(String text1, String text2) {
+        int index1 = text1.length();
+        int index2 = text2.length();
+        int[] prev = new int[index2];
+
+        for(int i = 0; i < index1; i++){
+            int[] curr = new int[index2];
+            for(int j = 0; j < index2; j++){
+                if(text1.charAt(i) == text2.charAt(j)){
+                    curr[j] = 1 + ((i > 0 && j > 0) ? prev[j-1]:0);
+                }else{
+                    int mov1 = (j > 0) ? curr[j-1]:0;
+                    int mov2 = (i > 0)?prev[j]:0;
+                    curr[j] = Math.max(mov1,mov2);
+                }
+
+            }
+            prev = curr;
+        }
+        return prev[index2-1];
+    }
+}
+```
+
+## min insertion to make a string palindromic(LC HARD)
+
+- https://takeuforward.org/data-structure/minimum-insertions-to-make-string-palindrome-dp-29/
+- https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/
+
+### Intuition
+
+<!-- Describe your first thoughts on how to solve this problem. -->
+
+- first think about how we will make a string palindrome with insertions
+  simply add the reverse of the string at the end
+
+```
+    s = mbadm
+    palindrom_s = mbadm + mdabm = mbadmmdabm
+```
+
+- but here this is max no of insertion i.e len of string (n) to make the string palindrome so let's think further about min no of insertion
+  to make it palindrome
+- here if we observe carefully in the orignal string `mbadm` we already have longest palindromic subsequnce `mam` so there char don't prevent the string to be palindromic already so no need to add those again so n(len of str) - lps will give us the min no of insertion to make the string palindrome
+- `bd` are the only 2 char which prevent the string from being palindromic so 2 op wll be needed
+  e.g `mbadm len = 5, lps = 3 for mam so len - lps = 2` is our ans.
+
+non palindrome char bd simply reverse it and add in original string to find the palindromic string i.e
+mdbabdm or mbdadbm
+
+### without LPS|LCS method
+
+- it could also be solved using DP without using LCS method i.e take 2 points from beg and end to traverse from both end and in case char(beg) == char(end) matches then simply take beg++, end-- but in case it does not matches then take min of (case1, case2)
+- case 1 is 1 + rec(str,beg,end-1)
+- case 2 is 1 + rec(str, ber+1, end)
+
+### Approach
+
+<!-- Describe your approach to solving the problem. -->
+
+We are given a string (say s), store its length as n.
+Find the length of the longest palindromic subsequence ( say k) which again uses the LCS method i.e reverse the string `rev_s` find lcs of `s` and `rev_s`
+Return n-k as answer
+
+### Complexity
+
+- Time complexity:
+  <!-- Add your time complexity here, e.g. $$O(n)$$ -->
+  O(n^2)
+- Space complexity:
+O(n)
+<!-- Add your space complexity here, e.g. $$O(n)$$ -->
+
+### Code
+
+```
+class Solution {
+    public int minInsertions(String s) {
+       int n = s.length();
+       int lps = lps(s);
+       return n-lps;
+
+    }
+
+    private int lps(String s){
+        String s2 = new StringBuilder(s).reverse().toString();
+        return lcs(s,s2);
+    }
+
+    private int lcs(String text1, String text2) {
+        int index1 = text1.length();
+        int index2 = text2.length();
+        int[] prev = new int[index2];
+
+        for(int i = 0; i < index1; i++){
+            int[] curr = new int[index2];
+            for(int j = 0; j < index2; j++){
+                if(text1.charAt(i) == text2.charAt(j)){
+                    curr[j] = 1 + ((i > 0 && j > 0) ? prev[j-1]:0);
+                }else{
+                    int mov1 = (j > 0) ? curr[j-1]:0;
+                    int mov2 = (i > 0)?prev[j]:0;
+                    curr[j] = Math.max(mov1,mov2);
+                }
+
+            }
+            prev = curr;
+        }
+        return prev[index2-1];
+    }
+}
+```
+
+## Minimum Insertions/Deletions to Convert String | (DP- 30)
+
+- https://takeuforward.org/data-structure/minimum-insertions-deletions-to-convert-string-dp-30/
+- https://practice.geeksforgeeks.org/problems/minimum-number-of-deletions-and-insertions0209/1
+
+### Intuition
+
+- forget the min condition just try how would you easily convers str1 to str2 i.e del all char of str1 and add str2 char so m + n op but this max, now on all matching & in order char you can skip op as those will unnessary so task to find lcs of 2 str and then m-lcs + n-lcs will be our ans
+
+```
+class Solution
+{
+	public int minOperations(String str1, String str2)
+	{
+	    // Your code goes here
+	    int len1 = str1.length();
+	    int len2 = str2.length();
+	    int lcs = lcs(str1,str2,len1,len2);
+	    return (len1 + len2 - 2*lcs);
+	}
+
+	public int lcs(String str1, String str2,int len1,int len2){
+
+	    int[] prev = new int[len2+1];
+	    for(int ind1= 1; ind1 <= len1; ind1++){
+	        int[] curr = new int[len2+1];
+	        for(int ind2 = 1; ind2 <= len2; ind2++){
+	            if(str1.charAt(ind1-1) == str2.charAt(ind2-1)){
+	                curr[ind2] = 1 + prev[ind2-1];
+	            }else{
+	                curr[ind2] =  Math.max(prev[ind2],curr[ind2-1]);
+	            }
+	        }
+	        prev = curr;
+	    }
+	    return prev[len2];
+	}
+}
+```
+
+## DP 31. Shortest Common Supersequence | DP on Strings | LC HARD
+
+- https://leetcode.com/problems/shortest-common-supersequence/submissions/
+- https://takeuforward.org/data-structure/shortest-common-supersequence-dp-31/
+
+### Intuition
+
+![](img/sup_seq.jpg)
+
+```
+class Solution {
+    public String shortestCommonSupersequence(String str1, String str2) {
+        int len1 = str1.length();
+        int len2 = str2.length();
+        int[][] dp = new int[len1+1][len2+1];
+	    for(int ind1 = 1; ind1 <= len1; ind1++){
+	        for(int ind2 = 1; ind2 <= len2; ind2++){
+	            if(str1.charAt(ind1-1) == str2.charAt(ind2-1)){
+	                dp[ind1][ind2] = 1 + dp[ind1-1][ind2-1];
+	            }else{
+	                dp[ind1][ind2] =  Math.max(dp[ind1-1][ind2],dp[ind1][ind2-1]);
+	            }
+	        }
+	    }
+	    int i = len1;
+        int j = len2;
+        StringBuilder supStr = new StringBuilder("");
+        while(i > 0 && j > 0){
+            if(str1.charAt(i-1) == str2.charAt(j-1)){
+                supStr.append(str1.charAt(i-1));
+                i--;
+                j--;
+            }else if(dp[i][j-1] > dp[i-1][j]){
+                supStr.append(str2.charAt(j-1));
+                j--;
+            }else{
+                supStr.append(str1.charAt(i-1));
+                i--;
+            }
+        }
+        while(i > 0){
+            supStr.append(str1.charAt(i-1));
+            i--;
+        }
+        while(j > 0){
+            supStr.append(str2.charAt(j-1));
+            j--;
+        }
+        return supStr.reverse().toString();
+    }
+}
+```
+
+## Distinct Subsequences | 1D Array Optimisation Technique LC HARD
+
+- https://leetcode.com/problems/distinct-subsequences/submissions/
+- https://www.youtube.com/watch?v=nVG7eTiD2bY&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=33
+
+### using memoization
+
+```
+class Solution {
+    public int numDistinct(String s, String t) {
+
+        int len1 = s.length();
+        int len2 = t.length();
+        int[][] dp = new int[len1][len2];
+        for(int[] row: dp){
+            Arrays.fill(row, -1);
+        }
+        return rec(len1-1,len2-1,s,t,dp);
+    }
+
+    private int rec(int ind1,int ind2,String s, String t,int[][] dp){
+        if(ind2 < 0) return 1;
+        if(ind1 < 0) return 0;
+        if(dp[ind1][ind2] != -1) return dp[ind1][ind2];
+        if(s.charAt(ind1) == t.charAt(ind2)){
+            return dp[ind1][ind2] = rec(ind1-1,ind2-1,s,t,dp) + rec(ind1-1,ind2,s,t,dp);
+        }else{
+            return dp[ind1][ind2]=rec(ind1-1,ind2,s,t,dp);
+        }
+    }
+}
+```
+
+### using tabulation
+
+```
+class Solution {
+    public int numDistinct(String s, String t) {
+
+        int len1 = s.length();
+        int len2 = t.length();
+        int[] prev = new int[len2+1];
+
+        prev[0] = 1;
+        for(int ind1 = 1; ind1 <= len1; ind1++){
+            int[] curr = new int[len2+1];
+            curr[0] = 1;
+            for(int ind2 = 1; ind2 <= len2; ind2++){
+                if(s.charAt(ind1 - 1) == t.charAt(ind2-1))
+                    curr[ind2] = prev[ind2-1] + prev[ind2];
+                else
+                    curr[ind2] = prev[ind2];
+            }
+            prev = curr;
+        }
+        return prev[len2];
+    }
+}
+```
+
+### 1D space optimization
+
+```
+class Solution {
+    public int numDistinct(String s, String t) {
+
+        int len1 = s.length();
+        int len2 = t.length();
+        int[] prev = new int[len2+1];
+
+        prev[0] = 1;
+        for(int ind1 = 1; ind1 <= len1; ind1++){
+
+            for(int ind2 = len2; ind2 > 0; ind2--){
+                if(s.charAt(ind1 - 1) == t.charAt(ind2-1))
+                    prev[ind2] = prev[ind2-1] + prev[ind2];
+                else
+                    prev[ind2] = prev[ind2]; // we can omit this
+            }
+
+        }
+        return prev[len2];
+    }
+}
 ```
