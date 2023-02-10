@@ -44,9 +44,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -227,9 +227,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -436,6 +436,13 @@
     - [using memoization](#using-memoization-11)
     - [using tabulation](#using-tabulation-3)
     - [1D space optimization](#1d-space-optimization)
+  - [Edit Distance | (DP-33) LC HARD](#edit-distance--dp-33-lc-hard)
+    - [Intuition](#intuition-18)
+    - [using memoization](#using-memoization-12)
+    - [using tabulation](#using-tabulation-4)
+      - [2 row space optimization](#2-row-space-optimization)
+  - [44. Wildcard Matching LC HARD](#44-wildcard-matching-lc-hard)
+  - [using memoization](#using-memoization-13)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -11440,6 +11447,183 @@ class Solution {
 
         }
         return prev[len2];
+    }
+}
+```
+
+## Edit Distance | (DP-33) LC HARD
+
+- https://takeuforward.org/data-structure/edit-distance-dp-33/
+- https://leetcode.com/problems/edit-distance/submissions/895553727/
+- https://leetcode.com/problems/edit-distance/solutions/3169576/dp-tabulation-and-memoization-approach-with-intuition-java-clean-space-optimization/
+
+### Intuition
+
+max op we know is delete all char from word1 and then insert all char of word2 i.e word1.len + word2.len, now to find min operation we have to consider all 3 possibilty on non match case i.e let's say pointer i and j are pointing to char in word1 and word2 respectivly, now if they match already we don't need any operation to match them so simply return f(i-1,j-1) but if they don't match then we will have consider every possibility i.e del operation , insert operation and replace operation and return 1 + min(del,ins,rep)
+
+### using memoization
+
+TC O(m*n) without mem exponential 3^m*n
+SC O(m\*n) + O(m+n)
+
+```
+class Solution {
+    int max = (int)1e9;
+    public int minDistance(String word1, String word2) {
+        int len1 = word1.length();
+        int len2 =  word2.length();
+        int ind1 = len1 - 1;
+        int ind2 = len2 - 1;
+        if(len2 == 0) return len1;
+        if(len1 == 0) return len2;
+        int[][] dp = new int[len1][len2];
+        for(int[] row: dp ){
+            Arrays.fill(row, -1);
+        }
+        return rec(ind1,ind2,word1,word2, dp);
+    }
+
+    private int rec(int ind1,int ind2, String word1, String word2, int[][] dp){
+        if(ind1 < 0 &&  ind2 < 0) return 0;
+        if(ind1 < 0) return ind2 + 1;
+        if(ind2 < 0) return ind1 + 1;
+        if(dp[ind1][ind2] != -1 ) return dp[ind1][ind2];
+
+        if(word1.charAt(ind1) == word2.charAt(ind2)){
+            return rec(ind1-1,ind2-1, word1,word2,dp);
+        }else{
+            int ins = rec(ind1,ind2-1,word1,word2,dp);
+            int del = rec(ind1-1,ind2,word1,word2,dp);
+            int rep = rec(ind1-1,ind2-1,word1,word2,dp);
+            return dp[ind1][ind2] = 1 + Math.min(ins,Math.min(del,rep));
+        }
+
+    }
+}
+```
+
+### using tabulation
+
+TC O(m*n)
+SC O(m*n)
+
+```
+class Solution {
+    int max = (int)1e9;
+    public int minDistance(String word1, String word2) {
+        int len1 = word1.length();
+        int len2 =  word2.length();
+        if(len2 == 0) return len1;
+        if(len1 == 0) return len2;
+        int[][] dp = new int[len1+1][len2+1];
+
+        for(int i = 1; i <= len2; i++){
+            dp[0][i] = i;
+        }
+        for(int i = 1; i <= len1; i++){
+            dp[i][0] = i;
+        }
+
+        for(int ind1 = 1; ind1 <= len1; ind1++){
+            for(int ind2 = 1; ind2 <= len2; ind2++){
+                if(word1.charAt(ind1-1) == word2.charAt(ind2-1)){
+                    dp[ind1][ind2] = dp[ind1-1][ind2-1];
+                }else{
+                    int ins = dp[ind1][ind2-1];
+                    int del = dp[ind1-1][ind2];
+                    int rep = dp[ind1-1][ind2-1];
+                    dp[ind1][ind2] = 1 + Math.min(ins,Math.min(del,rep));
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
+}
+```
+
+#### 2 row space optimization
+
+TC O(m\*n)
+SC O(n)
+
+```
+class Solution {
+    int max = (int)1e9;
+    public int minDistance(String word1, String word2) {
+        int len1 = word1.length();
+        int len2 =  word2.length();
+        if(len2 == 0) return len1;
+        if(len1 == 0) return len2;
+        int[] prev = new int[len2+1];
+
+        for(int i = 1; i <= len2; i++){
+            prev[i] = i;
+        }
+
+        for(int ind1 = 1; ind1 <= len1; ind1++){
+            int[] curr = new int[len2+1];
+            curr[0] = ind1;
+            for(int ind2 = 1; ind2 <= len2; ind2++){
+                if(word1.charAt(ind1-1) == word2.charAt(ind2-1)){
+                    curr[ind2] = prev[ind2-1];
+                }else{
+                    int ins = curr[ind2-1];
+                    int del = prev[ind2];
+                    int rep = prev[ind2-1];
+                    curr[ind2] = 1 + Math.min(ins,Math.min(del,rep));
+                }
+            }
+            prev = curr;
+        }
+        return prev[len2];
+    }
+}
+```
+
+## 44. Wildcard Matching LC HARD
+
+- https://takeuforward.org/data-structure/wildcard-matching-dp-34/
+- https://www.youtube.com/watch?v=ZmlQ3vgAOMo
+- https://leetcode.com/problems/wildcard-matching/description/
+
+## using memoization
+
+```
+class Solution {
+    public boolean isMatch(String s, String p) {
+        int len1 = s.length();
+        int len2 = p.length();
+        if(len2 == 0 && len1 == 0) return true;
+        int ind1 = len1-1;
+        int ind2 = len2-1;
+        int[][] dp = new int[len1][len2];
+        for(int[] row: dp ){
+            Arrays.fill(row, -1);
+        }
+        return rec(ind1,ind2,s,p,dp)==1 ? true:false;
+    }
+    private int rec(int ind1, int ind2, String s, String p, int[][] dp){
+        if(ind1 < 0 && ind2 < 0) return 1;
+        if(ind1 >= 0 && ind2 < 0) return 0;
+        if(ind1 < 0 && ind2>=0) return isAllStar(p,ind2) ? 1 : 0;
+        if(dp[ind1][ind2] != -1) return dp[ind1][ind2];
+        if(s.charAt(ind1) == p.charAt(ind2) || p.charAt(ind2) == '?'){
+            return dp[ind1][ind2] = rec(ind1-1,ind2-1,s,p,dp);
+        }else{
+            if(p.charAt(ind2) == '*'){
+               return dp[ind1][ind2] = (rec(ind1,ind2-1,s,p,dp) == 1 || rec(ind1-1,ind2,s,p,dp) ==1)?1:0;
+            } else{
+                 return dp[ind1][ind2] = 0;
+
+            }
+        }
+    }
+    private boolean isAllStar(String s, int ind){
+        for(int i = 0;i <= ind; i++){
+            if(s.charAt(i) != '*')
+                return false;
+        }
+        return true;
     }
 }
 ```
