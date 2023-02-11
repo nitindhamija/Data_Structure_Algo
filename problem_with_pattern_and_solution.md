@@ -443,6 +443,13 @@
       - [2 row space optimization](#2-row-space-optimization)
   - [44. Wildcard Matching LC HARD](#44-wildcard-matching-lc-hard)
   - [using memoization](#using-memoization-13)
+    - [tabulation with space optimization](#tabulation-with-space-optimization)
+  - [buy and sell stock](#buy-and-sell-stock)
+    - [using memoization TLE (self sol)](#using-memoization-tle-self-sol)
+  - [can buy and sell stock || (many times buying/selling)](#can-buy-and-sell-stock--many-times-buyingselling)
+    - [using memoization](#using-memoization-14)
+    - [using tabulation](#using-tabulation-5)
+    - [space optimization](#space-optimization-1)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -11625,5 +11632,173 @@ class Solution {
         }
         return true;
     }
+}
+```
+
+### tabulation with space optimization
+
+TC O(m\*n)
+SC(n)
+
+```
+class Solution {
+public boolean isMatch(String s, String p) {
+        int len1 = s.length();
+        int len2 = p.length();
+        if(len2 == 0 && len1 == 0) return true;
+
+        int[] prev = new int[len2+1];
+        prev[0] = 1;
+        for(int i = 1; i <= len2; i++){
+            prev[i] = isAllStar(p, i-1) ? 1 : 0;
+        }
+
+
+        for(int ind1 = 1; ind1 <= len1; ind1++){
+            int[] curr = new int[len2+1];
+            curr[0]= 0;
+            for(int ind2 = 1; ind2 <= len2; ind2++){
+                if(s.charAt(ind1-1) == p.charAt(ind2-1) || p.charAt(ind2-1) == '?'){
+                    curr[ind2] = prev[ind2-1];
+                }else{
+                    if(p.charAt(ind2-1) == '*'){
+                    curr[ind2] = (curr[ind2-1] == 1 || prev[ind2] ==1) ? 1 : 0;
+                } else{
+                     curr[ind2] = 0;
+                }
+              }
+            }
+            prev = curr;
+        }
+        return prev[len2] == 1 ?  true: false;
+```
+
+## buy and sell stock
+
+### using memoization TLE (self sol)
+
+```
+class Solution {
+    int max = (int) 1e9;
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int[] dp = new int[len];
+        Arrays.fill(dp,-1);
+        return rec(len-1 , prices,dp);
+    }
+    private int rec(int ind, int[] prices, int[] dp){
+        if(ind == 0) return 0;
+        if(dp[ind] != -1) return dp[ind];
+        int sell = prices[ind] - min(ind-1,prices);
+        int notSell = rec(ind-1,prices,dp);
+        return dp[ind] = Math.max(sell,notSell);
+        }
+        private int min(int i, int[] p){
+            int min = max;
+            while(i >= 0){
+                min = Math.min(min, p[i--]);
+            }
+            return min;
+        }
+}
+
+```
+
+## can buy and sell stock || (many times buying/selling)
+
+- https://www.youtube.com/watch?v=nGJmxkUJQGs
+- https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/submissions/
+  ![](img/dp_stock_2.jpg)
+
+### using memoization
+
+TC(n*2)
+SC (n*2) + O(n)
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int[][] dp = new int[prices.length][2];
+        for(int[] row: dp){
+            Arrays.fill(row, -1);
+        }
+        return rec(0, 1, prices, dp);
+    }
+
+    private int rec(int ind, int canBuy,int[] prices, int[][] dp){
+        if(ind == prices.length) return 0;
+        if(dp[ind][canBuy] != -1) return dp[ind][canBuy];
+        int profit = 0;
+        if(canBuy == 1){
+            int buy = -prices[ind] + rec(ind + 1, 0,prices,dp);
+            int notBuy = rec(ind + 1, 1, prices,dp);
+            profit =  Math.max(buy,notBuy);
+        }else{
+            int sell = prices[ind] + rec(ind + 1, 1,prices,dp);
+            int notSell = rec(ind + 1, 0, prices,dp);
+            profit = Math.max(sell,notSell);
+        }
+        return dp[ind][canBuy] = profit;
+    }
+}
+```
+
+### using tabulation
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int[][] dp = new int[len + 1][2];
+        dp[len][0] = 0;
+        dp[len][1] = 0;
+
+        for(int ind = len - 1; ind >= 0; ind--){
+            for(int canBuy = 0; canBuy <= 1 ; canBuy++){
+                if(canBuy == 1){
+                    int buy = -prices[ind] + dp[ind + 1][0];
+                    int notBuy = dp[ind + 1][1];
+                    dp[ind][canBuy] = Math.max(buy, notBuy);
+                }else{
+                    int sell = prices[ind] + dp[ind + 1][1];
+                    int notSell = dp[ind + 1][0];
+                    dp[ind][canBuy] = Math.max(sell, notSell);
+                }
+            }
+        }
+        return dp[0][1];
+    }
+```
+
+### space optimization
+
+- here since we looping in reverse direction ind+1 is prev
+
+![](img/dp_stock_2_space.JPG)
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int[] prev = new int[2];
+        prev[0] = 0;
+        prev[1] = 0;
+
+        for(int ind = len - 1; ind >= 0; ind--){
+            int[] curr = new int[2];
+            for(int canBuy = 0; canBuy <= 1 ; canBuy++){
+                if(canBuy == 1){
+                    int buy = -prices[ind] + prev[0];
+                    int notBuy = prev[1];
+                    curr[canBuy] = Math.max(buy, notBuy);
+                }else{
+                    int sell = prices[ind] + prev[1];
+                    int notSell = prev[0];
+                    curr[canBuy] = Math.max(sell, notSell);
+                }
+            }
+            prev = curr;
+        }
+        return prev[1];
 }
 ```
