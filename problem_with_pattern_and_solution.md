@@ -44,9 +44,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -227,9 +227,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -446,10 +446,14 @@
     - [tabulation with space optimization](#tabulation-with-space-optimization)
   - [buy and sell stock](#buy-and-sell-stock)
     - [using memoization TLE (self sol)](#using-memoization-tle-self-sol)
+    - [good sol](#good-sol)
   - [can buy and sell stock || (many times buying/selling)](#can-buy-and-sell-stock--many-times-buyingselling)
     - [using memoization](#using-memoization-14)
     - [using tabulation](#using-tabulation-5)
     - [space optimization](#space-optimization-1)
+  - [Best Time to Buy and Sell Stock III](#best-time-to-buy-and-sell-stock-iii)
+    - [using memoization](#using-memoization-15)
+    - [using tabulation](#using-tabulation-6)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -11671,6 +11675,15 @@ public boolean isMatch(String s, String p) {
             prev = curr;
         }
         return prev[len2] == 1 ?  true: false;
+}
+    private boolean isAllStar(String s, int ind){
+        for(int i = 0;i <= ind; i++){
+            if(s.charAt(i) != '*')
+                return false;
+        }
+        return true;
+    }
+}
 ```
 
 ## buy and sell stock
@@ -11702,6 +11715,25 @@ class Solution {
         }
 }
 
+```
+
+### good sol
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int maxProfit = 0;
+        int min = prices[0];
+
+        for(int i = 1; i < len; i++){
+            int currProfit = prices[i] - min;
+            maxProfit = Math.max(maxProfit, currProfit);
+            min = Math.min(prices[i],min);
+        }
+    return maxProfit;
+    }
+}
 ```
 
 ## can buy and sell stock || (many times buying/selling)
@@ -11801,4 +11833,85 @@ class Solution {
         }
         return prev[1];
 }
+}
+```
+
+## Best Time to Buy and Sell Stock III
+
+- https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/description/
+- https://takeuforward.org/data-structure/buy-and-sell-stock-iii-dp-37/
+- https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/solutions/3181135/java-sol-with-intuition-dp-memoization-tabulation-o-1-space-optimization/
+
+### using memoization
+
+Time Complexity: O(N*2*3)
+Space Complexity: O(N*2*3) + O(N)
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int[][][]  dp = new int[len][2][3];
+
+        for(int[][] dp_2d : dp){
+            for(int[] row : dp_2d){
+                Arrays.fill(row, -1);
+            }
+        }
+        return rec(0, 1 , 2, len, prices, dp);
+    }
+    int rec(int ind, int canBuy, int cap, int len, int[] prices, int[][][] dp){
+        if(cap == 0 || ind == len){
+            return 0;
+        }
+        if(dp[ind][canBuy][cap] != -1)
+            return dp[ind][canBuy][cap];
+        int profit = 0;
+        if(canBuy == 1){
+            int buy = -prices[ind] + rec(ind + 1, 0, cap, len, prices,dp);
+            int notBuy = rec(ind + 1, 1, cap, len, prices,dp);
+            profit = Math.max(buy, notBuy);
+        }else{
+            int sell = prices[ind] + rec(ind + 1, 1, cap - 1, len, prices,dp);
+            int notSell = rec(ind + 1, 0, cap, len, prices,dp);
+            profit = Math.max(sell, notSell);
+        }
+        return dp[ind][canBuy][cap] = profit;
+    }
+}
+```
+
+### using tabulation
+
+Time Complexity: O(N*2*3)
+Space Complexity: O(2\*3) ~ O(1)
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int[][] prev = new int[2][3];
+
+        for(int ind = len-1; ind >= 0; ind--){
+            int[][] curr = new int[2][3];
+            for(int canBuy = 0; canBuy <= 1; canBuy++){
+                for(int cap = 1; cap <=2 ; cap++){
+                    int profit = 0;
+                    if(canBuy == 1){
+                        int buy = -prices[ind] + prev[0][cap];
+                        int notBuy = prev[1][cap];
+                        profit = Math.max(buy, notBuy);
+                    }else{
+                        int sell = prices[ind] + prev[1][cap - 1];
+                        int notSell = prev[0][cap];
+                        profit = Math.max(sell, notSell);
+                    }
+                    curr[canBuy][cap] = profit;
+                }
+            }
+            prev = curr;
+        }
+
+        return prev[1][2];
+    }
 ```
