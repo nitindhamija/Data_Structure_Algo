@@ -454,6 +454,13 @@
   - [Best Time to Buy and Sell Stock III](#best-time-to-buy-and-sell-stock-iii)
     - [using memoization](#using-memoization-15)
     - [using tabulation](#using-tabulation-6)
+    - [n\*5 sol with 2d array](#n5-sol-with-2d-array)
+  - [Best Time to Buy and Sell Stock IV IMP](#best-time-to-buy-and-sell-stock-iv-imp)
+  - [Best Time to Buy and Sell Stock with Cooldown](#best-time-to-buy-and-sell-stock-with-cooldown)
+    - [using memoization](#using-memoization-16)
+    - [using tabulation](#using-tabulation-7)
+    - [skip inner loop and optimize the sol](#skip-inner-loop-and-optimize-the-sol)
+      - [further space optmize](#further-space-optmize)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -11832,7 +11839,7 @@ class Solution {
             prev = curr;
         }
         return prev[1];
-}
+    }
 }
 ```
 
@@ -11913,5 +11920,161 @@ class Solution {
         }
 
         return prev[1][2];
+    }
+```
+
+### n\*5 sol with 2d array
+
+- here we can also do it in O(n\*4) space complexity i.e if we use cap ranging from 1 to 4 and -- for every buy or sell
+- now we can only do trans in B S B S so 4 3 2 1 will be corresponding cap value at buy sell and we can see if cap%2 ==0 then it's a buy else it's sell
+- then canBuy can be replaced with above condition
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        //int[][] dp = new int[len+1][5];
+        int[] prev = new int[5];
+
+        for(int ind = len - 1; ind >= 0; ind--){
+            int[] curr = new int[5];
+                for(int cap = 3; cap >= 0 ; cap--){
+                    int profit = 0;
+                    if(cap%2 == 0){
+                        int buy = -prices[ind] + prev[cap + 1];
+                        int notBuy = prev[cap];
+                        profit = Math.max(buy, notBuy);
+                    }else{
+                        int sell = prices[ind] + prev[cap + 1];
+                        int notSell = prev[cap];
+                        profit = Math.max(sell, notSell);
+                    }
+                    curr[cap] = profit;
+                }
+
+            prev = curr;
+        }
+        return prev[0];
+    }
+}
+```
+
+## Best Time to Buy and Sell Stock IV IMP
+
+- extension of prev prob just replace at most 2 transaction with k to generalize it
+
+## Best Time to Buy and Sell Stock with Cooldown
+
+- https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/submissions/
+- https://takeuforward.org/data-structure/buy-and-sell-stocks-with-cooldown-dp-39/
+
+### using memoization
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int[][] dp = new int[len][2];
+        for(int[] row: dp){
+            Arrays.fill(row, -1);
+        }
+        return rec(0,1, prices,dp);
+    }
+    private int rec(int ind, int canBuy, int[] prices, int[][] dp){
+        if(ind >= prices.length) return 0;
+        if(dp[ind][canBuy] != -1) return dp[ind][canBuy];
+        int profit = 0;
+        if(canBuy == 1){
+            int buy = -prices[ind] + rec(ind + 1 , 0, prices,dp);
+            int notBuy = rec(ind+1 , 1, prices,dp);
+            profit = Math.max(buy, notBuy);
+        }else{
+            int sell = prices[ind] + rec(ind + 2 , 1, prices,dp);
+            int notSell = rec(ind + 1 , 0, prices,dp);
+            profit = Math.max(sell, notSell);
+        }
+        return dp[ind][canBuy] = profit;
+    }
+}
+```
+
+### using tabulation
+
+- since here we need 2 prev row to calculate curr row so we can not space optmize it
+- but see carefully the innerloop both if and else executes only once for inner loop so we can omit inner and loop
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int[][] dp = new int[len + 2][2];
+
+        for(int ind = len - 1; ind >= 0 ; ind--){
+            for(int canBuy = 0; canBuy <= 1; canBuy++){
+                int profit = 0;
+                if(canBuy == 1){
+                    int buy = -prices[ind] + dp[ind + 1][0];
+                    int notBuy = dp[ind+1][1];
+                    profit = Math.max(buy, notBuy);
+                }else{
+                    int sell = prices[ind] + dp[ind + 2][1];
+                    int notSell = dp[ind + 1][0];
+                    profit = Math.max(sell, notSell);
+                }
+                dp[ind][canBuy] = profit;
+            }
+        }
+        return dp[0][1];
+        // for(int[] row: dp){
+        //     Arrays.fill(row, -1);
+        // }
+        // return rec(0,1, prices,dp);
+    }
+```
+
+### skip inner loop and optimize the sol
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int[][] dp = new int[len + 2][2];
+
+        for(int ind = len - 1; ind >= 0 ; ind--){
+
+            int buy = -prices[ind] + dp[ind + 1][0];
+            int notBuy = dp[ind+1][1];
+            dp[ind][1] = Math.max(buy, notBuy);
+
+            int sell = prices[ind] + dp[ind + 2][1];
+            int notSell = dp[ind + 1][0];
+            dp[ind][0] = Math.max(sell, notSell);
+
+        }
+        return dp[0][1];
+    }
+```
+
+#### further space optmize
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int len = prices.length;
+        int[] prev1  = new int[2];
+        int[] prev2  = new int[2];
+        
+        for(int ind = len - 1; ind >= 0 ; ind--){
+            int[] curr  = new int[2];
+            int buy = -prices[ind] + prev1[0];
+            int notBuy = prev1[1];
+            curr[1] = Math.max(buy, notBuy);
+        
+            int sell = prices[ind] + prev2[1];
+            int notSell = prev1[0];
+            curr[0] = Math.max(sell, notSell);
+            prev2 = prev1;
+            prev1 = curr;
+        }
+        return prev1[1];   
     }
 ```
