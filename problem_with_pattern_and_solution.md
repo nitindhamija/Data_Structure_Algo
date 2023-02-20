@@ -44,9 +44,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -227,9 +227,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -461,6 +461,13 @@
     - [using tabulation](#using-tabulation-7)
     - [skip inner loop and optimize the sol](#skip-inner-loop-and-optimize-the-sol)
       - [further space optmize](#further-space-optmize)
+  - [300. Longest Increasing Subsequence](#300-longest-increasing-subsequence)
+    - [using memoization and coardinate shifts](#using-memoization-and-coardinate-shifts)
+    - [using tabulation](#using-tabulation-8)
+    - [other Approach with benefit of printing LIS as well](#other-approach-with-benefit-of-printing-lis-as-well)
+    - [to print the LIS just use another trace array to store prev index](#to-print-the-lis-just-use-another-trace-array-to-store-prev-index)
+  - [Largest Divisible Subset(variation of LIS)](#largest-divisible-subsetvariation-of-lis)
+  - [1048. Longest String Chain](#1048-longest-string-chain)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -12056,25 +12063,216 @@ class Solution {
 ```
 
 #### further space optmize
+
 ```
 class Solution {
     public int maxProfit(int[] prices) {
         int len = prices.length;
         int[] prev1  = new int[2];
         int[] prev2  = new int[2];
-        
+
         for(int ind = len - 1; ind >= 0 ; ind--){
             int[] curr  = new int[2];
             int buy = -prices[ind] + prev1[0];
             int notBuy = prev1[1];
             curr[1] = Math.max(buy, notBuy);
-        
+
             int sell = prices[ind] + prev2[1];
             int notSell = prev1[0];
             curr[0] = Math.max(sell, notSell);
             prev2 = prev1;
             prev1 = curr;
         }
-        return prev1[1];   
+        return prev1[1];
     }
+```
+
+## 300. Longest Increasing Subsequence
+
+- https://leetcode.com/problems/longest-increasing-subsequence/description/
+- for sol check the leetcode submission
+- https://leetcode.com/problems/longest-increasing-subsequence/solutions/1326308/c-python-dp-binary-search-bit-segment-tree-solutions-picture-explain-o-nlogn/?orderBy=most_votes O(nlogn)
+
+### using memoization and coardinate shifts
+
+TC o(n^2)
+SC O(n^2) + O(n) rec stack
+
+```
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int len = nums.length;
+        int[][] dp = new int[len + 2][len + 1];
+        for(int[] row: dp){
+            Arrays.fill(row, -1);
+        }
+        return rec(1, 0, len, nums, dp);
+    }
+
+    private int rec(int currInd,int prevInd,int len, int[] nums, int[][] dp){
+        if(currInd == len + 1) return dp[currInd][prevInd] = 0;
+        if(dp[currInd][prevInd] != -1) return dp[currInd][prevInd];
+        int notTake = rec(currInd+1, prevInd, len, nums,dp);
+        int take = 0;
+        if(prevInd == 0 || nums[currInd - 1] > nums[prevInd - 1] ){
+            take = 1 + rec(currInd+1, currInd, len, nums,dp);
+        }
+        return dp[currInd][prevInd] = Math.max(take, notTake);
+    }
+}
+```
+
+### using tabulation
+
+TC O(n^2)
+SC O(n)
+
+```
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int len = nums.length;
+        int[] prev = new int[len + 1];
+
+        for(int currInd = len; currInd >= 1; currInd--){
+            int[] curr = new int[len + 1];
+            for(int prevInd = currInd - 1; prevInd >= 0; prevInd--){
+                int notTake = prev[prevInd];
+                int take = 0;
+                if(prevInd == 0 || nums[currInd-1] > nums[prevInd-1] ){
+                    take = 1 + prev[currInd];
+                }
+                curr[prevInd] = Math.max(take, notTake);
+            }
+            prev = curr;
+        }
+        return prev[0];
+    }
+```
+
+### other Approach with benefit of printing LIS as well
+
+- https://takeuforward.org/data-structure/printing-longest-increasing-subsequence-dp-42/
+
+TC O(n^2)
+SC O(n)
+
+```
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int len = nums.length;
+        int[] dp = new int[len];
+        Arrays.fill(dp, 1);
+        int max = 0;
+        for(int i = 0; i < len; i++){
+            for(int j = 0; j < i; j++){
+                if(nums[j] < nums[i]){
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+    }
+```
+
+### to print the LIS just use another trace array to store prev index
+
+```
+   if(nums[j] < nums[i]){
+        dp[i] = Math.max(dp[i], dp[j] + 1);
+        trace[i] = j;
+    }
+```
+
+## Largest Divisible Subset(variation of LIS)
+
+- https://leetcode.com/problems/largest-divisible-subset/description/
+- https://www.youtube.com/watch?v=gDuZwBW9VvM
+
+```
+class Solution {
+    public List<Integer> largestDivisibleSubset(int[] nums) {
+        int len = nums.length;
+        int[] dp = new int[len];
+        Arrays.fill(dp, 1);
+        Arrays.sort(nums);
+        int[] trace = new int[len];
+        int max = 0;
+        int lastIndex = -1;
+        for(int i = 0; i < len; i++){
+            trace[i] = i;
+            for(int j = 0; j < i; j++){
+                if(nums[i] % nums[j] == 0 && dp[j] + 1 > dp[i]){
+                    dp[i] = dp[j] + 1;
+                    trace[i] = j;
+                }
+            }
+            if(dp[i] > max){
+                max = dp[i];
+                lastIndex = i;
+            }
+        }
+
+        var ans = new ArrayList<Integer>();
+        ans.add(nums[lastIndex]);
+        while(lastIndex != trace[lastIndex]){
+            lastIndex = trace[lastIndex];
+            ans.add(nums[lastIndex]);
+        }
+        Collections.reverse(ans);
+        return ans;
+    }
+}
+```
+
+## 1048. Longest String Chain
+
+- https://www.youtube.com/watch?v=YY8iBaYcc4g
+- https://leetcode.com/problems/longest-string-chain/
+
+```
+
+class Solution {
+    public int longestStrChain(String[] words) {
+        int len = words.length;
+        int[] dp = new int[len];
+        Arrays.fill(dp, 1);
+        Arrays.sort(words,new Comparator<>(){
+            public int compare(String a,String b)
+            {
+                return a.length() - b.length();
+            }
+        });
+
+        int max = 1;
+        for(int i = 0; i < len; i++){
+            for(int j = 0; j < i; j++){
+                if(compare(words[i],words[j]) && dp[j] + 1 > dp[i]){
+                    dp[i] = dp[j] + 1;
+                }
+            }
+            if(dp[i] > max){
+                max = dp[i];
+            }
+        }
+        return max;
+    }
+    private boolean compare(String s1, String s2){
+        if (s1.length()  != 1 + s2.length()) return false;
+
+        int i = 0;
+        int j = 0;
+        System.out.println(s1 + " -> "+ s2);
+        while(i < s1.length()){
+            if(j < s2.length() && s1.charAt(i) == s2.charAt(j)){
+                i++;
+                j++;
+            }else{
+                i++;
+            }
+        }
+        if(i == s1.length() && j == s2.length()) return true;
+        return false;
+    }
+}
 ```
