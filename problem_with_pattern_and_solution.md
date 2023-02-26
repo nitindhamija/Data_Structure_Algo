@@ -468,6 +468,10 @@
     - [to print the LIS just use another trace array to store prev index](#to-print-the-lis-just-use-another-trace-array-to-store-prev-index)
   - [Largest Divisible Subset(variation of LIS)](#largest-divisible-subsetvariation-of-lis)
   - [1048. Longest String Chain](#1048-longest-string-chain)
+  - [Longest Bitonic subsequence(var of LIS)](#longest-bitonic-subsequencevar-of-lis)
+    - [Intuition](#intuition-19)
+  - [Number of Longest Increasing Subsequences|(DP-47)](#number-of-longest-increasing-subsequencesdp-47)
+    - [Intuition](#intuition-20)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -12276,3 +12280,59 @@ class Solution {
     }
 }
 ```
+
+## Longest Bitonic subsequence(var of LIS)
+
+- https://takeuforward.org/data-structure/longest-bitonic-subsequence-dp-46/
+
+### Intuition
+
+![](img/bitonic.jpg)
+
+- as per the bitonic definition it can be either all increasing or decreasing or inc-dec or dec-inc so
+  ![](img/bitonic1.jpg)
+- if think how this prob links to LIS, we can breack the inc-dec seq in to parts of inc seq from 0 to i and dec seq from i to n-1
+- now dec seq from i to n-1 can be referred as inc seq from n-1 to i and i will be pivot point.
+- Therefore the length of the longest bitonic subsequence at pivot [ i ] will be dp1[i] + dp2[i] -1
+
+```
+class Solution
+{
+    public int LongestBitonicSequence(int[] nums)
+    {
+        int len = nums.length;
+        int[] dp = new int[len];
+        int[] dpb = new int[len];
+        Arrays.fill(dp, 1);
+        Arrays.fill(dpb, 1);
+
+        int max = 0;
+        for(int ind = 0; ind <len; ind++){
+            for(int prev = 0; prev < ind; prev ++){
+                if(nums[ind] > nums[prev] && dp[prev] + 1 > dp[ind]){
+                    dp[ind] = dp[prev] + 1;
+                }
+            }
+        }
+
+        for(int ind = len-1; ind >= 0; ind--){
+            for(int prev = len-1; prev > ind; prev--){
+                if(nums[ind] > nums[prev] && dpb[prev] + 1 > dpb[ind]){
+                    dpb[ind] = dpb[prev] + 1;
+                }
+            }
+            max = Math.max(max, dp[ind] + dpb[ind] - 1);
+        }
+
+        return max;
+    }
+}
+```
+
+## Number of Longest Increasing Subsequences|(DP-47)
+
+- https://takeuforward.org/data-structure/number-of-longest-increasing-subsequences-dp-47/
+
+### Intuition
+
+![](img/count_lis.JPG)
