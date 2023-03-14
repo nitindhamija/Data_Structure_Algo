@@ -472,6 +472,11 @@
     - [Intuition](#intuition-19)
   - [Number of Longest Increasing Subsequences|(DP-47)](#number-of-longest-increasing-subsequencesdp-47)
     - [Intuition](#intuition-20)
+  - [Matrix Chain Multiplication (partition DP)](#matrix-chain-multiplication-partition-dp)
+    - [using memoization](#using-memoization-17)
+    - [using tabulation](#using-tabulation-9)
+  - [Minimum Cost to Cut a Stick](#minimum-cost-to-cut-a-stick)
+    - [using recursion](#using-recursion-1)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -12336,3 +12341,116 @@ class Solution
 ### Intuition
 
 ![](img/count_lis.JPG)
+
+## Matrix Chain Multiplication (partition DP)
+
+- https://takeuforward.org/dynamic-programming/matrix-chain-multiplication-dp-48/
+
+### using memoization
+
+Time Complexity: O(N*N*N)
+
+Reason: There are N*N states and we explicitly run a loop inside the function which will run for N times, therefore at max ‘N*N\*N’ new problems will be solved.
+
+Space Complexity: O(N\*N) + O(N)
+
+Reason: We are using an auxiliary recursion stack space(O(N))and a 2D array ( O(N\*N))
+
+```
+
+public class Solution {
+	//private static int min = Integer.MAX_VALUE;
+	public static int matrixMultiplication(int[] arr , int N) {
+		// Write your code here
+		int[][] dp = new int[N][N];
+		for(int[] row: dp){
+			Arrays.fill(row,-1);
+		}
+
+		return rec(arr, 1,N-1,dp);
+	}
+	private static int rec(int[] arr, int i, int j, int[][] dp){
+		if(i == j) return 0;
+		if(dp[i][j] != -1) return dp[i][j];
+		int min = Integer.MAX_VALUE;
+		for(int k = i; k < j; k++){
+			int ans =  rec(arr,i,k,dp) + rec(arr,k+1,j,dp) + (arr[i-1] * arr[k] * arr[j]);
+			min = Math.min(min, ans);
+		}
+
+		return dp[i][j] = min;
+	}
+}
+
+```
+
+### using tabulation
+
+bottom up means building from smaller prob to bigger prob
+i.e i ranges from n-1 to 1 and j from 0 to n-1 but j =0 does not makes sense since j is always right of i
+
+```
+class Solution{
+    static int matrixMultiplication(int N, int arr[])
+    {
+        // code here
+        int[][] dp = new int[N][N];
+
+	    for(int i = 0 ;i < N; i++){
+	        dp[i][i] = 0;
+	    }
+
+	    for(int i = N; i > 0; i--){
+	        for(int j = i+1; j < N; j++){
+	            int min = Integer.MAX_VALUE;
+		        for(int k = i; k < j; k++){
+		        	int ans =  dp[i][k] + dp[k+1][j] + (arr[i-1] * arr[k] * arr[j]);
+		        	min = Math.min(min, ans);
+		        }
+		        dp[i][j] = min;
+	        }
+	    }
+	    return dp[1][N-1];
+    }
+}
+```
+
+## Minimum Cost to Cut a Stick
+
+- https://leetcode.com/problems/minimum-cost-to-cut-a-stick/description/
+- https://takeuforward.org/data-structure/minimum-cost-to-cut-the-stick-dp-50/
+
+### using recursion
+
+```
+class Solution {
+    public int minCost(int n, int[] cuts) {
+        int len = cuts.length;
+        int[] sc = new int[len + 2];
+        int[][] dp = new int[len + 1][len + 1];
+        for(int[] row: dp){
+            Arrays.fill(row, -1);
+        }
+
+        sc[0] = 0;
+        sc[len + 1] = n;
+        int ind = 1;
+        for(int ele: cuts){
+            sc[ind++] = ele;
+        }
+        Arrays.sort(sc);
+        return rec(sc, 1, len, dp);
+    }
+    int rec(int[] sc, int i , int j, int[][] dp){
+        if(i > j) return 0;
+        if(dp[i][j] != -1) return dp[i][j];
+        int min = Integer.MAX_VALUE;
+        for(int ind = i; ind <= j; ind++){
+            int cost = sc[j + 1] - sc[i - 1] + rec(sc, i, ind - 1,dp) + rec(sc, ind + 1, j,dp);
+            min = Math.min(min, cost);
+        }
+        dp[i][j] = min;
+        return min;
+    }
+}
+```
