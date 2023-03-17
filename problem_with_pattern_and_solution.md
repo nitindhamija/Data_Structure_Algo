@@ -472,11 +472,20 @@
     - [Intuition](#intuition-19)
   - [Number of Longest Increasing Subsequences|(DP-47)](#number-of-longest-increasing-subsequencesdp-47)
     - [Intuition](#intuition-20)
-  - [Matrix Chain Multiplication (partition DP)](#matrix-chain-multiplication-partition-dp)
+  - [Matrix Chain Multiplication (partition DP) HARD LC](#matrix-chain-multiplication-partition-dp-hard-lc)
     - [using memoization](#using-memoization-17)
     - [using tabulation](#using-tabulation-9)
   - [Minimum Cost to Cut a Stick](#minimum-cost-to-cut-a-stick)
     - [using recursion](#using-recursion-1)
+    - [tabulation](#tabulation-3)
+  - [burst ballons LC HARD (partition DP)](#burst-ballons-lc-hard-partition-dp)
+    - [refer this for easy explanation](#refer-this-for-easy-explanation)
+    - [Intution](#intution-5)
+    - [using memoization](#using-memoization-18)
+  - [Evaluate Boolean Expression to True | Partition DP](#evaluate-boolean-expression-to-true--partition-dp)
+  - [Palindrome Partitioning - II | Front Partition | IMP](#palindrome-partitioning---ii--front-partition--imp)
+    - [using memoization](#using-memoization-19)
+    - [using tabulation](#using-tabulation-10)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -12342,7 +12351,7 @@ class Solution
 
 ![](img/count_lis.JPG)
 
-## Matrix Chain Multiplication (partition DP)
+## Matrix Chain Multiplication (partition DP) HARD LC
 
 - https://takeuforward.org/dynamic-programming/matrix-chain-multiplication-dp-48/
 
@@ -12420,6 +12429,9 @@ class Solution{
 - https://leetcode.com/problems/minimum-cost-to-cut-a-stick/description/
 - https://takeuforward.org/data-structure/minimum-cost-to-cut-the-stick-dp-50/
 
+TC O(n^3) + O(nlogn) sorting
+SC O(n^2) + O(n) rec stack
+
 ### using recursion
 
 ```
@@ -12452,5 +12464,240 @@ class Solution {
         dp[i][j] = min;
         return min;
     }
+}
+```
+
+### tabulation
+
+TC O(n^3) + O(nlogn) sorting
+SC O(n^2)
+
+- here dp array len needs to be len+2 since dp[ind+1] can go till len+1 index and this is not the case with recursive sol
+
+```
+class Solution {
+    public int minCost(int n, int[] cuts) {
+        int len = cuts.length;
+        int[] sc = new int[len + 2];
+        int[][] dp = new int[len + 2][len + 2];
+
+        sc[0] = 0;
+        sc[len + 1] = n;
+        int cnt = 1;
+        for(int ele: cuts){
+            sc[cnt++] = ele;
+        }
+        Arrays.sort(sc);
+
+        for(int i = len; i > 0 ; i--){
+            for(int j = i; j <= len ; j++){
+                int min = Integer.MAX_VALUE;
+                for(int ind = i; ind <= j; ind++){
+                    int cost = sc[j + 1] - sc[i - 1] + dp[i][ind - 1] + dp[ind + 1][j];
+                    min = Math.min(min, cost);
+                }
+                dp[i][j] = min;
+            }
+        }
+        return dp[1][len];
+    }
+}
+```
+
+## burst ballons LC HARD (partition DP)
+
+- https://leetcode.com/problems/burst-balloons/solutions/3303973/clean-sol-with-intution-explanation-partition-dp-java/
+- https://www.youtube.com/watch?v=Yz4LlDSlkns
+
+### refer this for easy explanation
+
+https://leetcode.com/problems/burst-balloons/solutions/892552/for-those-who-are-not-able-to-understand-any-solution-with-diagram/
+![](img/burst_balloons_DP3.JPG)
+
+### Intution
+
+- this prob seems like a partition prob where the order of solving sub prob changes the ans, so we apply the partition DP here
+- DP Solution: For a DP solution to exist, we need to define the subproblems. Let's define the problem first as:
+- `solve(nums, i, j)`
+  by which I mean that we need to burst balloons starting from index i to index j. At the beginning, they'll be 0, nums.size() -1 respectively. Let's suppose we burst the kth balloon in the first chance. We will get nums[k-1] _ nums[k] _ nums[k+1] coins. Now let's define the subproblems as:
+- `solve(nums, i, k - 1) , solve(nums, k + 1, j)`
+  As the balloon k is already burst, we solve the subproblems from i to k -1 and k + 1 to j. But wait, what's going wrong here? The subproblem solve(nums, i, k - 1) and solve(nums, k + 1, j) are not independent since after bursting kth balloon, balloon k - 1 and k + 1 have become adjacent and they will need each other in order to calculate the profit.
+
+- So, as we saw that if we choose the kth balloon to be the first one to be burst, we can't make the subproblems independent. Let's try the other way round. We choose the kth balloon as the last one to be burst. Now the subproblems will become independent since (k - 1)th balloon and (k + 1)th balloon won't need each other in order to calculate the answer but only need kth index value since kth is last one to burst it will be present in earlier stages
+
+- to further understand with an example refer below
+- but here we can't solve the subprob independently as shown in below image
+  ![](img/burst_balloons_DP2.JPG)
+- if we burst b4 first then it divids the prob in 2 sub prob and now b3 and b5 becomes adjacent and dependent on each other so now if we burst b5 from right subarray then it needs b3 which is part of left sub prob so 2 sub prob can't be solved indendently
+
+- since thinking in terms of which is the first balloon to birst gives us depedent sub prob, think other way round i.e think which will be the last balloon to burst
+
+let's say kth balloon is last one to burst then 1*arr[k]*1
+
+```
+coins = arr[i-1]*arr[k]*arr[j+1] + subprob(i, k-1) +subprob(k+1, i)
+```
+
+herer k-1 and k+1 will not be adjacent since k is bursting in last so it is present in earlier stages i.e subprob
+
+- let's say 8 is the last ballon to burst in [3,1,5,8] then it will earn coins = 1*8*1 now which will be the 2nd last ballon to burst it could be any one out of [3,1,5] i.e at 2nd last stage left ballons could be [3,8] or [1,8] or [5,8] cos 8 will definitley be there in 2nd last stage if it is burst in last stage so if we burst 3 in 2nd last stage then
+- `coins = a[i-1] * a[ind] * a[j+1]` i-1 and j+1 signify out of bounds of sub prob i.e left of sub prob range and right of sub prob range so left of [3,8] in [3,1,5,8] is 1 and right is defnitely 8 cos it is burst in last stage and at 2nd last stage 1 and 5 are already assumed to be burst in earlier stages for [3,8] so coins = 1*3*5 and so on till 1st stage
+  ![](img/burst_balloons_DP.JPG)
+- as shown in image below two sub prob at 2nd last stage are not dependent on each other but on b4 i.e balloon bursted in last stage  
+  ![](img/burst_balloons_DP1.JPG)
+
+### using memoization
+
+```
+class Solution {
+    public int maxCoins(int[] nums) {
+        int len = nums.length;
+        int[] arr = new int[len+2];
+        int[][] dp = new int[len+1][len+1];
+        for(int[] row: dp){
+            Arrays.fill(row, -1);
+        }
+        arr[0] = arr[len+1] = 1;
+        for(int i = 1; i <= len; i++){
+            arr[i] = nums[i-1];
+        }
+        return rec(arr, 1, len, dp);
+    }
+    int rec(int[] arr, int i, int j, int[][] dp){
+        if(i > j ) return 0;
+        if(dp[i][j] != -1) return dp[i][j];
+        int max = Integer.MIN_VALUE;
+        for(int ind = i; ind <= j ; ind++){
+            int coins = (arr[i-1] * arr[ind] * arr[j+1]) + rec(arr, i, ind - 1, dp) + rec(arr, ind+1, j, dp);
+            max = Math.max(max, coins);
+        }
+        return dp[i][j] = max;
+    }
+}
+```
+
+## Evaluate Boolean Expression to True | Partition DP
+
+TC - O(n*n*2) * n = n^3
+SC O(n*n\*2) + O(n)
+
+```
+import java.util.* ;
+import java.io.*;
+public class Solution {
+    private static int mod = 1000000007;
+    public static int evaluateExp(String exp) {
+        // Write your code here.
+        int len = exp.length();
+        long[][][] dp = new long[len][len][2];
+        for(long[][] twoD : dp){
+            for(long[] row: twoD){
+                Arrays.fill(row, -1);
+            }
+        }
+        return (int) rec(exp, 0, len - 1, 1,dp);
+    }
+    static long rec(String exp, int i, int j, int isTrue,long[][][] dp){
+        if(i > j) return 0;
+        if(i == j){
+            if(isTrue == 1 && exp.charAt(i) == 'T') return 1;
+            else if( isTrue == 0 && exp.charAt(i) == 'F') return 1;
+            else return 0;
+        }
+        if(dp[i][j][isTrue] != -1) return dp[i][j][isTrue];
+        long  ways = 0;
+        for(int ind = i+1; ind <= j-1; ind+=2){
+            long lt = rec(exp, i, ind - 1, 1,dp);
+            long rt = rec(exp,  ind + 1,j, 1,dp);
+            long lf = rec(exp, i, ind - 1, 0,dp);
+            long rf = rec(exp,  ind + 1,j, 0,dp);
+
+            if(exp.charAt(ind) == '&'){
+                if(isTrue == 1) ways= (ways + (lt*rt)%mod)%mod;
+                else ways= (ways + (lt*rf)%mod + (lf*rf)%mod + (lf*rt)%mod)%mod;
+            }else if(exp.charAt(ind) == '|'){
+                 if(isTrue == 1) ways= (ways + (lt*rt)%mod + (lf*rt)%mod + (lt*rf)%mod)%mod;
+                else ways= (ways + (lf*rf)%mod)%mod;
+            }else if(exp.charAt(ind) == '^'){
+                 if(isTrue == 1) ways=  (ways + (lf*rt)%mod + (lt*rf)%mod)%mod;
+                else ways= (ways + (lt*rt)%mod + (lf*rf)%mod)%mod;
+            }
+        }
+        return dp[i][j][isTrue] = ways;
+    }
+}
+```
+
+## Palindrome Partitioning - II | Front Partition | IMP
+
+### using memoization
+
+TC O(n^3)
+SC O(n) + O(n)
+
+- here front partition is used notice we are doing -1 to final answer becase for a string ABC it will do partion like A|BC -> A|B|C -> A|B|C| i.e at index c it will do a 1+ rec call so we need to reduce ans by 1
+
+```
+public class Solution {
+
+	public static int palindromePartitioning(String str) {
+	    // Write your code here
+		int len = str.length();
+		if(isPalindrome(str,0,len - 1)) return 0;
+		int[] dp = new int[len];
+		Arrays.fill(dp, -1);
+		return rec(str, 0, len, dp) - 1;
+	}
+	private static int rec(String str, int i, int len, int[] dp){
+		if(i == len) return 0;
+		if(dp[i] != -1) return dp[i];
+
+		int min = Integer.MAX_VALUE;
+		for(int j = i; j < len; j++){
+			if(isPalindrome(str,i , j)){
+				int cuts = 1 + rec(str, j + 1, len, dp);
+				min = Math.min(min, cuts);
+			}
+		}
+		//return min == Integer.MAX_VALUE ? 0:min;
+		return dp[i] = min;
+	}
+	private static boolean isPalindrome(String str, int i , int j){
+		while(i < j){
+			if(str.charAt(i) != str.charAt(j))
+				return false;
+				i++;
+				j--;
+		}
+		return true;
+	}
+}
+
+```
+
+### using tabulation
+
+```
+public class Solution {
+
+	public static int palindromePartitioning(String str) {
+
+		int len = str.length();
+		if(isPalindrome(str,0,len - 1)) return 0;
+		int[] dp = new int[len + 1];
+
+		for(int i = len - 1; i >= 0; i--){
+			int min = Integer.MAX_VALUE;
+			for(int j = i; j < len; j++){
+				if(isPalindrome(str,i , j)){
+					int cuts = 1 + dp[j + 1];
+					min = Math.min(min, cuts);
+				}
+			}
+			dp[i] = min;
+		}
+		return dp[0]-1;
+
+	}
 }
 ```
