@@ -486,6 +486,10 @@
   - [Palindrome Partitioning - II | Front Partition | IMP](#palindrome-partitioning---ii--front-partition--imp)
     - [using memoization](#using-memoization-19)
     - [using tabulation](#using-tabulation-10)
+  - [Partition Array for Maximum Sum|(DP-54) | Front Partition | IMP](#partition-array-for-maximum-sumdp-54--front-partition--imp)
+    - [using memoization](#using-memoization-20)
+    - [using tabulation](#using-tabulation-11)
+  - [Maximal Rectangle LC HARD - using histogram prob](#maximal-rectangle-lc-hard---using-histogram-prob)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -6596,8 +6600,9 @@ class Solution {
 
 Time complexity is O(4n) and space complexity is O(4n)
 
-- trick is to find the left smaller and right smaller for a bar at index i, that way max area for the bar is (rs - ls + 1 ) \* bar height, so the naive solution will be do this for every element in the array so TC will be O(n^2) + O(n^2) + O(n) = O(n^2)
-- to optimize TC compute the left & right smaller array using stack check the youtube link for how to calculate the LS and RS array
+- trick is to find the first left smaller and first right smaller for a bar at index i, because next of left smaller will be the farthest greater bar in left dir and prev of first right smaller will be farthest greater bar in right dir
+- that way max area for the bar is (prev index of rs - next index of ls + 1 ) \* bar height, so the naive solution will be do this for every element in the array so TC will be O(n^2) + O(n^2) + O(n) = O(n^2)
+- to optimize TC compute the left & right smaller array (next greater element technique) using stack check the youtube link for how to calculate the LS and RS array
 - below sol uses multiple passes i.e O(4n) 2n for loop and 2n stack operation for push/pop further with another observation it can be done in single pass but that is hard to understand and to explain so avoid that unless interviewer ask for further optimizatation, for that refer the youtube video
 - - Note: + 1 -> for adjust 0 based index
 
@@ -12630,6 +12635,8 @@ public class Solution {
 
 ## Palindrome Partitioning - II | Front Partition | IMP
 
+- front partition is nothing but simply applying recustion
+
 ### using memoization
 
 TC O(n^3)
@@ -12699,5 +12706,140 @@ public class Solution {
 		return dp[0]-1;
 
 	}
+}
+```
+
+## Partition Array for Maximum Sum|(DP-54) | Front Partition | IMP
+
+### using memoization
+
+TC O(n \* k)
+SC O(n) + O(n)
+
+```
+class Solution {
+    public int maxSumAfterPartitioning(int[] arr, int k) {
+        int len = arr.length;
+        int[] dp = new int[len];
+        Arrays.fill(dp, -1);
+        return rec(arr, 0, k, len,dp);
+    }
+
+    private int rec(int[] arr, int i, int k, int len, int[] dp){
+        if(i == len) return 0;
+        if(dp[i] != -1) return dp[i];
+        int slen = 0;
+        int maxele = Integer.MIN_VALUE;
+        int max = Integer.MIN_VALUE;
+        for(int ind = i; ind < Math.min(len, i+k); ind++){
+            slen++;
+            maxele = Math.max(maxele,arr[ind]);
+            int sum = (slen*maxele) + rec(arr, ind + 1, k, len,dp);
+            max = Math.max(max, sum);
+        }
+        return dp[i] = max;
+    }
+}
+```
+
+### using tabulation
+
+- solved using front partition
+
+```
+class Solution {
+    public int maxSumAfterPartitioning(int[] arr, int k) {
+        int len = arr.length;
+        int[] dp = new int[len + 1];
+
+        for(int i = len - 1; i >= 0; i--){
+            int slen = 0;
+            int maxele = Integer.MIN_VALUE;
+            int max = Integer.MIN_VALUE;
+            for(int ind = i; ind < Math.min(len, i+k); ind++){
+                slen++;
+                maxele = Math.max(maxele,arr[ind]);
+                int sum = (slen*maxele) + dp[ind + 1];
+                max = Math.max(max, sum);
+            }
+            dp[i] = max;
+        }
+        return dp[0];
+    }
+```
+
+## Maximal Rectangle LC HARD - using histogram prob
+
+- https://leetcode.com/problems/maximal-rectangle/description/
+
+```
+class Solution {
+   // using 2 pass
+   // here we find the right and left smaller and then do rightsmaller -1 and left smaller + 1 to find the bar greater on both sides on bar
+
+     public int largestRectangleArea(int[] heights) {
+        var n = heights.length;
+        var leftSmaller = new int[n];
+        var rightSmaller = new int[n];
+        var stack = new ArrayDeque<Integer>();
+        var rstack = new ArrayDeque<Integer>();
+        var maxArea = 0;
+        for(int i = 0; i < n; i++){
+            while(!stack.isEmpty() && heights[stack.peek()] >= heights[i]){
+                stack.pop();
+            }
+            if(stack.isEmpty()) leftSmaller[i] = 0;
+            else leftSmaller[i] = stack.peek() + 1;
+            stack.push(i);
+        }
+
+        for(int i = n - 1; i >= 0 ; i--){
+            while(!rstack.isEmpty() && heights[rstack.peek()] >= heights[i]){
+                rstack.pop();
+            }
+            if(rstack.isEmpty()) rightSmaller[i] = n - 1;
+            else rightSmaller[i] = rstack.peek() - 1;
+            rstack.push(i);
+            maxArea = Math.max(maxArea, (rightSmaller[i] - leftSmaller[i] + 1) * heights[i]);
+        }
+        return maxArea;
+    }
+// using single pass
+// here we actually find the left and right smaller of top element of stack
+    public int largestRectangleArea1(int[] heights) {
+        var n = heights.length;
+        var stack = new ArrayDeque<Integer>();
+        var maxArea = 0;
+        for(int i = 0; i <= n; i++){
+            while(!stack.isEmpty() && (i == n || heights[stack.peek()] >= heights[i])){
+                int width = 0;
+                int ind = stack.pop();
+                if(stack.isEmpty())
+                    width = i;
+                else
+                    width = i - stack.peek() - 1;
+
+                maxArea = Math.max(maxArea, width * heights[ind]);
+            }
+            stack.push(i);
+        }
+        return maxArea;
+    }
+
+    public int maximalRectangle(char[][] matrix) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int[] heights = new int[cols];
+        int maxA = 0;
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < cols; j++){
+                if(matrix[i][j] == '1'){
+                    heights[j]++;
+                }else heights[j] = 0;
+            }
+            maxA = Math.max(maxA,largestRectangleArea1(heights));
+        }
+        return maxA;
+    }
 }
 ```
