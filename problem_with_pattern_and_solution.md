@@ -490,6 +490,20 @@
     - [using memoization](#using-memoization-20)
     - [using tabulation](#using-tabulation-11)
   - [Maximal Rectangle LC HARD - using histogram prob](#maximal-rectangle-lc-hard---using-histogram-prob)
+- [greedy Algorithms](#greedy-algorithms)
+  - [N meetings in a room](#n-meetings-in-a-room)
+    - [Intuition](#intuition-21)
+  - [Minimum number of Coins (greedy) uniform and const set of denomination in desc order](#minimum-number-of-coins-greedy-uniform-and-const-set-of-denomination-in-desc-order)
+  - [assign cookies leetcode easy](#assign-cookies-leetcode-easy)
+  - [Lemonade Change](#lemonade-change)
+  - [jump game](#jump-game)
+    - [my DP memoization sol](#my-dp-memoization-sol)
+    - [simple greedy sol](#simple-greedy-sol)
+  - [jump game ||](#jump-game-)
+    - [using memoization](#using-memoization-21)
+    - [using tabulation](#using-tabulation-12)
+    - [greedy approach with TC O(n)](#greedy-approach-with-tc-on)
+      - [intuition](#intuition-22)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -12842,4 +12856,328 @@ class Solution {
         return maxA;
     }
 }
+```
+
+# greedy Algorithms
+
+## N meetings in a room
+
+TC - O(nlog(n)) + O(n)
+SC - O(n)
+
+### Intuition
+
+- since the prob is find out the max meetings we can think in terms of greedy sol like if we do a sort on end timesand allocate the meetings we can get max meetings
+
+```
+class Meeting {
+    int start, end;
+    Meeting(int s, int e){
+        start = s;
+        end = e;
+    }
+}
+
+class SortbyEndTime implements Comparator<Meeting>{
+    // Used for sorting in ascending order of
+    // roll number
+    public int compare(Meeting a, Meeting b)
+        {
+        if(a.end == b.end){
+            return a.start - b.start;
+        }else return a.end - b.end;
+    }
+}
+class Solution
+{
+    //Function to find the maximum number of meetings that can
+    //be performed in a meeting room.
+    public static int maxMeetings(int start[], int end[], int n)
+    {
+        // add your code here
+        var meetings = new ArrayList<Meeting>();
+        for(int i = 0; i < n; i++){
+            meetings.add(new Meeting(start[i], end[i]));
+        }
+        Collections.sort(meetings,new SortbyEndTime());
+
+        int tm = 0;
+        int last = -1;
+        for(int ind = 0; ind < n; ind++){
+            var m = meetings.get(ind);
+            if(ind == 0){
+                tm++;
+                last = m.end;
+                continue;
+            }
+            if(last < m.start ){
+                tm++;
+                last = m.end;
+            }
+        }
+        return tm;
+    }
+}
+```
+
+## Minimum number of Coins (greedy) uniform and const set of denomination in desc order
+
+- here greedy sol works because even though there's infinite supply of denomincation but denomincation is const and uniform in desc order.
+
+```
+class Solution{
+    private static Integer[] deno = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 2000 };
+    static List<Integer> minPartition(int N)
+    {
+        // code here
+        List res = new ArrayList();
+       // Arrays.sort(deno, new DenominationComparator());
+
+        int curr = N;
+        int i = deno.length-1;
+        while(curr > 0 && i >= 0){
+           // System.out.println(deno[i] + " - "+ curr);
+            if(deno[i] > curr)
+                i--;
+            else{
+                curr -= deno[i];
+                res.add(deno[i]);
+            }
+        }
+        return res;
+
+    }
+}
+```
+
+## assign cookies leetcode easy
+
+```
+class DescComparator implements Comparator<Integer>{
+    public int compare(Integer a, Integer b){
+        return b - a;
+    }
+}
+class Solution {
+    public int findContentChildren(int[] g, int[] s) {
+    //   Integer[] newg = Arrays.stream(g)
+    //                           .boxed()
+    //                           .toArray(Integer[]::new);
+    //   Integer[] news = Arrays.stream(s)
+    //                           .boxed()
+    //                           .toArray(Integer[]::new);
+    //   int[] unwrappedInts = Arrays.stream(wrappedInts)
+    //                          .mapToInt(Integer::intValue)
+    //                          .toArray();
+      int[] newg= g;
+      int[] news = s;
+
+        Arrays.sort(newg);
+        Arrays.sort(news);
+        // Arrays.sort(newg, new DescComparator());
+        // Arrays.sort(news, new DescComparator());
+
+        int i = 0;
+        int j = 0;
+        int res = 0;
+        while(i < newg.length && j < news.length){
+            if(newg[i] <= news[j]){
+                i++;
+                j++;
+                res++;
+            }else
+                j++;
+        }
+        return res;
+    }
+}
+```
+
+## Lemonade Change
+
+- https://leetcode.com/problems/lemonade-change/description/
+
+```
+class Solution {
+    public boolean lemonadeChange(int[] bills) {
+          int fived , tend , t20d;
+        fived = tend = t20d = 0;
+        for(int i = 0; i < bills.length; i++){
+            int b = bills[i];
+            int r = 0;
+            if(b == 5){
+                r = 0;
+                fived++;
+            }else if(b == 10){
+                r = 5;
+                tend++;
+            }else{
+                r = 15;
+                t20d++;
+            }
+
+            while( r > 0){
+                if(r >= 10 && tend > 0){
+                    r = r - 10;
+                    tend--;
+                }
+                else if(fived > 0){
+                    r = r - 5;
+                    fived--;
+                }else{
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+```
+
+## jump game
+
+- https://leetcode.com/problems/jump-game/description/
+
+### my DP memoization sol
+
+```
+class Solution {
+    public boolean canJump(int[] nums) {
+     int len = nums.length;
+     int[] dp = new int[len];
+     Arrays.fill(dp, -1);
+     return rec(0, nums, len, dp);
+    }
+
+    public boolean rec(int ind, int[] nums,int len, int[] dp){
+        if(ind == len - 1)
+            return true;
+        if(ind >= len) return  false;
+        if(dp[ind] != -1) return (dp[ind] == 1 )? true: false;
+        if(nums[ind] == 0)
+            return false;
+        boolean isPossible=false;
+        for(int jump = nums[ind] ; jump > 0; jump--)    {
+            isPossible = rec(ind + jump, nums, len, dp);
+            if(ind+jump < len)
+                dp[ind+jump] = isPossible ? 1: 0;
+            if(isPossible) return true;
+        }
+        return isPossible;
+    }
+}
+```
+
+### simple greedy sol
+
+- the approach is pretty simple if i can reach last index from second last index and then my goal now becomes to reach 2nd last index because i know from 2nd to last index is possible that way i can further check if i can reach 2nd last index from 3rd last and so on and if i reach a point where my goal becomes first index i.e 0th index then it's possible to reach last index from first else false
+
+```
+class Solution {
+    public boolean canJump(int[] nums) {
+     int len = nums.length;
+     int goal = len - 1;
+     for(int i = goal - 1; i >= 0 ; i--){
+         if(i + nums[i] >= goal)
+            goal = i;
+     }
+     return goal == 0;
+
+    }
+}
+```
+
+## jump game ||
+
+- https://leetcode.com/problems/jump-game-ii/description/
+- https://leetcode.com/problems/jump-game-ii/solutions/1192401/easy-solutions-w-explanation-optimizations-from-brute-force-to-dp-to-greedy-bfs/
+- https://leetcode.com/problems/jump-game-ii/submissions/
+
+### using memoization
+
+- TC O(n^2)
+- SC O(n) + O(n) rec stack
+
+```
+class Solution {
+    public int jump(int[] nums) {
+     int len = nums.length;
+     int[] dp = new int[len];
+     Arrays.fill(dp, -1);
+     return rec(0, nums, len, dp);
+    }
+    public int rec(int ind, int[] nums,int len, int[] dp){
+        if(ind == len - 1)
+            return 0;
+        if(ind >= len || nums[ind] == 0) return  (int)(1e9);
+        if(dp[ind] != -1) return dp[ind];
+
+        int min = Integer.MAX_VALUE;
+        for(int jump = nums[ind] ; jump > 0; jump--)    {
+            int jumps =  1 +  rec(ind + jump, nums, len, dp);
+            min = Math.min(min, jumps);
+        }
+        return dp[ind] = min;
+    }
+}
+```
+
+### using tabulation
+
+- TC O(n^2)
+- SC O(n)
+
+```
+class Solution {
+    public int jump(int[] nums) {
+     int len = nums.length;
+     int[] dp = new int[len];
+
+     for(int ind = len - 2; ind >= 0; ind--){
+        int min = (int)(1e9);
+        for(int jump = 1; jump <= nums[ind] ; jump++)    {
+            int newInd = ind + jump;
+           // int jumps = 0;
+            if(newInd <= len - 1) {
+                int jumps =  1 +  dp[newInd];
+                min = Math.min(min, jumps);
+            }
+        }
+         dp[ind] = min;
+     }
+     return dp[0];
+     //Arrays.fill(dp, -1);
+    // return rec(0, nums, len, dp);
+    }
+}
+```
+
+### greedy approach with TC O(n)
+
+- TC O(n)
+- SC O(1)
+
+#### intuition
+
+- The intuition behind the greedy approach is to always jump to the position that maximizes the number of steps we can take in the next jump. By doing this, we minimize the number of jumps needed to reach the end of the array.
+- we are essentianly creating a tree with each level segregated with farthest node we can reach from that index
+- and no of levels will give us the no of jumps required
+- refer chatgpt or links above to understand in detail
+
+```
+class Solution {
+    public int jump(int[] nums) {
+        int len = nums.length;
+        int farthest = 0;
+        int lastPos = 0;
+        int jumps = 0;
+        for(int currPos = 0; currPos < len - 1; currPos++){
+            farthest = Math.max(farthest, currPos + nums[currPos]);
+            if(currPos == lastPos){
+                lastPos = farthest;
+                jumps++;
+            }
+        }
+        return jumps;
+    }
 ```
