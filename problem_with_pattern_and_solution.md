@@ -44,9 +44,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -227,9 +227,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -504,6 +504,12 @@
     - [using tabulation](#using-tabulation-12)
     - [greedy approach with TC O(n)](#greedy-approach-with-tc-on)
       - [intuition](#intuition-22)
+      - [if sol is not always possible then](#if-sol-is-not-always-possible-then)
+  - [Minimum number of platforms required for a railway (IMP) greedy overlapping intervals](#minimum-number-of-platforms-required-for-a-railway-imp-greedy-overlapping-intervals)
+    - [Inuituion](#inuituion-2)
+    - [Time and Space complexity](#time-and-space-complexity-1)
+  - [Job Sequencing Problem greedy IMP](#job-sequencing-problem-greedy-imp)
+    - [Intuition](#intuition-23)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -13180,4 +13186,127 @@ class Solution {
         }
         return jumps;
     }
+```
+
+#### if sol is not always possible then
+
+- https://practice.geeksforgeeks.org/problems/minimum-number-of-jumps-1587115620/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=minimum-number-of-jumps
+
+```
+class Solution{
+    static int minJumps(int[] arr){
+        // your code here
+        int[] nums = arr;
+        int len = nums.length;
+        int farthest = 0;
+        int lastPos = 0;
+        int jumps = 0;
+        for(int currPos = 0; currPos < len - 1; currPos++){
+            farthest = Math.max(farthest, Math.min(currPos + nums[currPos], len - 1));
+            if(currPos == lastPos){
+                lastPos = farthest;
+                jumps++;
+            }
+        }
+        return lastPos == len - 1 ? jumps:-1;
+    }
+}
+```
+
+## Minimum number of platforms required for a railway (IMP) greedy overlapping intervals
+
+- https://takeuforward.org/data-structure/minimum-number-of-platforms-required-for-a-railway/
+- https://practice.geeksforgeeks.org/problems/minimum-platforms-1587115620/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=minimum-platforms
+
+### Inuituion
+
+- if we find the max no of overapping trains at a given time that will be the min no of platform req
+- here we are concerned with when the next train is arriving if it is arriving beforethe departure of a train already at a platform then we will need another platform so plat count will increase
+  and if it is arriving after the departure we will reduce the platform count while keeping the max max of (max, plat count) and at the end we will have our ans
+
+### Time and Space complexity
+
+- TC O(2nlogn) + O(2n)
+- SC O(1)
+
+```
+class Solution
+{
+    //Function to find the minimum number of platforms required at the
+    //railway station such that no train waits.
+    static int findPlatform(int arr[], int dep[], int n)
+    {
+        // add your code here
+        Arrays.sort(arr);
+        Arrays.sort(dep);
+        int plat_needed = 1;
+        int max_plat = 1;
+        int i = 1;
+        int j = 0;
+
+        while(i < n && j < n){
+            if(arr[i] <= dep[j]){
+                plat_needed++;
+                i++;
+            }else if(arr[i] > dep[j]){
+                plat_needed--;
+                j++;
+            }
+            max_plat = Math.max(max_plat, plat_needed);
+        }
+        return max_plat;
+    }
+}
+```
+
+## Job Sequencing Problem greedy IMP
+
+- https://practice.geeksforgeeks.org/problems/job-sequencing-problem-1587115620/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=job-sequencing-problem
+- https://takeuforward.org/data-structure/job-sequencing-problem/
+
+### Intuition
+
+- here simple things that comes to mind to do sorting by profit in desc order then simpling executing them if the deadline is not crossed but that will not give us the max profi check out striver link to understand the case why
+- after sorting we have to try to execute a job as late as possible according to it's deadline that way it will give room to other jobs having smaller deadline and this is how we will max no of jobs executed and so max profit will be achieved.
+- first you will have to compute max deadline with a single loop then take an seq array of size(max deadline) and initialize it with -1
+- now loop through the sorted array try to position job as per it's deadline in seq array if the pos is already filled with high profit job then keep checking on prev index in seq array. this way at the end we will have max profit.
+
+```
+public class JobComparator implements Comparator<Job>{
+    public int compare(Job j1, Job j2){
+            return j2.profit - j1.profit;
+    }
+}
+class Solution
+{
+    //Function to find the maximum profit and the number of jobs done.
+    int[] JobScheduling(Job arr[], int n)
+    {
+        // Your code here
+        Arrays.sort(arr, new JobComparator());
+
+        int maxDeadline = arr[0].deadline;
+        for(Job job: arr){
+            if(maxDeadline < job.deadline)
+                maxDeadline = job.deadline;
+        }
+        int[] seq = new int[maxDeadline];
+        Arrays.fill(seq, -1);
+        int profit = 0;
+        int count = 0;
+        for(int i = 0; i < n; i++){
+            int deadline = arr[i].deadline - 1;
+            while(deadline >= 0){
+                if(seq[deadline] == -1){
+                    seq[deadline] = arr[i].id;
+                    profit += arr[i].profit;
+                    count++;
+                    break;
+                }
+                deadline--;
+            }
+        }
+        return new int[]{count, profit};
+    }
+}
 ```
