@@ -44,9 +44,9 @@
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
     - [min stack problem](#min-stack-problem)
   - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
-      - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-      - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+    - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
+    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
 - [binary search O(log(n)](#binary-search-ologn)
@@ -227,9 +227,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -510,6 +510,20 @@
     - [Time and Space complexity](#time-and-space-complexity-1)
   - [Job Sequencing Problem greedy IMP](#job-sequencing-problem-greedy-imp)
     - [Intuition](#intuition-23)
+  - [candy LC HARD greedy approach](#candy-lc-hard-greedy-approach)
+    - [Intuition](#intuition-24)
+    - [why 2 loops are needed Left - right and right to left](#why-2-loops-are-needed-left---right-and-right-to-left)
+    - [Approach](#approach-2)
+    - [Complexity](#complexity-6)
+    - [Code](#code-1)
+  - [Shortest Job first](#shortest-job-first)
+    - [intuition](#intuition-25)
+  - [https://leetcode.com/problems/single-threaded-cpu/ TODO](#httpsleetcodecomproblemssingle-threaded-cpu-todo)
+  - [Program for Least Recently Used (LRU) Page Replacement Algorithm](#program-for-least-recently-used-lru-page-replacement-algorithm)
+    - [Intuition](#intuition-26)
+    - [sol with Priority Queue only](#sol-with-priority-queue-only)
+    - [sol with priority Queue and MAP](#sol-with-priority-queue-and-map)
+      - [Approach](#approach-3)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -13307,6 +13321,302 @@ class Solution
             }
         }
         return new int[]{count, profit};
+    }
+}
+```
+
+## candy LC HARD greedy approach
+
+- https://leetcode.com/problems/candy/solutions/3378564/easy-to-understand-sol-in-java-with-intuition-and-example-greedy-approach-2-loops-explanation/
+
+### Intuition
+
+<!-- Describe your first thoughts on how to solve this problem. -->
+
+The intuition behind this approach is that we first assign candies to children based on their relative ratings from left to right, then we make sure that the right-to-left traversal does not violate the previously assigned candies.
+
+### why 2 loops are needed Left - right and right to left
+
+- The reason why we need to do two passes is that if we only do one pass, we may end up with an inconsistent distribution of candies. For example, consider the following ratings array: [1, 2, 3, 2, 1]. If we start by giving each child one candy and then iterate from left to right, we end up with the following distribution: [1, 2, 3, 1, 1]. If we then iterate from right to left, we end up with the following distribution: [1, 2, 3, 2, 1]. As you can see, the child with rating 2 only got one candy in the first pass, but should have gotten two candies in total.
+  please give it thumbs up if you like the sol.
+
+### Approach
+
+<!-- Describe your approach to solving the problem. -->
+
+- Initialize the candies array with all elements as 1, since each child must have at least one candy.
+- Iterate over the ratings array from left to right:
+  If the current child has a higher rating than the previous child, assign them one more candy than the previous child.
+- Iterate over the ratings array from right to left:
+  If the current child has a higher rating than the next child and has less or equal candies than the next child, assign them one more candy than the next child.
+- Return the sum of all elements in the candies array.
+
+please give it thumbs up if you like the sol.
+
+### Complexity
+
+- Time complexity:
+O(3n)
+<!-- Add your time complexity here, e.g. $$O(n)$$ -->
+
+- Space complexity:
+O(n)
+<!-- Add your space complexity here, e.g. $$O(n)$$ -->
+
+### Code
+
+```
+class Solution {
+    public int candy(int[] ratings) {
+        int len = ratings.length;
+        int[] cand = new int[len];
+        Arrays.fill(cand, 1);
+        int minCandy = 0;
+        for(int i = 0; i < len; i++){
+            int leftn = i - 1;
+            if(isSafe(leftn, len) && ratings[i] > ratings[leftn]){
+                    cand[i] = cand[leftn] + 1;
+            }
+        }
+
+        for(int i = len - 1; i >= 0; i--){
+            int rightn = i + 1;
+            if(isSafe(rightn, len) && ratings[i] > ratings[rightn]){
+                    cand[i] = Math.max(cand[i], cand[rightn] + 1);
+            }
+            minCandy += cand[i];
+        }
+
+        return minCandy;
+    }
+    boolean isSafe(int rn, int len){
+        if(rn >= len || rn < 0 ) return false;
+        return true;
+    }
+}
+```
+
+## Shortest Job first
+
+https://practice.geeksforgeeks.org/problems/shortest-job-first/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=shortest-job-first
+
+### intuition
+
+- To calculate the average waiting time using the shortest job first policy, we need to first sort the processes based on their burst time in ascending order. We can then iterate through the sorted processes and calculate the waiting time of each process as the sum of the burst times of all the processes that arrived before it. The average waiting time can then be calculated by summing up all the waiting times and dividing by the total number of processes.
+- we can use priority queue also if we are given objects but here we are given bursttime in terms of int values so
+
+TC O(nlogn)
+SC O(n)
+
+```
+class Solution {
+    static int solve(int bt[] ) {
+
+    int len = bt.length;
+    Arrays.sort(bt);
+    int[] wt = new int[len];
+    int sumWeight = 0;
+    wt[0] = 0;
+    int twt = 0;
+    for(int i = 1; i < len; i++){
+        sumWeight += bt[i-1];
+        wt[i] = sumWeight;
+        twt += wt[i];
+    }
+
+    return twt/len;
+
+  }
+}
+```
+
+## https://leetcode.com/problems/single-threaded-cpu/ TODO
+
+- for scheduling problem think in terms of greedy sol and for greedy we can use sorting or min-maxheap (priority queue)
+
+```
+class Solution {
+    public int[] getOrder(int[][] tasks) {
+        int n = tasks.length;
+        Task [] arr = new Task[n];
+        for(int i = 0 ;i<n;i++){
+            arr[i] = new Task(i, tasks[i][0],tasks[i][1]);
+        }
+
+        Arrays.sort(arr, (a,b)->{
+            return Integer.compare(a.enqueueTime,b.enqueueTime);
+        });
+
+        PriorityQueue<Task> p = new PriorityQueue<>((a,b)->{
+            if(a.processingTime == b.processingTime){
+                return Integer.compare(a.idx,b.idx);
+            }
+            return Integer.compare(a.processingTime,b.processingTime);
+        });
+
+        int[] ans = new int[n];
+        int ansIdx = 0;
+        int taskIdx = 0;
+        int curTime= 0;
+
+        while(ansIdx < n){
+            while(taskIdx < n && arr[taskIdx].enqueueTime <= curTime){
+                p.offer(arr[taskIdx++]);
+            }
+            if(p.isEmpty()){
+                curTime = arr[taskIdx].enqueueTime;
+            }else{
+                curTime += p.peek().processingTime;
+                ans[ansIdx++] = p.poll().idx;
+            }
+        }
+        return ans;
+    }
+
+    class Task {
+        int idx;
+        int enqueueTime;
+        int processingTime;
+
+        Task(int idx , int en , int pro){
+            this.idx = idx;
+            this.enqueueTime = en;
+            this.processingTime = pro;
+        }
+    }
+}
+```
+
+## Program for Least Recently Used (LRU) Page Replacement Algorithm
+
+- https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/
+
+### Intuition
+
+- here we know that we have keep track of LRU pages so a min heap DS comes to mind so we can use priority queue
+  Also we will need to check if next page exist in the memory or not here one way would be to iterate the queue
+  which will cost is O(C) time but if we use map then we can find this out in constant O(1)
+
+### sol with Priority Queue only
+
+TC O(N\*ClogC)
+SC O(C)
+
+```
+class Pages {
+    int index, page;
+    Pages(int i, int p){
+        index = i;
+        page = p;
+    }
+}
+
+class Solution{
+    static int pageFaults(int N, int C, int pages[]){
+        // code here
+        int pfaults = 0;
+        int ind = 0;
+        var pq = new PriorityQueue<Pages>((p1, p2) -> p1.index -p2.index);
+        boolean found;
+        while(ind < N){
+            found = false;
+            var itr = pq.iterator();
+
+            while(itr.hasNext()){
+                var p = itr.next();
+                if(p.page == pages[ind]){
+                    found = true;
+                    pq.remove(p);
+                    pq.offer(new Pages(ind, pages[ind]));
+                    break;
+                }
+            }
+            if(!found){
+              pfaults++;
+              if(pq.size() == C) pq.remove();
+              pq.offer(new Pages(ind, pages[ind]));
+            }
+            ind++;
+
+        }
+        return pfaults;
+    }
+}
+```
+
+### sol with priority Queue and MAP
+
+#### Approach
+
+- The map is used to keep track of which pages are currently in memory. We can use the page number as the key in the
+  map, and the value can be a reference to the corresponding page object in the priority queue. This allows us to quickly
+  check whether a page is in memory or not, and also quickly retrieve the corresponding page object in the priority queue
+  when we need to update it.
+
+- The priority queue is used to keep track of the pages in memory, sorted by their last access time.
+  We use a priority queue because we need to remove the least recently used page when we need to free up space
+  in memory. By sorting the pages by last access time, we can simply remove the first element in the priority
+  queue to remove the least recently used page.
+
+- We define a custom Page class to represent each page with its index and page number, and use it as the type of
+  the elements in the PriorityQueue. We define a comparator for the priority queue to sort by the index of the page,
+  which represents the last access time. By using a custom class and comparator, we can easily sort the pages by last
+  access time without needing to implement our own sorting algorithm.
+  take note that we must override equals and hashcode method of Pages class else removal from priority queue will not work.
+
+TC - O(NlogC)
+SC - O(C)
+
+- Also if we use doubly linked list instead of priority queue then TC can be further reduced since insertion and
+  removal in linked list is O(1) but in priority queue it is O(logC).
+
+```
+class Pages {
+    int index, page;
+    Pages(int i, int p){
+        index = i;
+        page = p;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pages page1 = (Pages) o;
+        return page == page1.page;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(page);
+    }
+}
+
+class Solution{
+    static int pageFaults(int N, int C, int pages[]){
+        int pageFaults = 0;
+         PriorityQueue<Pages> pq = new PriorityQueue<>((a, b) -> a.index - b.index);
+         Map<Integer, Integer> map = new HashMap<>();
+
+         for (int i = 0; i < N; i++) {
+             int page = pages[i];
+             if (map.containsKey(page)) {
+                 int index = map.get(page);
+                 pq.remove(new Pages( index, page ));
+                 pq.offer(new Pages ( i, page ));
+                 map.put(page, i);
+             } else {
+                 if (pq.size() == C) {
+                     var removed = pq.poll();
+                     map.remove(removed.page);
+                 }
+                 pq.offer(new Pages ( i, page ));
+                 map.put(page, i);
+                 pageFaults++;
+             }
+         }
+
+         return pageFaults;
     }
 }
 ```
