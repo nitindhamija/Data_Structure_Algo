@@ -2,6 +2,7 @@
 - [IMP DataStructure to know for writing programs during interviews](#imp-datastructure-to-know-for-writing-programs-during-interviews)
   - [ArrayDeque](#arraydeque)
 - [Linked List](#linked-list)
+  - [summary of most linked list prob from leetcode discuss](#summary-of-most-linked-list-prob-from-leetcode-discuss)
   - [to detect cycle/loop in linked list](#to-detect-cycleloop-in-linked-list)
   - [circular linked list applications](#circular-linked-list-applications)
   - [to detect loop and find first node of the loop (FLOYD cycle detetction algorithm)](#to-detect-loop-and-find-first-node-of-the-loop-floyd-cycle-detetction-algorithm)
@@ -25,6 +26,9 @@
     - [optimal](#optimal)
   - [rotate a linked list by k places](#rotate-a-linked-list-by-k-places)
     - [improved version from discuss comments](#improved-version-from-discuss-comments)
+  - [reverse a linked list in group size of k](#reverse-a-linked-list-in-group-size-of-k)
+    - [better sol refer the leetcode solution link for better sol](#better-sol-refer-the-leetcode-solution-link-for-better-sol)
+    - [my sol with a stack i.e O(n) extra space](#my-sol-with-a-stack-ie-on-extra-space)
 - [stack and queues](#stack-and-queues)
   - [implement a circular queue](#implement-a-circular-queue)
   - [implementation with better isFull and isEmpty check](#implementation-with-better-isfull-and-isempty-check)
@@ -42,13 +46,43 @@
     - [Perfect Squares( sol using BFS, DP TODO, Math Solution)](#perfect-squares-sol-using-bfs-dp-todo-math-solution)
       - [using BFS and queue time complexity (n \* sqrt(n))](#using-bfs-and-queue-time-complexity-n--sqrtn)
       - [Mathematical solution (Most optimal time complexity)](#mathematical-solution-most-optimal-time-complexity)
-    - [min stack problem](#min-stack-problem)
-  - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
+  - [implement stack using queues](#implement-stack-using-queues)
+    - [Intution for one queue](#intution-for-one-queue)
+    - [using 2 queues](#using-2-queues)
+  - [implement queue using stacks](#implement-queue-using-stacks)
+    - [intuition](#intuition)
+  - [min stack problem](#min-stack-problem)
+    - [using arraylist and with TC O(n) for pop and rest all op O(1) not optimal](#using-arraylist-and-with-tc-on-for-pop-and-rest-all-op-o1-not-optimal)
+    - [using extra space time complexity O(1) for all operation and space complexity O(n)](#using-extra-space-time-complexity-o1-for-all-operation-and-space-complexity-on)
     - [without extra space TC O(1) SC(1)](#without-extra-space-tc-o1-sc1)
-    - [using a stack of Nodes having both val and min for each node](#using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
-    - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
+    - [MOST IMP \& OPTIMAL sol using a stack of Nodes having both val and min for each node](#most-imp--optimal-sol-using-a-stack-of-nodes-having-both-val-and-min-for-each-node)
+      - [using a linked list node only slight diff from above solution](#using-a-linked-list-node-only-slight-diff-from-above-solution)
     - [valid paranthese](#valid-paranthese)
       - [my submission ok but not as good as above](#my-submission-ok-but-not-as-good-as-above)
+- [monotonous stack i.e increasing or decreasing stack](#monotonous-stack-ie-increasing-or-decreasing-stack)
+  - [next greater element in an array (monotonic stack prob) paytm interview](#next-greater-element-in-an-array-monotonic-stack-prob-paytm-interview)
+    - [Inuition](#inuition)
+    - [approach](#approach)
+  - [Next Greater Element II i.e circular array](#next-greater-element-ii-ie-circular-array)
+    - [Intuition](#intuition-1)
+  - [Next Smaller Element](#next-smaller-element)
+    - [approach](#approach-1)
+  - [trapping rain water prob](#trapping-rain-water-prob)
+    - [brute force O(n^2) sol](#brute-force-on2-sol)
+    - [my sol using stack but it can be done without stack also so don't use this sol](#my-sol-using-stack-but-it-can-be-done-without-stack-also-so-dont-use-this-sol)
+    - [sol without stack](#sol-without-stack)
+    - [2 pointer approach without using any extra space](#2-pointer-approach-without-using-any-extra-space)
+      - [Intuition:](#intuition-2)
+  - [Sum of Subarray Minimums](#sum-of-subarray-minimums)
+    - [similar prob where same pattern will be applied](#similar-prob-where-same-pattern-will-be-applied)
+    - [brute force solution](#brute-force-solution)
+    - [optimical approach](#optimical-approach)
+      - [Intution:](#intution)
+  - [remove k digits](#remove-k-digits)
+    - [Intuition](#intuition-3)
+  - [https://leetcode.com/problems/online-stock-span/description/](#httpsleetcodecomproblemsonline-stock-spandescription)
+    - [Intuition](#intuition-4)
+    - [Approach](#approach-2)
 - [binary search O(log(n)](#binary-search-ologn)
   - [template 1](#template-1-1)
     - [iterative sol](#iterative-sol)
@@ -56,11 +90,16 @@
     - [checkout below also](#checkout-below-also)
     - [here below part is extra to calculate the fractional part up to p point](#here-below-part-is-extra-to-calculate-the-fractional-part-up-to-p-point)
   - [search in a rotated sorted array](#search-in-a-rotated-sorted-array)
+  - [search in rotated sorted array 2(with duplicates)](#search-in-rotated-sorted-array-2with-duplicates)
+    - [intuition](#intuition-5)
   - [template 2](#template-2-1)
     - [first bad version problem](#first-bad-version-problem)
       - [iterative](#iterative)
       - [recursive](#recursive)
     - [find peak element](#find-peak-element)
+    - [find peak element 2 i.e in 2d array](#find-peak-element-2-ie-in-2d-array)
+      - [Inutuition](#inutuition)
+    - [Search a 2D Matrix](#search-a-2d-matrix)
     - [Find Minimum in Rotated Sorted Array](#find-minimum-in-rotated-sorted-array)
       - [recursive approach find pivot next element of pivot is min element in array](#recursive-approach-find-pivot-next-element-of-pivot-is-min-element-in-array)
       - [iterative approach](#iterative-approach)
@@ -70,11 +109,13 @@
       - [sol with template 3 instructions](#sol-with-template-3-instructions)
       - [sol with single binary search (Easy and clean)](#sol-with-single-binary-search-easy-and-clean)
     - [implement pow(x,n)](#implement-powxn)
+      - [Inutuion](#inutuion)
     - [Find Smallest Letter Greater Than Target](#find-smallest-letter-greater-than-target)
     - [Find Minimum in Rotated Sorted Array with duplicates](#find-minimum-in-rotated-sorted-array-with-duplicates)
       - [iterative approach](#iterative-approach-1)
       - [recursive approach](#recursive-approach)
-- [Arrays & String](#arrays--string)
+    - [binary search generalized pattern for solving problems that do not look like BS MOST imp](#binary-search-generalized-pattern-for-solving-problems-that-do-not-look-like-bs-most-imp)
+- [Arrays \& String](#arrays--string)
   - [find pivot index](#find-pivot-index)
   - [largest no atleast twice the size of every other no](#largest-no-atleast-twice-the-size-of-every-other-no)
     - [simple sol using two passes](#simple-sol-using-two-passes)
@@ -86,13 +127,15 @@
     - [iterative sol](#iterative-sol-1)
     - [recursive sol (TLE but with memoization it is ok)](#recursive-sol-tle-but-with-memoization-it-is-ok)
   - [Add Binary](#add-binary)
-  - [Implement strStr()](#implement-strstr)
-    - [sliding window my sol with TC O(m \* (m - n)) SC O(n)](#sliding-window-my-sol-with-tc-om--m---n-sc-on)
-    - [normal TC O(m \* n) SC O(1)](#normal-tc-om--n-sc-o1)
+  - [sliding window problems](#sliding-window-problems)
+    - [Implement strStr()](#implement-strstr)
+      - [sliding window my sol with TC O(m \* (m - n)) SC O(n)](#sliding-window-my-sol-with-tc-om--m---n-sc-on)
+      - [normal TC O(m \* n) SC O(1)](#normal-tc-om--n-sc-o1)
   - [to check KMP optimze sol TC O(m + n) SC O(n)](#to-check-kmp-optimze-sol-tc-om--n-sc-on)
+    - [Longest Substring Without Repeating Characters](#longest-substring-without-repeating-characters)
   - [longest common prefix](#longest-common-prefix)
   - [Longest Palindromic Substring](#longest-palindromic-substring)
-    - [Inuition](#inuition)
+    - [Inuition](#inuition-1)
   - [2-pointer technique](#2-pointer-technique)
     - [Array Partition](#array-partition)
     - [two sum II (sorted array)](#two-sum-ii-sorted-array)
@@ -188,7 +231,7 @@
     - [convert sorten int array to BST TC O(n) SC(n) for recursion](#convert-sorten-int-array-to-bst-tc-on-scn-for-recursion)
   - [n-ary tree](#n-ary-tree)
     - [preorder traversal of 3-ary tree](#preorder-traversal-of-3-ary-tree)
-      - [recursive sol TC O(n) [SC (n) to check]](#recursive-sol-tc-on-sc-n-to-check)
+      - [recursive sol TC O(n) \[SC (n) to check\]](#recursive-sol-tc-on-sc-n-to-check)
       - [iterative sol TC O(n) SC(n)](#iterative-sol-tc-on-scn)
     - [postoreder traversal of n-ary tree](#postoreder-traversal-of-n-ary-tree)
       - [recursive sol](#recursive-sol-1)
@@ -211,7 +254,7 @@
       - [using DFS (though correct but not optimal Time limit exceeds)](#using-dfs-though-correct-but-not-optimal-time-limit-exceeds)
     - [Maximum XOR of Two Numbers in an Array](#maximum-xor-of-two-numbers-in-an-array)
       - [brtute force is O(n^2) with 2 loops](#brtute-force-is-on2-with-2-loops)
-      - [using trie](#using-trie)
+      - [using trie \& bit manipulation](#using-trie--bit-manipulation)
 - [sliding window](#sliding-window)
   - [Longest Substring with K Distinct Characters](#longest-substring-with-k-distinct-characters)
     - [SOL : trick is to use hashmap with char and their freq to keep k unique char and keep expanding and shrinking window till map is size is k exactly](#sol--trick-is-to-use-hashmap-with-char-and-their-freq-to-keep-k-unique-char-and-keep-expanding-and-shrinking-window-till-map-is-size-is-k-exactly)
@@ -227,9 +270,9 @@
   - [importance of stability of sorting](#importance-of-stability-of-sorting)
   - [heap sort (TODO)](#heap-sort-todo)
 - [my calendar II](#my-calendar-ii)
-  - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
-  - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
-    - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
+    - [Inuition Algo brute force sol TC O(n^2) SC O(n)](#inuition-algo-brute-force-sol-tc-on2-sc-on)
+    - [boundary Count Intuition Algo](#boundary-count-intuition-algo)
+      - [TC n\* (4logn + n) = O(n^2) SC O(n)](#tc-n-4logn--n--on2-sc-on)
 - [bitwise operator](#bitwise-operator)
 - [recursion](#recursion)
   - [time complexity calculation with recursion and memoization](#time-complexity-calculation-with-recursion-and-memoization)
@@ -244,7 +287,7 @@
     - [22. Generate Parentheses](#22-generate-parentheses)
     - [largest area in histogram](#largest-area-in-histogram)
     - [permutations](#permutations)
-      - [using boolean array to improve TC(easy to understand & explain)](#using-boolean-array-to-improve-tceasy-to-understand--explain)
+      - [using boolean array to improve TC(easy to understand \& explain)](#using-boolean-array-to-improve-tceasy-to-understand--explain)
     - [Letter Combinations of a Phone Number](#letter-combinations-of-a-phone-number)
     - [The Skyline Problem](#the-skyline-problem)
       - [improvements by using treemap](#improvements-by-using-treemap)
@@ -275,7 +318,7 @@
     - [using BFS (kahn's algorithm)](#using-bfs-kahns-algorithm)
       - [cycle detected using kahn's algo i.e topo sort](#cycle-detected-using-kahns-algo-ie-topo-sort)
   - [Prerequisite Tasks](#prerequisite-tasks)
-    - [Intution](#intution)
+    - [Intution](#intution-1)
     - [IMP pattern to remember](#imp-pattern-to-remember)
   - [Course Schedule](#course-schedule)
   - [G-25. Find Eventual Safe States - BFS - Topological Sort](#g-25-find-eventual-safe-states---bfs---topological-sort)
@@ -284,12 +327,12 @@
     - [what if correct order is not possible](#what-if-correct-order-is-not-possible)
     - [variation of alien dictionary prob (953. Verifying an Alien Dictionary)](#variation-of-alien-dictionary-prob-953-verifying-an-alien-dictionary)
   - [Shortest path in Directed Acyclic Graph](#shortest-path-in-directed-acyclic-graph)
-    - [Intution](#intution-1)
+    - [Intution](#intution-2)
   - [Word Ladder I (HARD)](#word-ladder-i-hard)
-    - [Intuition](#intuition)
+    - [Intuition](#intuition-6)
   - [Word Ladder II (HARD)](#word-ladder-ii-hard)
   - [dijkastra shortest path algo](#dijkastra-shortest-path-algo)
-    - [Intution](#intution-2)
+    - [Intution](#intution-3)
     - [important observation](#important-observation)
       - [why can not be applied to graph having -ve weights](#why-can-not-be-applied-to-graph-having--ve-weights)
       - [why priority queue min heap is better than using queue](#why-priority-queue-min-heap-is-better-than-using-queue)
@@ -304,7 +347,7 @@
   - [Cheapest Flights Within K Stops](#cheapest-flights-within-k-stops)
   - [Minimum Multiplications to reach End](#minimum-multiplications-to-reach-end)
   - [Number of Ways to Arrive at Destination](#number-of-ways-to-arrive-at-destination)
-    - [Intution](#intution-3)
+    - [Intution](#intution-4)
   - [bellman ford algorithm ( use it for -ve weights or cycle where dijkstra does not work else use Dijkstra since TC is better in Dijkstra)](#bellman-ford-algorithm--use-it-for--ve-weights-or-cycle-where-dijkstra-does-not-work-else-use-dijkstra-since-tc-is-better-in-dijkstra)
     - [Algorithm](#algorithm)
     - [why n-1 iteration](#why-n-1-iteration)
@@ -312,33 +355,33 @@
   - [Floyd Warshal Algorithm( diff from dijkstra / bellman ford) - multi source shortest path algorithm - helps to detect -ve cycle as well](#floyd-warshal-algorithm-diff-from-dijkstra--bellman-ford---multi-source-shortest-path-algorithm---helps-to-detect--ve-cycle-as-well)
   - [mininum spanning tree (MST)](#mininum-spanning-tree-mst)
     - [prim's algorithm to find MST](#prims-algorithm-to-find-mst)
-      - [Intuition](#intuition-1)
+      - [Intuition](#intuition-7)
     - [kruskal algorithm to find MST ( disjoint set pre requisite so study that first)](#kruskal-algorithm-to-find-mst--disjoint-set-pre-requisite-so-study-that-first)
-      - [Intuition](#intuition-2)
-  - [disjoint set very IMP [REVISE]](#disjoint-set-very-imp-revise)
+      - [Intuition](#intuition-8)
+  - [disjoint set very IMP \[REVISE\]](#disjoint-set-very-imp-revise)
     - [Problem - why the need of disjoin set DS](#problem---why-the-need-of-disjoin-set-ds)
     - [disjoin data structure](#disjoin-data-structure)
     - [algorithm for union by rank (u, v)](#algorithm-for-union-by-rank-u-v)
     - [Time and space complexity](#time-and-space-complexity)
     - [why connect smaller component to larger one and not the other way round](#why-connect-smaller-component-to-larger-one-and-not-the-other-way-round)
   - [Number of Provinces - Disjoint Set](#number-of-provinces---disjoint-set)
-    - [Intuition](#intuition-3)
+    - [Intuition](#intuition-9)
   - [Number of Operations to Make Network Connected - DSU](#number-of-operations-to-make-network-connected---dsu)
-    - [Intuition](#intuition-4)
+    - [Intuition](#intuition-10)
   - [Accounts Merge - DSU (HARD)](#accounts-merge---dsu-hard)
-    - [Intuition](#intuition-5)
+    - [Intuition](#intuition-11)
     - [Complexity](#complexity-1)
   - [no of island II (DSU) online queries](#no-of-island-ii-dsu-online-queries)
-    - [Intuition](#intuition-6)
+    - [Intuition](#intuition-12)
     - [complexity](#complexity-2)
   - [making a large island (HARD)](#making-a-large-island-hard)
-    - [Intuition](#intuition-7)
-    - [Approach](#approach)
+    - [Intuition](#intuition-13)
+    - [Approach](#approach-3)
     - [Complexity](#complexity-3)
   - [maximum store removal Most Stones Removed with Same Row or Column](#maximum-store-removal-most-stones-removed-with-same-row-or-column)
   - [Inuituion](#inuituion)
   - [Strongly Connected Components(SCC) - Kosaraju's Algorithm](#strongly-connected-componentsscc---kosarajus-algorithm)
-    - [Inuition](#inuition-1)
+    - [Inuition](#inuition-2)
     - [Kosaraju's Algorithm](#kosarajus-algorithm)
     - [Complexity](#complexity-4)
   - [Bridges in Graph - Using Tarjan's Algorithm of time in and low time (HARD)](#bridges-in-graph---using-tarjans-algorithm-of-time-in-and-low-time-hard)
@@ -347,7 +390,7 @@
     - [interesting quesion (edge case)](#interesting-quesion-edge-case)
   - [778. Swim in Rising Water (HARD)](#778-swim-in-rising-water-hard)
     - [using Dijkstra](#using-dijkstra)
-      - [Intuition](#intuition-8)
+      - [Intuition](#intuition-14)
     - [using DS union find(TODO)](#using-ds-union-findtodo)
 - [Dynamic programming](#dynamic-programming)
   - [recursion prerequisite](#recursion-prerequisite)
@@ -383,14 +426,14 @@
     - [using memoization](#using-memoization-4)
     - [using tabulation with space optimization](#using-tabulation-with-space-optimization-3)
   - [DP 15 can partition](#dp-15-can-partition)
-    - [Intution](#intution-4)
+    - [Intution](#intution-5)
   - [Partition A Set Into Two Subsets With Minimum Absolute Sum Difference | DP on Subsequences](#partition-a-set-into-two-subsets-with-minimum-absolute-sum-difference--dp-on-subsequences)
     - [optimization](#optimization)
   - [Count Subsets with Sum K (DP – 17)](#count-subsets-with-sum-k-dp--17)
-    - [Intuition](#intuition-9)
+    - [Intuition](#intuition-15)
     - [using tabulation](#using-tabulation-1)
   - [Count Partitions With Given Difference | Dp on Subsequences](#count-partitions-with-given-difference--dp-on-subsequences)
-    - [Intuition](#intuition-10)
+    - [Intuition](#intuition-16)
   - [DP 19. 0/1 Knapsack | Recursion to Single Array Space Optimised Approach | DP on Subsequences](#dp-19-01-knapsack--recursion-to-single-array-space-optimised-approach--dp-on-subsequences)
     - [using memoization](#using-memoization-5)
     - [using tabulation with space optimization to 2 rows](#using-tabulation-with-space-optimization-to-2-rows)
@@ -412,32 +455,32 @@
     - [using tabulation and 1D array space optimization](#using-tabulation-and-1d-array-space-optimization)
   - [rod cutting](#rod-cutting)
   - [using memoization](#using-memoization-9)
-    - [intuition](#intuition-11)
+    - [intuition](#intuition-17)
     - [using tabulation with 1D space optimization](#using-tabulation-with-1d-space-optimization)
   - [Dp 25. Longest Common Subsequence | Top Down | Bottom-Up | Space Optimised | DP on Strings](#dp-25-longest-common-subsequence--top-down--bottom-up--space-optimised--dp-on-strings)
-    - [Intuition](#intuition-12)
+    - [Intuition](#intuition-18)
     - [using memoization](#using-memoization-10)
     - [using tabulation](#using-tabulation-2)
   - [longest common substring](#longest-common-substring)
-    - [Intuition](#intuition-13)
+    - [Intuition](#intuition-19)
   - [longest palindromic subsequence](#longest-palindromic-subsequence)
-    - [Intuition](#intuition-14)
+    - [Intuition](#intuition-20)
   - [min insertion to make a string palindromic(LC HARD)](#min-insertion-to-make-a-string-palindromiclc-hard)
-    - [Intuition](#intuition-15)
+    - [Intuition](#intuition-21)
     - [without LPS|LCS method](#without-lpslcs-method)
-    - [Approach](#approach-1)
+    - [Approach](#approach-4)
     - [Complexity](#complexity-5)
     - [Code](#code)
   - [Minimum Insertions/Deletions to Convert String | (DP- 30)](#minimum-insertionsdeletions-to-convert-string--dp--30)
-    - [Intuition](#intuition-16)
+    - [Intuition](#intuition-22)
   - [DP 31. Shortest Common Supersequence | DP on Strings | LC HARD](#dp-31-shortest-common-supersequence--dp-on-strings--lc-hard)
-    - [Intuition](#intuition-17)
+    - [Intuition](#intuition-23)
   - [Distinct Subsequences | 1D Array Optimisation Technique LC HARD](#distinct-subsequences--1d-array-optimisation-technique-lc-hard)
     - [using memoization](#using-memoization-11)
     - [using tabulation](#using-tabulation-3)
     - [1D space optimization](#1d-space-optimization)
   - [Edit Distance | (DP-33) LC HARD](#edit-distance--dp-33-lc-hard)
-    - [Intuition](#intuition-18)
+    - [Intuition](#intuition-24)
     - [using memoization](#using-memoization-12)
     - [using tabulation](#using-tabulation-4)
       - [2 row space optimization](#2-row-space-optimization)
@@ -469,9 +512,9 @@
   - [Largest Divisible Subset(variation of LIS)](#largest-divisible-subsetvariation-of-lis)
   - [1048. Longest String Chain](#1048-longest-string-chain)
   - [Longest Bitonic subsequence(var of LIS)](#longest-bitonic-subsequencevar-of-lis)
-    - [Intuition](#intuition-19)
+    - [Intuition](#intuition-25)
   - [Number of Longest Increasing Subsequences|(DP-47)](#number-of-longest-increasing-subsequencesdp-47)
-    - [Intuition](#intuition-20)
+    - [Intuition](#intuition-26)
   - [Matrix Chain Multiplication (partition DP) HARD LC](#matrix-chain-multiplication-partition-dp-hard-lc)
     - [using memoization](#using-memoization-17)
     - [using tabulation](#using-tabulation-9)
@@ -480,7 +523,7 @@
     - [tabulation](#tabulation-3)
   - [burst ballons LC HARD (partition DP)](#burst-ballons-lc-hard-partition-dp)
     - [refer this for easy explanation](#refer-this-for-easy-explanation)
-    - [Intution](#intution-5)
+    - [Intution](#intution-6)
     - [using memoization](#using-memoization-18)
   - [Evaluate Boolean Expression to True | Partition DP](#evaluate-boolean-expression-to-true--partition-dp)
   - [Palindrome Partitioning - II | Front Partition | IMP](#palindrome-partitioning---ii--front-partition--imp)
@@ -492,7 +535,7 @@
   - [Maximal Rectangle LC HARD - using histogram prob](#maximal-rectangle-lc-hard---using-histogram-prob)
 - [greedy Algorithms](#greedy-algorithms)
   - [N meetings in a room](#n-meetings-in-a-room)
-    - [Intuition](#intuition-21)
+    - [Intuition](#intuition-27)
   - [Minimum number of Coins (greedy) uniform and const set of denomination in desc order](#minimum-number-of-coins-greedy-uniform-and-const-set-of-denomination-in-desc-order)
   - [assign cookies leetcode easy](#assign-cookies-leetcode-easy)
   - [Lemonade Change](#lemonade-change)
@@ -503,27 +546,41 @@
     - [using memoization](#using-memoization-21)
     - [using tabulation](#using-tabulation-12)
     - [greedy approach with TC O(n)](#greedy-approach-with-tc-on)
-      - [intuition](#intuition-22)
+      - [intuition](#intuition-28)
       - [if sol is not always possible then](#if-sol-is-not-always-possible-then)
   - [Minimum number of platforms required for a railway (IMP) greedy overlapping intervals](#minimum-number-of-platforms-required-for-a-railway-imp-greedy-overlapping-intervals)
     - [Inuituion](#inuituion-2)
     - [Time and Space complexity](#time-and-space-complexity-1)
   - [Job Sequencing Problem greedy IMP](#job-sequencing-problem-greedy-imp)
-    - [Intuition](#intuition-23)
+    - [Intuition](#intuition-29)
   - [candy LC HARD greedy approach](#candy-lc-hard-greedy-approach)
-    - [Intuition](#intuition-24)
+    - [Intuition](#intuition-30)
     - [why 2 loops are needed Left - right and right to left](#why-2-loops-are-needed-left---right-and-right-to-left)
-    - [Approach](#approach-2)
+    - [Approach](#approach-5)
     - [Complexity](#complexity-6)
     - [Code](#code-1)
   - [Shortest Job first](#shortest-job-first)
-    - [intuition](#intuition-25)
+    - [intuition](#intuition-31)
   - [https://leetcode.com/problems/single-threaded-cpu/ TODO](#httpsleetcodecomproblemssingle-threaded-cpu-todo)
   - [Program for Least Recently Used (LRU) Page Replacement Algorithm](#program-for-least-recently-used-lru-page-replacement-algorithm)
-    - [Intuition](#intuition-26)
+    - [Intuition](#intuition-32)
     - [sol with Priority Queue only](#sol-with-priority-queue-only)
     - [sol with priority Queue and MAP](#sol-with-priority-queue-and-map)
-      - [Approach](#approach-3)
+      - [Approach](#approach-6)
+- [basic math problem](#basic-math-problem)
+  - [Reverse Integer](#reverse-integer)
+    - [my explanation for overflow check](#my-explanation-for-overflow-check)
+    - [more detailed explanation for overflow check](#more-detailed-explanation-for-overflow-check)
+- [bit manipulation](#bit-manipulation)
+  - [operators](#operators)
+  - [check ith bit set or not](#check-ith-bit-set-or-not)
+  - [set ith bit](#set-ith-bit)
+  - [check if a no is odd or not](#check-if-a-no-is-odd-or-not)
+  - [Check if a number is power of 2 or not](#check-if-a-number-is-power-of-2-or-not)
+  - [Count the number of set bits](#count-the-number-of-set-bits)
+  - [Set/Unset the rightmost unset bit](#setunset-the-rightmost-unset-bit)
+  - [swap no](#swap-no)
+  - [power set or how to get subset using bit manipulation](#power-set-or-how-to-get-subset-using-bit-manipulation)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -548,6 +605,10 @@ keep revisting these problems and algo's to keep it fresh in the memory until yo
 - https://docs.oracle.com/javase/7/docs/api/java/util/Deque.html
 
 # Linked List
+
+## summary of most linked list prob from leetcode discuss
+
+- https://leetcode.com/problems/add-two-numbers/solutions/1340/a-summary-about-how-to-solve-linked-list-problem-c/
 
 ## to detect cycle/loop in linked list
 
@@ -1292,6 +1353,65 @@ best Google Coding Style.....
 }
 ```
 
+## reverse a linked list in group size of k
+
+- https://leetcode.com/problems/reverse-nodes-in-k-group/description/
+- https://leetcode.com/problems/reverse-nodes-in-k-group/solutions/183356/java-o-n-solution-with-super-detailed-explanation-illustration/
+
+### better sol refer the leetcode solution link for better sol
+
+### my sol with a stack i.e O(n) extra space
+
+```
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if(k == 1 ) return head;
+        var st = new Stack<ListNode>();
+        var curr = head;
+
+        var  orig = head;
+        boolean flag = false;
+        ListNode last = null;
+        while(curr != null){
+            var size = k;
+            while(curr != null && size > 0){
+                st.push(curr);
+                curr = curr.next;
+                size--;
+            }
+            if(size == 0){
+                if(!flag){
+                    orig = st.peek();
+                    flag = true;
+                }
+                ListNode ptr1 = st.pop();
+                if(last != null){
+                    last.next = ptr1;
+                }
+
+                ListNode ptr2 = ptr1.next;
+                while(!st.isEmpty()){
+                    ptr1.next = st.pop();
+                    ptr1 = ptr1.next;
+                }
+                ptr1.next = ptr2;
+                last = ptr1;
+
+            }else {
+                ListNode temp = null;
+               while(!st.isEmpty()) {
+                   temp = st.pop();
+               }
+                last.next = temp;
+
+            }
+
+        }
+       return orig;
+    }
+}
+```
+
 # stack and queues
 
 ## implement a circular queue
@@ -1879,11 +1999,110 @@ class Solution {
 
 ```
 
-### min stack problem
+## implement stack using queues
+- https://leetcode.com/problems/implement-stack-using-queues/description/
+
+### Intution for one queue
+- idea is to make the most recent added element as head of the queue by removing all existing elements from the queue and add it again.
+- e.g q [1,2,3,4]
+- now if we need to add 5 we have to make sure 5 is at the front of the queue so that pop operation remove it simply by queue remove operation this way push becomes costly and rest all are O(1)
+- so in push operation we first add 5 to queue [1,2,3,4,5] and then remove all prev existing element from queue and add it again i.e q.add(q.remove()) until queue is empty this way queue becomes [5,1,2,3,4]
+
+### using 2 queues
+- idea is same i.e to make last added element at the front of the queue so push impl is as below
+- add new element to the empty queue
+- then pop every ele from the non empty queue and add it to other queue
+- swan the queue 
+
+## implement queue using stacks
+- https://leetcode.com/problems/implement-queue-using-stacks/description/
+
+### intuition
+- simply push to 1 input stack 
+- for peek/pop operation if the output stack is empty then do below
+- pop all elements from input and add it to output that way queues front element will be at the top in output stack
+- The loop in peek does the moving from input to output stack. Each element only ever gets moved like that once, though, and only after we already spent time pushing it, so the overall amortized cost for each operation is O(1).
+
+```
+class MyQueue {
+    ArrayDeque<Integer> input;
+    ArrayDeque<Integer> output;
+    public MyQueue() {
+        input = new ArrayDeque<>();
+        output = new ArrayDeque<>();
+    }
+    
+    public void push(int x) {
+        input.push(x);
+    }
+    
+    public int pop() {
+        peek();
+        return output.pop();
+    }
+    
+    public int peek() {
+       if(output.isEmpty()){
+           while(!input.isEmpty()){
+               output.push(input.pop());
+           }
+       }
+       return output.peek(); 
+    }
+    
+    public boolean empty() {
+        return input.isEmpty() && output.isEmpty();
+    }
+}
+```
+
+## min stack problem
+
+### using arraylist and with TC O(n) for pop and rest all op O(1) not optimal 
+- https://leetcode.com/problems/min-stack/description/
+```
+class MinStack {
+    List<Integer> list;
+    int min;
+    public MinStack() {
+        list = new ArrayList<Integer>();
+        min = Integer.MAX_VALUE;
+    }
+    // O(1) TC
+    public void push(int val) {
+        list.add(val);
+        if(min == Integer.MAX_VALUE || min > val){
+            min = val;
+        }        
+    }
+    //TC O(N)
+    public void pop() {
+        var top = list.remove(list.size() - 1); 
+        if(list.isEmpty())
+            min = Integer.MAX_VALUE; 
+        if(!list.isEmpty() && top == min){ 
+            min = list.get(0);           
+            list.stream().forEach((e) -> {
+                if(e < min){
+                    min = e;
+                }
+            });            
+        }        
+    }
+    
+    public int top() {
+        return list.get(list.size() - 1);
+    }
+    
+    public int getMin() {
+        return min;
+    }
+}
+```
 
 https://www.geeksforgeeks.org/design-a-stack-that-supports-getmin-in-o1-time-and-o1-extra-space/
 
-## using extra space time complexity O(1) for all operation and space complexity O(n)
+### using extra space time complexity O(1) for all operation and space complexity O(n)
 
 ```
 
@@ -1922,7 +2141,7 @@ Stack<Integer> aux;
 
 ```
 
-#### without extra space TC O(1) SC(1)
+### without extra space TC O(1) SC(1)
 
 this sol would not work if -2^31 <= val <= 2^31 - 1
 
@@ -1967,7 +2186,7 @@ int min;
 
 ```
 
-#### using a stack of Nodes having both val and min for each node
+###  MOST IMP & OPTIMAL sol using a stack of Nodes having both val and min for each node
 
 ```
 
@@ -2135,8 +2354,499 @@ return (st.isEmpty() || !st.peek().equals(c)) ? false : true;
 }
 
 }
+```
+# monotonous stack i.e increasing or decreasing stack
+```
+The typical paradigm for monotonous increase stack:
+for(int i = 0; i < A.size(); i++){
+  while(!in_stk.empty() && in_stk.top() > A[i]){
+    in_stk.pop();
+  }
+  in_stk.push(A[i]);
+}
+```
+
+##  next greater element in an array (monotonic stack prob) paytm interview
+- count the length of longest substr with distinct char(already done line no 3354. index 105)
+- https://practice.geeksforgeeks.org/problems/next-larger-element-1587115620/1
+- https://takeuforward.org/data-structure/next-greater-element-using-stack/
+- https://leetcode.com/problems/next-greater-element-i/solutions/97595/java-10-lines-linear-time-complexity-o-n-with-explanation/ for intuition
+- https://leetcode.com/problems/next-greater-element-i/submissions/ leet code submisstion
+
+### Inuition
+- brute force approach involves 2 loops has O(n^2) TC,
+- In an increasing section of A, the next greater element is just the next. And when there is a decrease, you have to wait until you reach a larger value.
+- 1, 2, 1, 3, 4
+- can be seen as two increasing sections
+  1, 2||1, 3, 4
+- giving the next greater elements
+  2, -||3, 4, -
+-  When you reach the 2 (in the original array), you have to wait until you reach 3 (in the original array) and conclude
+  2, 3, 3, 4, -
+- When you reach the 4 (in the original array), you have to wait... forever as there is no greater element.
+  Now the need for a stack stems from the fact that if you progress from left to right, there can be several waiting elements. As these elements form a decreasing section, they will be "served" smallest first, which correspond to LIFO order
+
+### approach
+- This problem can be solved easily and efficiently by using the stack data structure as it is based on the Last in First out (LIFO) principle.
 
 ```
+ - To find the next greater element we start traversing the given array from the right. As for the rightmost element, there is no other element at its right. Hence, we assign -1 at its index in the resultant array.
+ - Since this can be the next greater element (NGE) for some other element, we push it in the stack S. We keep checking for other elements. Let’s say we are checking for an element at index i. We keep popping from the stack until the element at the top of the stack is smaller than A[i]. The main intuition behind popping them is that these elements can never be the NGE for any element present at the left of A[i] because A[i] is greater than these elements. Now, if the top element of S is greater than A[i] then this is NGE of A[i] and we will assign it to res[i], where res is the resultant array. If the stack becomes empty then it implies that no element at the right of A[i] is greater than it and we assign -1. At last, we push A[i] in S.
+```
+
+```
+class Solution
+{
+    //Function to find the next greater element for each element of the array.
+    public static long[] nextLargerElement(long[] arr, int n)
+    { 
+        // Your code here
+        ArrayDeque<Long> stack = new ArrayDeque<>();
+        long[] res = new long[n];
+        stack.push(arr[n-1]);
+        res[n-1] = -1;
+        for(int i = n - 2; i >= 0; i--){
+            while(!stack.isEmpty() && arr[i] >= stack.peek()){
+                stack.pop();
+            }
+            if(!stack.isEmpty())
+                res[i] = stack.peek();
+            else
+                res[i] = -1;
+            stack.push(arr[i]);
+        }
+        return res;
+    }
+}
+```
+
+## Next Greater Element II i.e circular array
+- Next Greater Element II
+  
+### Intuition
+- it is similar to prev prob with only diff being circular array so here array [1,2,1] becomes 1,2,1,1,2,1 so for this array you need to find NGE it will be 2,-1, 2 
+
+TC O(N) SC (N)
+```
+class Solution {
+    public int[] nextGreaterElements(int[] nums) {
+        var stack = new ArrayDeque<Integer>();
+        int len = nums.length;
+        int[] res = new int[len];        
+        
+        for(int i = 2*len - 1; i >= 0; i--){
+            var ind = i % len;
+            while(!stack.isEmpty() && nums[ind] >= stack.peek()){
+                stack.pop();
+            }
+            if(i < len){
+                if(!stack.isEmpty())
+                    res[ind] = stack.peek();
+                else
+                    res[ind] = -1;
+            }
+            stack.push(nums[ind]);
+        }
+        return res;
+    }
+}
+```
+
+
+## Next Smaller Element
+- https://practice.geeksforgeeks.org/problems/fab3dbbdce746976ba35c7b9b24afde40eae5a04/1?utm_source=geeksforgeeks&utm_medium=article_practice_tab&utm_campaign=article_practice_tab
+
+### approach
+just change the condition for stack pop i.e keep popping from stack till (stack.top > prev)
+
+
+```
+
+class Solution {
+	public static int[] help_classmate(int arr[], int n) 
+	{ 
+	    // Your code goes here
+	    
+	    ArrayDeque<Integer> stack = new ArrayDeque<>();
+        int[] res = new int[n];
+        stack.push(arr[n-1]);
+        res[n-1] = -1;
+        for(int i = n - 2; i >= 0; i--){
+            while(!stack.isEmpty() && arr[i] <= stack.peek()){
+                stack.pop();
+            }
+            if(!stack.isEmpty())
+                res[i] = stack.peek();
+            else
+                res[i] = -1;
+            stack.push(arr[i]);
+        }
+        return res;
+	} 
+}
+
+```
+
+## trapping rain water prob
+- https://takeuforward.org/data-structure/trapping-rainwater/
+- https://leetcode.com/problems/trapping-rain-water/
+
+### brute force O(n^2) sol
+- For each index, we have to find the amount of water that can be stored and we have to sum it up.If we observe carefully the amount the water stored at a particular index is the minimum of maximum elevation to the left and right of the index minus the elevation at that index.
+ 
+```
+class Solution {
+    public int trap(int[] height) {
+        int len = height.length;
+        int trapped = 0;
+        for(int i = 0; i < len; i++){
+             var j = i + 1;
+             int lmax, rmax;
+             lmax = rmax = height[i];           
+             while(j < len){
+                 rmax = Math.max(rmax, height[j]);
+                 j++;
+             }
+             j = i-1;
+             while(j >= 0){
+                 lmax = Math.max(lmax,height[j]);
+                 j--;
+             }
+            trapped += Math.min(lmax, rmax) - height[i];
+        }
+        return trapped;
+    }
+}
+```
+
+### my sol using stack but it can be done without stack also so don't use this sol
+
+```
+class Solution {
+    public int trap(int[] height) {
+        int len = height.length;
+        int trapped = 0;
+        var lmax = new int[len];
+        var rmax = new int[len];
+        var stack = new ArrayDeque<Integer>();
+        stack.push(height[len - 1]);
+        rmax[len-1] = 0;
+        for(int i = len - 2; i >= 0 ; i--){
+            var prev = height[i];
+            while(!stack.isEmpty() && prev >= stack.peek()){
+                stack.pop();
+            }
+            if(stack.isEmpty())
+                stack.push(prev);
+            else
+                rmax[i] = stack.peek();
+             //   System.out.println(rmax[i]);
+        }
+        lmax[0] = 0;
+        stack = new ArrayDeque<Integer>();
+        stack.push(height[0]);
+        for(int i = 1; i < len ; i++){
+            var next = height[i];
+            while(!stack.isEmpty() && next >= stack.peek()){
+                stack.pop();
+            }
+            if(stack.isEmpty())
+                stack.push(next);
+            else
+                lmax[i] = stack.peek();
+        }
+
+        for(int i = 0; i < len; i++){
+           // System.out.println(lmax[i] +"-" +rmax[i]);
+            var max = Math.min(lmax[i], rmax[i]);
+            if(max == 0) continue;
+            trapped += max - height[i];
+        }
+        return trapped;
+    }
+}
+```
+### sol without stack 
+- here without stack we can also compute rigth max and lmax since anyway in stack we are conidering right max element till index i so whatever max we have found at i+1, just compare it with val at i and that will be right most at i and if val at i is greater than val will stay the same and in formula min of(rmax,lmax) - height[i]) will be 0
+```
+class Solution {
+    public int trap(int[] height) {
+        var arr = height;
+       int n = arr.length;
+        int prefix[] = new int[n];
+        int suffix[] = new int[n];
+        prefix[0] = arr[0];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = Math.max(prefix[i - 1], arr[i]);
+        }
+        suffix[n - 1] = arr[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            suffix[i] = Math.max(suffix[i + 1], arr[i]);
+        }
+        int waterTrapped = 0;
+        for (int i = 0; i < n; i++) {
+            waterTrapped += Math.min(prefix[i], suffix[i]) - arr[i];
+        }
+        return waterTrapped;
+    }
+}
+```
+
+### 2 pointer approach without using any extra space 
+####  Intuition: 
+- We need a minimum of leftMax and rightMax.So if we take the case when height[l]<=height[r] then we are making sure that there's atleast a block right of l that has height >= height[l] so now there could be 2 sub cases here i.e lmax < height[l] or lmax > height[l],
+- first case means there's no block of height greater than height[l] to the left of l so lmax = height[l] and hence we can simply ignore this case and not add it to res since min of (lmax, rmax) = lmax since height[l] < height[r],rmax and hence lmax - height[l] is 0 so we simply do lmax = height[l] since this will be next lmax for element right of l
+- and for other case lmax > height[l] lmax is the left greater block so simply do lmax - height[l] and add it res since this time it will store water
+- similarly handle for right case
+
+
+```
+class Solution {
+    public int trap(int[] height) {
+         int n = height.length;
+        int left = 0, right = n - 1;
+        int res = 0;
+        int maxLeft = 0, maxRight = 0;
+        while (left <= right) {
+            if (height[left] <= height[right]) {
+                if (height[left] >= maxLeft) {
+                    maxLeft = height[left];
+                } else {
+                    res += maxLeft - height[left];
+                }
+                left++;
+            } else {
+                if (height[right] >= maxRight) {
+                    maxRight = height[right];
+                } else {
+                    res += maxRight - height[right];
+                }
+                right--;
+            }
+        }
+        return res;
+    }
+}
+```
+
+##  Sum of Subarray Minimums
+- https://leetcode.com/problems/sum-of-subarray-minimums/
+### similar prob where same pattern will be applied
+- [Sum of Subarray Ranges](https://leetcode.com/problems/sum-of-subarray-ranges/description/)
+### brute force solution
+TC O(n^2) SC O(1)
+```
+class Solution {
+    public int sumSubarrayMins(int[] arr) {
+        var len = arr.length;
+        var res = 0;
+        var mod = (int)(1e9) + 7;
+        for(int i = 0; i < len; i++){
+            var min = arr[i];
+            res += min;
+            for(int j = i + 1; j < len; j++){
+                min = Math.min(min, arr[j]);
+                res = (res % mod) + min;
+                
+            }
+        }
+        return res;
+    }
+}
+```
+### optimical approach
+- https://leetcode.com/problems/sum-of-subarray-minimums/solutions/178876/stack-solution-with-very-detailed-explanation-step-by-step/
+#### Intution:
+- https://leetcode.com/problems/sum-of-subarray-minimums/solutions/178876/stack-solution-with-very-detailed-explanation-step-by-step/
+
+- Efficient Approach: The general intuition for solution to the problem is to find sum(A[i] * f(i)), where f(i) is the number of subarrays in which A[i] is the minimum.
+
+In order to find f[i], we need to find out: 
+
+left[i], the length of strictly larger numbers on the left of A[i], 
+right[i], the length of larger numbers on the right of A[i].
+
+How can the monotonous increase stack be applied to this problem?
+For example:
+Consider the element 3 in the following vector:
+
+                            [2, 9, 7, 8, 3, 4, 6, 1]
+			     |                    |
+	             the previous less       the next less 
+	                element of 3          element of 3
+After finding both NLE and PLE of 3, we can determine the
+distance between 3 and 2(previous less) , and the distance between 3 and 1(next less).
+In this example, the distance is 4 and 3 respectively. or in other words no of strictly larger element to the left 3 is 3. now 3 + 1 = 4 is the 
+no of subarrays where subarray ends with 3 and 3 is only single minimum with no duplicates
+and no of strictly larger element to the right of 3 is 2. and 2+1 = 3 is no of subarray where 3 is the first element and 3 is the first minimum means duplicates can be there like 3,3,4,6,1 etc 
+
+
+How many subarrays with 3 being its minimum value?
+The answer is 4*3. why 4*3 and not 4+3 cos both left and right subarrays will make subarrays with each other also where 3 is min i.e right subarray where 3 is min will make subarrays with left subarrays also i.e 8 3 *, 8 3 4 * and 8 3 4 6 *,  7 8 3 * etc
+
+```
+9 7 8 3 * 
+9 7 8 3 4 
+9 7 8 3 4 6 
+7 8 3 *
+7 8 3 4 
+7 8 3 4 6 
+8 3 *
+8 3 4 
+8 3 4 6 
+
+right subarrays where 3 is first min will pair with left subarrays to make addition subarrays where 3 will be min hence left * right
+3 *
+3 4 *
+3 4 6 *
+```
+
+```
+
+class Pair {
+ int val, cnt;
+ Pair(int value, int count){
+     val = value;
+     cnt = count;
+ }
+}
+class Solution {
+    public int sumSubarrayMins(int[] arr) {
+        var len = arr.length;        
+        var mod = (int)(1e9) + 7;
+        var stack = new ArrayDeque<Pair>();
+        var rstack = new ArrayDeque<Pair>();
+        var left = new int[len];
+        var right = new int[len];
+        var res = 0;
+        for(int i = 0; i < len; i++){
+            while(!stack.isEmpty() &&  stack.peek().val > arr[i]){
+                stack.pop();
+            }
+            left[i] = stack.isEmpty() ? i + 1: i - stack.peek().cnt;
+            stack.push(new Pair(arr[i], i));             
+        }
+        for(int i = len - 1; i >= 0; i--){
+            while(!rstack.isEmpty() &&  rstack.peek().val >= arr[i]){
+                rstack.pop();
+            }
+            right[i] = rstack.isEmpty() ? len - i: rstack.peek().cnt - i;
+            rstack.push(new Pair(arr[i], i));  
+           
+        }
+        long ans=0;
+        for(int i=0;i<len;i++){
+            ans=(ans%mod+(((long)(left[i])%mod*(right[i])%mod*arr[i])%mod)%mod)%mod;
+        }
+        return (int)ans%mod;
+
+    }
+}
+```
+
+## remove k digits 
+- https://leetcode.com/problems/remove-k-digits/solutions/
+### Intuition
+- In order to get the smallest possible number, we have to get rid of as many as possible big digits in the most significant places on the left. We can use a monotonically increasing stack to help us remove those big digits. When adding a new digit, we check whether the previous one is bigger than the current and pop it out. In the end, we concatenate the remaining elements from the stack and return the result.
+
+TC O(N)
+SC O(k)
+
+```
+class Solution {
+    public String removeKdigits(String num, int k) {
+        var len = num.length();
+        var charArray = num.toCharArray();
+        if(len == k)
+            return "0";
+
+        var stack = new ArrayDeque<Character>();
+        for(char ch: charArray){
+            
+            while(k > 0 && !stack.isEmpty() && stack.peek() > ch){
+                stack.pop();
+                k--;
+            }
+            stack.push(ch);    
+        }
+        
+        var res = "";
+        var lzcount = 0;
+        while(!stack.isEmpty()){
+            var ch = stack.pop();
+            if(k-- > 0) {                
+                continue;                
+            }
+            if(ch == '0') lzcount++;
+            else lzcount = 0;
+            res = ch + res;
+        }
+        return lzcount == res.length() ? "0": res.substring(lzcount);     
+    }
+}
+```
+
+## https://leetcode.com/problems/online-stock-span/description/
+- https://leetcode.com/problems/online-stock-span/solutions/3829214/java-monotonic-stack-sol-with-intuition-and-easy-to-understand-sol-beats-100-submission/
+
+### Intuition
+for any day we need find out prev consequtives days on which stack price was equal or less than today's stock price so this prob boils down to finding prev first greater element i.e for ith day we find the prev first greater stock price day now let's say this is i-3th day and that means stock price at i-1th & i-2th day is smaller than
+stock price at ith day
+and i-1th and i-2th day has already their stock span values computed.
+and since stock value at ith day is >= stock val at i-1th & i-2th day
+simply add their values to ith day stock span value.
+
+that way you have computed stock span val at the ith day.
+
+so for such prob we use a monotonic stack
+
+e.g [100, 80, 60, 70, 60, 75]
+default days = 1 since every day stock span has atleast the today
+100 -> stack is empty so it return 1
+80 -> stack is non empty but prev day price is 100 > today's price 80 so no addition and simply return 1
+60 -> same as 80 case return 1
+70 -> now here stack top i.e 60 is smaller i.e prev day stock price is smaller so pop it out and add it's precomputed span val to current day's span
+next 80 is greater then 70 so we stop and return 2
+60 -> return 1 since prev day stock price 70 > today's price 60
+75 -> pop 60 -> add it's precomputed span val 1 to current span then pop 70 and add it's PSV 2 to it and so on till you find PFG element
+so finally return 4;
+
+### Approach
+use a monotonic decreasing stack to find Previous first greater element.
+
+```
+class Pair {
+    int price, days;
+    Pair(int price, int days){
+        this.price = price;
+        this.days = days;
+    }
+}
+
+class StockSpanner {
+    ArrayDeque<Pair> dq;
+    public StockSpanner() {
+        dq = new ArrayDeque<>();
+    }
+    
+   public int next(int price) {
+        int days = 1;        
+        while(!dq.isEmpty() && price >= dq.peek().price){
+            var prevD = dq.pop();
+            days += prevD.days;
+        }
+        dq.push(new Pair(price, days));
+        return days;
+    }
+}
+
+/**
+ * Your StockSpanner object will be instantiated and called as such:
+ * StockSpanner obj = new StockSpanner();
+ * int param_1 = obj.next(price);
+ */
+```
+
 
 # binary search O(log(n)
 
@@ -2174,7 +2884,7 @@ int beg = 0,end = nums.length - 1;
 `int mid = (low + high)/2;`
 
 But if we calculate the middle index like this means our code is not 100% correct, it contains bugs.
-That is, it fails for larger values of int variables low and high. Specifically, it fails if the sum of low and high is greater than the maximum positive int value(231 – 1 )
+That is, it fails for larger values of int variables low and high. Specifically, it fails if the sum of low and high is greater than the maximum positive int value(2^31 – 1 )
 The sum overflows to a negative value and the value stays negative when divided by 2.
 In java, it throws ArrayIndexOutOfBoundException.
 so always get middle like
@@ -2268,6 +2978,20 @@ class Solution {
 }
 ```
 
+## search in rotated sorted array 2(with duplicates)
+
+- https://leetcode.com/problems/search-in-rotated-sorted-array-ii/solutions/3482195/intuitive-java-sol-with-explanation-binary-search/
+
+### intuition
+
+- only extra condition that we need to handle here is below case rest it is similar to earlier prob
+
+- case a[left]=a[mid]=a[right]
+  we will have to find whether pivot is in left half or right, if the pivot is in left half then we will check for target in the right half bounds
+  similary if the pivot is in the right half then we check for target in the left half bounds
+
+- other way is simply to move left and right pointer towards mid by 1 for this case
+
 ## template 2
 
 - Template #2 is an advanced form of Binary Search. It is used to search for an element or condition which requires accessing the current index and its immediate right neighbor's index in the array.
@@ -2316,7 +3040,7 @@ public class Solution extends VersionControl {
 #### iterative
 
 - discuss better sol in TC
-- The only scenario left is where isBadVersion(mid) -> true isBadVersion(mid)⇒true. This tells us that mid may or may not be the first bad version, but we can tell for sure that all versions after midmid can be discarded. Therefore we set right = midright=mid as the new search space of interval [left,mid][left,mid] (inclusive).
+- The only scenario left is where isBadVersion(mid) -> true isBadVersion(mid)⇒true. This tells us that mid may or may not be the first bad version, but we can tell for sure that all versions after mid can be discarded. Therefore we set right = right=mid as the new search space of interval [left,mid][left,mid] (inclusive).
 
 ```
 /* The isBadVersion API is defined in the parent class VersionControl.
@@ -2383,6 +3107,95 @@ class Solution {
 ```
 
 - lc sol https://leetcode.com/problems/find-peak-element/solution/
+
+### find peak element 2 i.e in 2d array
+
+- https://leetcode.com/problems/find-a-peak-element-ii/description/
+- https://leetcode.com/problems/find-a-peak-element-ii/solutions/1338377/java-c-detailed-explanation/?orderBy=most_votes
+
+#### Inutuition
+
+this prob is about finding peak element in 2d array so if somehow we can convert this to find peak in 1d array we can use binary search
+
+so idea is find max of each col i.e [c0max,c1max,c2max ...] now the prob reduces to finding peak element in 1d array.
+
+but here to find max of each col we have traverse complete array and that will be O(m*n) and in total O(m*n\*log(m))
+
+but we don't need to find max of each col instead we can apply binary search w.r.t cols
+
+The algorithm is as follows:
+
+- Pick the middle column.
+- Find the global maximum in the column.
+- If the row-neighbours of this element are smaller, then we found a 2D peak. Else, we recurse at the right-half of the matrix if the right-neighbour was bigger, and left-half of the matrix if the left-neighbour was bigger.
+
+TC O(n log(m))
+
+for more details refer sol link above
+
+```
+class Solution {
+    public int[] findPeakGrid(int[][] mat) {
+        int[] res = new int[2];
+        int rows = mat.length;
+        int cols = mat[0].length;
+        int startCol = 0;
+        int endCol = cols - 1;
+        int maxR = 0;
+        while(startCol <= endCol){
+            int midCol = startCol + (endCol - startCol)/2;
+
+            for(int r = 0; r < rows; r++){
+                if(mat[r][midCol] > mat[maxR][midCol]){
+                    maxR = r;
+                }
+            }
+            var isLeftGreater = midCol - 1 >= 0 && mat[maxR][midCol-1] > mat[maxR][midCol];
+            var isRightGreater = midCol + 1 < cols && mat[maxR][midCol+1] > mat[maxR][midCol];
+            if(!isLeftGreater && !isRightGreater)
+                return new int[]{maxR, midCol};
+            else if(isLeftGreater)
+                endCol = midCol - 1;
+            else
+                startCol = midCol + 1;
+            }
+        return new int[] {-1, -1};
+
+    }
+}
+```
+
+### Search a 2D Matrix
+
+- https://leetcode.com/problems/search-a-2d-matrix/description/
+
+- use matrix conversion to 1d array and then apply binary search
+
+```
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int low = 0;
+        int high = rows*cols - 1;
+
+        while(low <= high){
+            int mid = low + (high - low)/2;
+            int midR = mid / cols;
+            int midC  = mid % cols;
+            if(matrix[midR][midC] == target)
+                return true;
+            else if(matrix[midR][midC] < target)
+                low = mid + 1;
+            else
+                high = mid - 1;
+        }
+        return false;
+
+    }
+}
+```
 
 ### Find Minimum in Rotated Sorted Array
 
@@ -2607,6 +3420,11 @@ class Solution {
 
 https://leetcode.com/explore/learn/card/binary-search/137/conclusion/982/discuss/19544/5-different-choices-when-talk-with-interviewers
 
+#### Inutuion
+
+- represent x^13 = (x^1)_ ( x^4) _ (x^8) and draw the rec tree for this prob to divide the prob at each step
+- we will see for odd power of n ans is x*(x*x, n/2) and for even (x\*x, n/2)
+
 ```
  class Solution {
     public double myPow(double x, int n) {
@@ -2634,19 +3452,29 @@ sol with new test cases added of leetcode (2.00000, Integer.MIN) and (-1.00000, 
 ```
 class Solution {
     public double myPow(double x, int n) {
-       if(n == Integer.MIN_VALUE)
-                n += 2;
+        if(n == Integer.MIN_VALUE)
+            n += 2;
         if(n > 0)
-            return helper(x, n);
+            return helper2(x, n);
         else
-            return 1/helper(x, -n);
+            return helper2(1/x, -n);
 
     }
+    // recusive
+    // private double helper(double x, int n){
+    //     if(n == 0) return 1;
+    //     return (n % 2) == 0 ? helper(x*x, n >> 1) : x * helper(x*x, n >> 1);
+    // }
 
-    double helper(double x, int n){
-         if(n == 0)
-            return 1;
-        return (n % 2 == 0) ? myPow(x*x, n/2) : x * myPow(x*x, n/2);
+// iterative approach using bitwise operator
+    private double helper2(double x, int n){
+        double ans = 1;
+        while(n > 0){
+            if((n & 1) == 1) ans *= x;
+            n >>= 1;
+            x*=x;
+        }
+        return ans;
     }
 }
 
@@ -2739,6 +3567,17 @@ class Solution {
     }
 }
 ```
+
+### binary search generalized pattern for solving problems that do not look like BS MOST imp
+
+- https://leetcode.com/problems/koko-eating-bananas/solutions/769702/python-clear-explanation-powerful-ultimate-binary-search-template-solved-many-problems/?orderBy=most_votes
+- https://leetcode.com/problems/binary-search/solutions/423162/Binary-Search-101-The-Ultimate-Binary-Search-Handbook/
+
+- read the discuss section from the link above to get an idea about identifying and using BS to solve problems that do not look like BS problems
+
+- check below prob on leetcode to understand
+- https://leetcode.com/problems/koko-eating-bananas/submissions/
+- https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/submissions/
 
 # Arrays & String
 
@@ -3019,13 +3858,21 @@ class Solution {
 }
 ```
 
-## Implement strStr()
+## sliding window problems
+
+To, find out a sliding window problem :-
+
+- First thing is, we have given something like an "Array" | OR | "String"
+- Second thing is, they are talking about either "subsequence" | OR | "substring"
+- And third most thing is, either we have given a "window size i.e. k" | OR | we have to "manually find out window size" i.e fixed sliding window prob or variable sliding window prob
+
+### Implement strStr()
 
 https://leetcode.com/explore/learn/card/array-and-string/203/introduction-to-string/1161
 
 https://www.geeksforgeeks.org/check-string-substring-another/
 
-### sliding window my sol with TC O(m \* (m - n)) SC O(n)
+#### sliding window my sol with TC O(m \* (m - n)) SC O(n)
 
 ```
 class Solution {
@@ -3058,7 +3905,7 @@ class Solution {
 }
 ```
 
-### normal TC O(m \* n) SC O(1)
+#### normal TC O(m \* n) SC O(1)
 
 ```
 public int strStr(String haystack, String needle) {
@@ -3120,6 +3967,70 @@ class Solution {
     }
 }
 ```
+
+### Longest Substring Without Repeating Characters
+
+- https://leetcode.com/submissions/detail/939990806/
+
+Intution:
+this prob fits the sliding window pattern along with that we need set or map data structure to keep track of characters
+
+```
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        var set = new HashSet<Character>();
+        int len = s.length();
+        int cnt = 0;
+        int longSubStr = 0;
+        int left = 0;
+        for(int right = 0; right < len; right++){
+          var c = s.charAt(right);
+          if(!set.contains(c)){
+              set.add(c);
+              longSubStr =  Math.max(longSubStr, right - left + 1);
+          }
+          else{
+            while(s.charAt(left) != s.charAt(right)){
+              set.remove(s.charAt(left++));
+            }
+            set.remove(s.charAt(left++));
+            set.add(s.charAt(right));
+
+          }
+
+        }
+        return longSubStr;
+    }
+
+// using map 
+
+class Solution{
+    static int longestSubstrDistinctChars(String S){
+        
+        char[] arr = S.toCharArray();
+        int len = S.length();
+        Map<Character, Integer> map = new HashMap<>();
+        int left = 0;
+        int subLen = 0;
+        for(int right = 0; right < len; right++){
+            if(!map.containsKey(arr[right])){
+                map.put(arr[right], right);
+                subLen = Math.max(subLen, right - left + 1);
+            }else{
+                int ind = map.get(arr[right]);
+                while(left <= ind){
+                    map.remove(arr[left++]);
+                }
+                map.put(arr[right], right);
+            }
+        }
+       
+        return subLen;    
+    }
+}
+```
+
+
 
 ## longest common prefix
 
@@ -5895,7 +6806,7 @@ refernce - check take y forward trie series youtube channel
 
 #### brtute force is O(n^2) with 2 loops
 
-#### using trie
+#### using trie & bit manipulation
 
 - main trick is to create a trie of binary bits of every number in array using bit manipulation
 - check if the ith bit is set in a no using (num >> i) & 1
@@ -7123,7 +8034,7 @@ class Solution {
 ### sol by converting adjacency matrix to list first
 
 SC -> O(n) : vis array + O(n) : dfs calls worst case skewed graph + O(n + 2E) adjacency list = O(n)
-TC -> O(nn) for converion to list + O(n) + O(n+2E) = O(nn)
+TC -> O(n) for converion to list + O(n) + O(n+2E) = O(nn)
 
 ```
 class Solution {
@@ -7806,6 +8717,7 @@ class Solution
 - https://www.youtube.com/watch?v=iTBaI90lpDQ&list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn&index=23
 - https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=detect-cycle-in-a-directed-graph
 - topo sort is only possible on DAG so if topo sort is not possible for a directed graph then there's a cycle
+-  it will fail to find the topological sorting(i.e. The final sorting will not contain all the nodes or vertices). 
 
 ```
 class Solution {
@@ -13620,3 +14532,186 @@ class Solution{
     }
 }
 ```
+
+# basic math problem
+
+## Reverse Integer
+
+- https://leetcode.com/problems/reverse-integer/submissions/
+
+### my explanation for overflow check
+
+- only important thing here is to check for overflow
+- so when overflow will happen then newRev/10 will not be equal to rev i.e prev newRev
+- e.g 1234567889 at last loop x = 1 and newRev = 988765432 so when you multiple it by 10 it overflows and goes on -ve side so now if you divide it by 10 then it won't match to prev newRev value i.e 988765432
+
+### more detailed explanation for overflow check
+
+- For your reference, to test if there is overflow for any integer x of the form x = a _ 10 + b where |b| < 10, the right way should be comparing x / 10 (integer division) with a. If x / 10 != a, there is overflow, otherwise no overflow can happen. The proof is as follows: first note that x itself is a signed integer, therefore we have INT_MIN <= x <= INT_MAX, which implies INT_MIN/10 <= x/10 <= INT_MAX/10. So if we assume x / 10 == a, we have INT_MIN/10 <= a <= INT_MAX/10. Since |b| < 10, then a _ 10 + b can overflow only if a = INT*MAX/10 or a = INT_MIN/10. For signed 32-bit integers, we have INT_MAX = 2147483647 and INT_MIN = -2147483648. For a = INT_MAX/10 = 214748364, overflow will happen only if b = 8 or 9. However if this is the case, then x = a * 10 + b will be negative and x / 10 cannot be the same as a, contradicting our assumption above. Similarly if a = INT*MIN/10 = -214748364, overflow will happen only if b = -9 but then x = a * 10 + b will be positive and again x / 10 won't be equal to a. In summary, x / 10 != a <==> overflow.
+
+```class Solution {
+    public int reverse(int test) {
+        int rev = 0;
+        int newRev = 0;
+        int x = Math.abs(test);
+        while( x > 0){
+            int ld = x % 10;
+            newRev = newRev * 10 + ld;
+            if(newRev / 10 != rev) return 0;
+            rev = newRev;
+            x = x/10;
+        }
+
+        if(test < 0)
+            return -rev;
+        else return rev;
+
+    }
+}
+```
+
+# bit manipulation
+
+## operators
+
+```
+^ & | << >> ~
+1 << i means \* 2^i
+1 >> i means / 2^i
+
+eg x = 5 i.e 0101
+x << 0 = 5 i.e 5*2^0 0101  x << 1 = 10 i.e 5*2^1 1010
+x << 2 = 20 i.e 5\*2^2 10100
+```
+
+## check ith bit set or not
+
+```
+num & 1 << i != 0 ? 1 : 0
+or
+num >> i & 1 != 0 ? 1 : 0
+```
+
+## set ith bit
+
+```
+num = num | 1 << i
+```
+
+## check if a no is odd or not
+
+```
+multiple ways i.e using xor , or <<, >>
+main idea is to check if rightmost bit is set or not
+n & 1 == 0 ? even: odd
+```
+
+## Check if a number is power of 2 or not
+
+- https://leetcode.com/problems/power-of-two/
+
+```
+  n > 0 && (n & n - 1) == 0
+  e.g 16   16 & 15 == 0 i.e if a num is 2^i then it's prev no will be 0*2^i + 1* 2^i-1 .....1*2^0 so when we multply them we will get 0
+
+
+```
+
+## Count the number of set bits
+
+- https://practice.geeksforgeeks.org/problems/count-total-set-bits-1587115620/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=Count+total+set+bits
+
+```
+class Solution{
+
+    //Function to return sum of count of set bits in the integers from 1 to n.
+    public static int countSetBits(int n){
+
+        // Your code here
+        int res = 0;
+        for(int i = 1; i <= n; i++){
+            res += countSetBitsUtil(i);
+        }
+        return res;
+    }
+    private static int countSetBitsUtil(int i ){
+        int cnt=0;
+        while(i > 0){
+            if((i & 1) != 0) cnt++;
+            i = i >> 1;
+        }
+        return cnt;
+    }
+}
+```
+
+## Set/Unset the rightmost unset bit
+
+- https://practice.geeksforgeeks.org/problems/set-the-rightmost-unset-bit4436/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=Set+the+rightmost+unset+bit
+
+- find the pos of the rigtmost bit then set it
+
+```
+class Solution{
+    static int setBit(int N){
+        // code here
+       int i = 0;
+       int pos = -1;
+       int temp = N;
+
+       while(temp > 0){
+           if((temp & 1) == 0){
+               pos = i;
+               break;
+           }
+           temp = temp >> 1;
+           i++;
+       }
+        if(pos == -1) return N;
+        return N | (1 << pos);
+    }
+}
+```
+
+## swap no
+
+```
+a = a^b
+b = a^b
+a = a^b
+```
+
+## power set or how to get subset using bit manipulation
+
+```
+find all subsets of [1,2,3]
+total subset 2^3 = 8
+[{},{1},{2},{3},{1,2},{1,3},{2,3},{1,2,3}]
+
+0   0 0 0  {}
+1   0 0 1  {1}
+2   0 1 0  {2}
+3   0 1 1  {1,2}
+4   1 0 0  {3}
+5   1 0 1  {1,3}
+6   1 1 0  {2,3}
+7   1 1 1  {1,2,3}
+
+list
+for(i = 0 -> 2^n - 1){
+    for(j = 0 -> n-1){
+        if (jth bit is set for i)
+            set.add(a[i]);
+    }
+}
+
+TC O(2^n * n)
+- it is not suitable for large value of n so generaly when n < 16 it can be used
+like in petr and lock combination prob
+```
+
+- to find powerset with duplicates
+- need to sort first and then use a set<String> to eliminate duplicates subset
+- but this method is not good as TC is very high, backtracking is better approach here
+
+
