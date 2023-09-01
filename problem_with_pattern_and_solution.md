@@ -83,6 +83,10 @@
   - [https://leetcode.com/problems/online-stock-span/description/](#httpsleetcodecomproblemsonline-stock-spandescription)
     - [Intuition](#intuition-4)
     - [Approach](#approach-2)
+  - [https://leetcode.com/problems/lru-cache/description/](#httpsleetcodecomproblemslru-cachedescription)
+    - [Intuition:](#intuition-5)
+    - [my sol using priority queue and map](#my-sol-using-priority-queue-and-map)
+    - [using DLL with map can improve the TC as insertion and deletion in DLL is O(1) which it is logC in priority queue VERY IMP](#using-dll-with-map-can-improve-the-tc-as-insertion-and-deletion-in-dll-is-o1-which-it-is-logc-in-priority-queue-very-imp)
 - [binary search O(log(n)](#binary-search-ologn)
   - [template 1](#template-1-1)
     - [iterative sol](#iterative-sol)
@@ -91,7 +95,7 @@
     - [here below part is extra to calculate the fractional part up to p point](#here-below-part-is-extra-to-calculate-the-fractional-part-up-to-p-point)
   - [search in a rotated sorted array](#search-in-a-rotated-sorted-array)
   - [search in rotated sorted array 2(with duplicates)](#search-in-rotated-sorted-array-2with-duplicates)
-    - [intuition](#intuition-5)
+    - [intuition](#intuition-6)
   - [template 2](#template-2-1)
     - [first bad version problem](#first-bad-version-problem)
       - [iterative](#iterative)
@@ -141,8 +145,6 @@
     - [two sum II (sorted array)](#two-sum-ii-sorted-array)
       - [O(n) sol using two pointers](#on-sol-using-two-pointers)
       - [O(n log n) sol using binary search](#on-log-n-sol-using-binary-search)
-    - [Minimum Size Subarray Sum (revise)](#minimum-size-subarray-sum-revise)
-      - [using 2 pointer/ sliding window O(log(n))](#using-2-pointer-sliding-window-ologn)
       - [sol using outer loop and binary search TC O(n log n) TODO](#sol-using-outer-loop-and-binary-search-tc-on-log-n-todo)
     - [min window substring TODO](#min-window-substring-todo)
   - [rotate array TC O(n) in place SC O(1)](#rotate-array-tc-on-in-place-sc-o1)
@@ -329,7 +331,7 @@
   - [Shortest path in Directed Acyclic Graph](#shortest-path-in-directed-acyclic-graph)
     - [Intution](#intution-2)
   - [Word Ladder I (HARD)](#word-ladder-i-hard)
-    - [Intuition](#intuition-6)
+    - [Intuition](#intuition-7)
   - [Word Ladder II (HARD)](#word-ladder-ii-hard)
   - [dijkastra shortest path algo](#dijkastra-shortest-path-algo)
     - [Intution](#intution-3)
@@ -355,9 +357,9 @@
   - [Floyd Warshal Algorithm( diff from dijkstra / bellman ford) - multi source shortest path algorithm - helps to detect -ve cycle as well](#floyd-warshal-algorithm-diff-from-dijkstra--bellman-ford---multi-source-shortest-path-algorithm---helps-to-detect--ve-cycle-as-well)
   - [mininum spanning tree (MST)](#mininum-spanning-tree-mst)
     - [prim's algorithm to find MST](#prims-algorithm-to-find-mst)
-      - [Intuition](#intuition-7)
-    - [kruskal algorithm to find MST ( disjoint set pre requisite so study that first)](#kruskal-algorithm-to-find-mst--disjoint-set-pre-requisite-so-study-that-first)
       - [Intuition](#intuition-8)
+    - [kruskal algorithm to find MST ( disjoint set pre requisite so study that first)](#kruskal-algorithm-to-find-mst--disjoint-set-pre-requisite-so-study-that-first)
+      - [Intuition](#intuition-9)
   - [disjoint set very IMP \[REVISE\]](#disjoint-set-very-imp-revise)
     - [Problem - why the need of disjoin set DS](#problem---why-the-need-of-disjoin-set-ds)
     - [disjoin data structure](#disjoin-data-structure)
@@ -365,17 +367,17 @@
     - [Time and space complexity](#time-and-space-complexity)
     - [why connect smaller component to larger one and not the other way round](#why-connect-smaller-component-to-larger-one-and-not-the-other-way-round)
   - [Number of Provinces - Disjoint Set](#number-of-provinces---disjoint-set)
-    - [Intuition](#intuition-9)
-  - [Number of Operations to Make Network Connected - DSU](#number-of-operations-to-make-network-connected---dsu)
     - [Intuition](#intuition-10)
-  - [Accounts Merge - DSU (HARD)](#accounts-merge---dsu-hard)
+  - [Number of Operations to Make Network Connected - DSU](#number-of-operations-to-make-network-connected---dsu)
     - [Intuition](#intuition-11)
+  - [Accounts Merge - DSU (HARD)](#accounts-merge---dsu-hard)
+    - [Intuition](#intuition-12)
     - [Complexity](#complexity-1)
   - [no of island II (DSU) online queries](#no-of-island-ii-dsu-online-queries)
-    - [Intuition](#intuition-12)
+    - [Intuition](#intuition-13)
     - [complexity](#complexity-2)
   - [making a large island (HARD)](#making-a-large-island-hard)
-    - [Intuition](#intuition-13)
+    - [Intuition](#intuition-14)
     - [Approach](#approach-3)
     - [Complexity](#complexity-3)
   - [maximum store removal Most Stones Removed with Same Row or Column](#maximum-store-removal-most-stones-removed-with-same-row-or-column)
@@ -390,7 +392,7 @@
     - [interesting quesion (edge case)](#interesting-quesion-edge-case)
   - [778. Swim in Rising Water (HARD)](#778-swim-in-rising-water-hard)
     - [using Dijkstra](#using-dijkstra)
-      - [Intuition](#intuition-14)
+      - [Intuition](#intuition-15)
     - [using DS union find(TODO)](#using-ds-union-findtodo)
 - [Dynamic programming](#dynamic-programming)
   - [recursion prerequisite](#recursion-prerequisite)
@@ -430,10 +432,10 @@
   - [Partition A Set Into Two Subsets With Minimum Absolute Sum Difference | DP on Subsequences](#partition-a-set-into-two-subsets-with-minimum-absolute-sum-difference--dp-on-subsequences)
     - [optimization](#optimization)
   - [Count Subsets with Sum K (DP – 17)](#count-subsets-with-sum-k-dp--17)
-    - [Intuition](#intuition-15)
+    - [Intuition](#intuition-16)
     - [using tabulation](#using-tabulation-1)
   - [Count Partitions With Given Difference | Dp on Subsequences](#count-partitions-with-given-difference--dp-on-subsequences)
-    - [Intuition](#intuition-16)
+    - [Intuition](#intuition-17)
   - [DP 19. 0/1 Knapsack | Recursion to Single Array Space Optimised Approach | DP on Subsequences](#dp-19-01-knapsack--recursion-to-single-array-space-optimised-approach--dp-on-subsequences)
     - [using memoization](#using-memoization-5)
     - [using tabulation with space optimization to 2 rows](#using-tabulation-with-space-optimization-to-2-rows)
@@ -455,32 +457,32 @@
     - [using tabulation and 1D array space optimization](#using-tabulation-and-1d-array-space-optimization)
   - [rod cutting](#rod-cutting)
   - [using memoization](#using-memoization-9)
-    - [intuition](#intuition-17)
+    - [intuition](#intuition-18)
     - [using tabulation with 1D space optimization](#using-tabulation-with-1d-space-optimization)
   - [Dp 25. Longest Common Subsequence | Top Down | Bottom-Up | Space Optimised | DP on Strings](#dp-25-longest-common-subsequence--top-down--bottom-up--space-optimised--dp-on-strings)
-    - [Intuition](#intuition-18)
+    - [Intuition](#intuition-19)
     - [using memoization](#using-memoization-10)
     - [using tabulation](#using-tabulation-2)
   - [longest common substring](#longest-common-substring)
-    - [Intuition](#intuition-19)
-  - [longest palindromic subsequence](#longest-palindromic-subsequence)
     - [Intuition](#intuition-20)
-  - [min insertion to make a string palindromic(LC HARD)](#min-insertion-to-make-a-string-palindromiclc-hard)
+  - [longest palindromic subsequence](#longest-palindromic-subsequence)
     - [Intuition](#intuition-21)
+  - [min insertion to make a string palindromic(LC HARD)](#min-insertion-to-make-a-string-palindromiclc-hard)
+    - [Intuition](#intuition-22)
     - [without LPS|LCS method](#without-lpslcs-method)
     - [Approach](#approach-4)
     - [Complexity](#complexity-5)
     - [Code](#code)
   - [Minimum Insertions/Deletions to Convert String | (DP- 30)](#minimum-insertionsdeletions-to-convert-string--dp--30)
-    - [Intuition](#intuition-22)
-  - [DP 31. Shortest Common Supersequence | DP on Strings | LC HARD](#dp-31-shortest-common-supersequence--dp-on-strings--lc-hard)
     - [Intuition](#intuition-23)
+  - [DP 31. Shortest Common Supersequence | DP on Strings | LC HARD](#dp-31-shortest-common-supersequence--dp-on-strings--lc-hard)
+    - [Intuition](#intuition-24)
   - [Distinct Subsequences | 1D Array Optimisation Technique LC HARD](#distinct-subsequences--1d-array-optimisation-technique-lc-hard)
     - [using memoization](#using-memoization-11)
     - [using tabulation](#using-tabulation-3)
     - [1D space optimization](#1d-space-optimization)
   - [Edit Distance | (DP-33) LC HARD](#edit-distance--dp-33-lc-hard)
-    - [Intuition](#intuition-24)
+    - [Intuition](#intuition-25)
     - [using memoization](#using-memoization-12)
     - [using tabulation](#using-tabulation-4)
       - [2 row space optimization](#2-row-space-optimization)
@@ -512,9 +514,9 @@
   - [Largest Divisible Subset(variation of LIS)](#largest-divisible-subsetvariation-of-lis)
   - [1048. Longest String Chain](#1048-longest-string-chain)
   - [Longest Bitonic subsequence(var of LIS)](#longest-bitonic-subsequencevar-of-lis)
-    - [Intuition](#intuition-25)
-  - [Number of Longest Increasing Subsequences|(DP-47)](#number-of-longest-increasing-subsequencesdp-47)
     - [Intuition](#intuition-26)
+  - [Number of Longest Increasing Subsequences|(DP-47)](#number-of-longest-increasing-subsequencesdp-47)
+    - [Intuition](#intuition-27)
   - [Matrix Chain Multiplication (partition DP) HARD LC](#matrix-chain-multiplication-partition-dp-hard-lc)
     - [using memoization](#using-memoization-17)
     - [using tabulation](#using-tabulation-9)
@@ -535,7 +537,7 @@
   - [Maximal Rectangle LC HARD - using histogram prob](#maximal-rectangle-lc-hard---using-histogram-prob)
 - [greedy Algorithms](#greedy-algorithms)
   - [N meetings in a room](#n-meetings-in-a-room)
-    - [Intuition](#intuition-27)
+    - [Intuition](#intuition-28)
   - [Minimum number of Coins (greedy) uniform and const set of denomination in desc order](#minimum-number-of-coins-greedy-uniform-and-const-set-of-denomination-in-desc-order)
   - [assign cookies leetcode easy](#assign-cookies-leetcode-easy)
   - [Lemonade Change](#lemonade-change)
@@ -546,24 +548,24 @@
     - [using memoization](#using-memoization-21)
     - [using tabulation](#using-tabulation-12)
     - [greedy approach with TC O(n)](#greedy-approach-with-tc-on)
-      - [intuition](#intuition-28)
+      - [intuition](#intuition-29)
       - [if sol is not always possible then](#if-sol-is-not-always-possible-then)
   - [Minimum number of platforms required for a railway (IMP) greedy overlapping intervals](#minimum-number-of-platforms-required-for-a-railway-imp-greedy-overlapping-intervals)
     - [Inuituion](#inuituion-2)
     - [Time and Space complexity](#time-and-space-complexity-1)
   - [Job Sequencing Problem greedy IMP](#job-sequencing-problem-greedy-imp)
-    - [Intuition](#intuition-29)
-  - [candy LC HARD greedy approach](#candy-lc-hard-greedy-approach)
     - [Intuition](#intuition-30)
+  - [candy LC HARD greedy approach](#candy-lc-hard-greedy-approach)
+    - [Intuition](#intuition-31)
     - [why 2 loops are needed Left - right and right to left](#why-2-loops-are-needed-left---right-and-right-to-left)
     - [Approach](#approach-5)
     - [Complexity](#complexity-6)
     - [Code](#code-1)
   - [Shortest Job first](#shortest-job-first)
-    - [intuition](#intuition-31)
+    - [intuition](#intuition-32)
   - [https://leetcode.com/problems/single-threaded-cpu/ TODO](#httpsleetcodecomproblemssingle-threaded-cpu-todo)
   - [Program for Least Recently Used (LRU) Page Replacement Algorithm](#program-for-least-recently-used-lru-page-replacement-algorithm)
-    - [Intuition](#intuition-32)
+    - [Intuition](#intuition-33)
     - [sol with Priority Queue only](#sol-with-priority-queue-only)
     - [sol with priority Queue and MAP](#sol-with-priority-queue-and-map)
       - [Approach](#approach-6)
@@ -581,6 +583,25 @@
   - [Set/Unset the rightmost unset bit](#setunset-the-rightmost-unset-bit)
   - [swap no](#swap-no)
   - [power set or how to get subset using bit manipulation](#power-set-or-how-to-get-subset-using-bit-manipulation)
+- [DSA coding patterns IMP](#dsa-coding-patterns-imp)
+  - [sliding window pattern](#sliding-window-pattern)
+    - [sliding window template from leetcode discuss](#sliding-window-template-from-leetcode-discuss)
+    - [top sliding window questions](#top-sliding-window-questions)
+    - [1838. Frequency of the Most Frequent Element](#1838-frequency-of-the-most-frequent-element)
+    - [209. Minimum Size Subarray Sum (revise)](#209-minimum-size-subarray-sum-revise)
+      - [using 2 pointer/ sliding window O(log(n))](#using-2-pointer-sliding-window-ologn)
+    - [424. Longest Repeating Character Replacement](#424longest-repeating-character-replacement)
+    - [Longest Substring with At Most K Distinct Characters](#longest-substring-with-at-most-k-distinct-characters)
+    - [1004. Max Consecutive Ones III](#1004max-consecutive-ones-iii)
+  - [merge intervals pattern](#merge-intervals-pattern)
+    - [greedy(sorting required) + merge interval problems](#greedysorting-required--merge-interval-problems)
+      - [56 merge intervals](#56-merge-intervals)
+      - [57. Insert Interval](#57insert-interval)
+  - [2 pointer with merge interval pattern problems](#2-pointer-with-merge-interval-pattern-problems)
+    - [986. Interval List Intersections](#986-interval-list-intersections)
+  - [greedy (sorting required) + 2 pointer with merge intervals pattern i.e overlapping conditions](#greedy-sorting-required--2-pointer-with-merge-intervals-pattern-ie-overlapping-conditions)
+    - [435. Non-overlapping Intervals](#435-non-overlapping-intervals)
+    - [using len - non overlapping interval logic](#using-len---non-overlapping-interval-logic)
 
 goal of these notes is to identify patterns and then map it to problems
 keep revisting these problems and algo's to keep it fresh in the memory until you no longer needs to revisit again
@@ -2847,7 +2868,152 @@ class StockSpanner {
  */
 ```
 
+## https://leetcode.com/problems/lru-cache/description/
 
+### Intuition:
+- from cache we understand that we need to use a map to act as cache
+- now to keep track of LRU item in cache efficiently we need a DS where LRU item is available easily to remove head DS comes to mind i.e we can maintain a min heap to keep LRU item at the top with the help of a timer or counter variable however removal and insertion operation for head are O(logn) now if we use DLL in it's place insertion and removal can be done in constant time i.e O(1)
+- so we can use DLL to keep the LRU item at the tail and MRU item at the head that way we can remove the LRU item from tail
+- i used key along with a counter to keep track of LRU item, counter helps me maintain a min heap and LRU item will be the one at the top of min heap to be removed, for that i will have update counter val as per the operation on the key
+### my sol using priority queue and map
+
+```
+class Pair {
+    int key, counter;
+    Pair(int key, int counter){
+        this.key = key;
+        this.counter = counter;
+    }
+       @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pair p1 = (Pair) o;
+        return key == p1.key;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key);
+    }
+}
+
+class LRUCache {
+    private static int count = 0;
+    PriorityQueue<Pair> pq;
+    Map<Integer,Integer> cache;
+    int size;
+    public LRUCache(int capacity) {
+        pq = new PriorityQueue<>((a, b) -> a.counter - b.counter );
+        cache = new HashMap<>();
+        size = capacity;
+    }
+    // O(logC)
+    public int get(int key) {
+        int val = cache.getOrDefault(key, -1);
+        if(val != -1){
+            pq.remove(new Pair(key, count));    
+            pq.offer(new Pair(key, ++count));
+        }
+        return val;
+    }
+       // O(logC)
+    public void put(int key, int value) {
+        if(cache.containsKey(key)){
+            cache.put(key, value);
+            pq.remove(new Pair(key, count));    
+            pq.offer(new Pair(key, ++count));    
+        }else if(cache.size() == size){
+            var LRUKey = pq.remove().key;                        
+            pq.remove(new Pair(LRUKey, count));    
+            cache.remove(LRUKey);
+            cache.put(key, value);
+            pq.offer(new Pair(key, ++count));
+        }else{
+            cache.put(key, value);
+            pq.offer(new Pair(key, ++count));
+        }
+        
+    }
+}
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */
+ ```
+
+### using DLL with map can improve the TC as insertion and deletion in DLL is O(1) which it is logC in priority queue VERY IMP
+- https://takeuforward.org/data-structure/implement-lru-cache/
+- https://leetcode.com/problems/lru-cache/solutions/3843642/dll-hashmap-sol-in-java-with-explanation-why-dll-is-better-than-heap-for-this-sol/
+```
+class Node{
+    Node next, prev;
+    int key, val;
+    Node(int _key,int _val){
+        key = _key;
+        val = _val;
+    }
+}
+
+class LRUCache {
+    Node head, tail;
+    Map<Integer, Node> cache;
+    int size;
+    public LRUCache(int capacity) {
+        head = new Node(0, 0);
+        tail = new Node(0, 0);
+        head.next = tail;
+        tail.prev = head;
+        cache = new HashMap<>();
+        size = capacity;
+    }
+    
+    public int get(int key) {
+        var node = cache.getOrDefault(key, null);
+        if(node != null){
+            remove(node);
+            insert(node);
+            return node.val;
+        }   
+        else
+            return -1;
+    }
+    
+    public void put(int key, int value) {
+        if(cache.containsKey(key)){
+            remove(cache.get(key));
+        }
+        if(size == cache.size()){
+            remove(tail.prev);            
+        }
+        insert(new Node(key, value));
+    }
+
+    private void remove(Node node){
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+        cache.remove(node.key);
+    }
+
+    private void insert(Node node){
+        node.next = head.next;
+        head.next.prev = node;
+        node.prev = head;
+        head.next = node;
+        cache.put(node.key, node); 
+    }
+}
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */
+ ```
 # binary search O(log(n)
 
 there are 3 templates for binary search
@@ -3974,33 +4140,28 @@ class Solution {
 
 Intution:
 this prob fits the sliding window pattern along with that we need set or map data structure to keep track of characters
+- sliding window 2 pointer with hashset/hashmap approach
 
 ```
 class Solution {
     public int lengthOfLongestSubstring(String s) {
-        var set = new HashSet<Character>();
-        int len = s.length();
-        int cnt = 0;
-        int longSubStr = 0;
-        int left = 0;
-        for(int right = 0; right < len; right++){
-          var c = s.charAt(right);
-          if(!set.contains(c)){
-              set.add(c);
-              longSubStr =  Math.max(longSubStr, right - left + 1);
-          }
-          else{
-            while(s.charAt(left) != s.charAt(right)){
-              set.remove(s.charAt(left++));
+       var set = new HashSet<Character>();
+       int left = 0;
+       int len = s.length();
+       int maxLen = 0;
+       for(int right = 0; right < len; right++){
+            if(set.contains(s.charAt(right))){
+                while(left < right && set.contains(s.charAt(right))){
+                    set.remove(s.charAt(left));
+                    left++;
+                }
             }
-            set.remove(s.charAt(left++));
             set.add(s.charAt(right));
-
-          }
-
-        }
-        return longSubStr;
+            maxLen = Math.max(maxLen, right - left + 1);
+       } 
+        return maxLen;      
     }
+}
 
 // using map 
 
@@ -4173,30 +4334,7 @@ class Solution {
     }
 ```
 
-### Minimum Size Subarray Sum (revise)
 
-- https://leetcode.com/explore/learn/card/array-and-string/205/array-two-pointer-technique/1299/
-
-#### using 2 pointer/ sliding window O(log(n))
-
-- https://www.youtube.com/watch?v=K0NgGYEAkA4
-- this sol actually uses sliding window via 2 pointers
-
-```
-	class Solution {
-    public int minSubArrayLen(int target, int[] nums) {
-        int str = 0, end = 0, sum = 0, minlen = Integer.MAX_VALUE;
-        for(;end < nums.length; end++){
-            sum += nums[end];
-            while(sum >= target){
-                minlen = Math.min(minlen, end - str + 1);
-                sum -= nums[str++];
-            }
-        }
-        return minlen == Integer.MAX_VALUE ? 0 : minlen;
-    }
-}
-```
 
 #### sol using outer loop and binary search TC O(n log n) TODO
 
@@ -13800,7 +13938,7 @@ SC - O(n)
 ### Intuition
 
 - since the prob is find out the max meetings we can think in terms of greedy sol like if we do a sort on end timesand allocate the meetings we can get max meetings
-
+- if we need to print order then pos is needed in DS else skip it
 ```
 class Meeting {
     int start, end;
@@ -14715,3 +14853,347 @@ like in petr and lock combination prob
 - but this method is not good as TC is very high, backtracking is better approach here
 
 
+# DSA coding patterns IMP
+https://levelup.gitconnected.com/grokking-the-coding-interview-mastering-the-20-coding-patterns-a83ecef016b2
+
+## sliding window pattern
+
+### sliding window template from leetcode discuss
+- https://leetcode.com/problems/frequency-of-the-most-frequent-element/solutions/1175088/C++-Maximum-Sliding-Window-Cheatsheet-Template/
+
+### top sliding window questions
+- check leetcode sliding window list (https://leetcode.com/list?selectedList=rq6894ji)
+- https://medium.com/techie-delight/top-problems-on-sliding-window-technique-8e63f1e2b1fa
+
+
+### 1838. Frequency of the Most Frequent Element
+
+- sorting + sliding window
+- TC O(nlogn) SC O(1)
+```
+class Solution {
+    public int maxFrequency(int[] nums, int k) {
+        Arrays.sort(nums);
+        var len = nums.length;
+        var maxFreq = 0;
+        int i = 0, j = 0, sum = 0; 
+        for(; j < len; j++){
+            sum += nums[j];
+            if( (j - i + 1) * nums[j] - sum > k ){
+                sum -= nums[i++];                
+            }
+            maxFreq = Math.max(maxFreq, j-i+1);
+        }
+
+        return maxFreq;
+    }
+}
+```
+
+### 209. Minimum Size Subarray Sum (revise)
+
+- https://leetcode.com/explore/learn/card/array-and-string/205/array-two-pointer-technique/1299/
+
+#### using 2 pointer/ sliding window O(log(n))
+
+- https://www.youtube.com/watch?v=K0NgGYEAkA4
+- this sol actually uses sliding window via 2 pointers
+
+```
+	class Solution {
+    public int minSubArrayLen(int target, int[] nums) {
+        int str = 0, end = 0, sum = 0, minlen = Integer.MAX_VALUE;
+        for(;end < nums.length; end++){
+            sum += nums[end];
+            while(sum >= target){
+                minlen = Math.min(minlen, end - str + 1);
+                sum -= nums[str++];
+            }
+        }
+        return minlen == Integer.MAX_VALUE ? 0 : minlen;
+    }
+}
+```
+
+### 424. Longest Repeating Character Replacement
+- keep track of most freq char count 
+sliding window i.e invalid window condition is (curr window - most freq char count > k) then we have to move left i.e shrink the window
+```
+class Solution {
+    public int characterReplacement(String s, int k) {
+        var len = s.length();
+        var mostFreq = Integer.MIN_VALUE;
+        var freq = new int[26];
+        var left = 0;
+        var right = 0;
+        var maxLen=0;
+        for(; right < len; right++){
+            var charIdx  = s.charAt(right) - 'A';
+            freq[charIdx]++;
+            mostFreq = Math.max(mostFreq, freq[charIdx]);
+            var currWin = right - left + 1;
+            if(currWin - mostFreq > k){
+                freq[s.charAt(left++) - 'A']--;
+            }
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+        return maxLen;
+    }
+}
+```
+
+### Longest Substring with At Most K Distinct Characters
+- https://www.codingninjas.com/studio/problems/longest-substring-with-at-most-k-distinct-characters_2221410?utm_source=striver&utm_medium=website&utm_campaign=a_zcoursetuf&leftPanelTab=0
+
+
+```
+import java.util.*;
+
+public class Solution {
+
+	public static int kDistinctChars(int k, String str) {
+		// Write your code here
+		int len = str.length();
+		int left = 0;
+		int right = 0;
+		Map<Character, Integer> map = new HashMap<>();
+		int max = Integer.MIN_VALUE;
+		for(; right < len; right++){
+			
+			char ch = str.charAt(right);
+			map.put(ch, map.getOrDefault(ch, 0) + 1);
+			while(left < right && map.size() > k){
+				char leftCh = str.charAt(left);
+				int chCount = map.get(leftCh);
+				if(chCount == 1)
+					map.remove(leftCh);				
+				else 
+					map.put(leftCh,chCount - 1);
+				
+				left++;
+			}
+			int currWind = right - left + 1;
+			max = Math.max(max, currWind);			
+		}
+		return max;	
+	}
+}
+
+
+```
+
+### 1004. Max Consecutive Ones III
+- https://leetcode.com/problems/max-consecutive-ones-iii/description/
+
+```
+class Solution {
+    public int longestOnes(int[] nums, int k) {
+        var len = nums.length;
+        var left = 0;
+        var right = 0;
+        var zeroCnt = 0;
+        var max = Integer.MIN_VALUE;
+        for(; right < len; right++){
+            if(nums[right] == 0)
+                zeroCnt++;
+            while(zeroCnt > k){
+                if(nums[left] == 0)
+                    zeroCnt--;
+                left++;    
+            }
+            max = Math.max(max, right - left + 1);
+        }
+        return max;
+
+    }
+}
+```
+
+## merge intervals pattern
+We will maintain a list of interval events (not necessarily sorted). Evidently, two events [s1, e1) and [s2, e2) do not conflict if and only if one of them starts after the other one ends: either e1 <= s2 OR e2 <= s1. By De Morgan's laws, this means the events conflict when s1 < e2 AND s2 < e1.
+to understand this de morgans's law deduction draw a line and map booking on it and check for overlapping cases
+
+- below condition is also similar to s1 < e2 && s2 < e1
+- if (Math.max(b[0], start) < Math.min(b[1], end)) return false;
+``` 
+Given 2 segment [left1, right1], [left2, right2],
+how can we check whether they overlap?
+If these two intervals overlap, it should exist a value x,
+left1 <= x <= right1 && left2 <= x <= right2
+so that
+max(left1, left2) <= x <= min(right1, right 2)
+so that
+left1 <= right2 && left2 <= right1
+
+
+// non overlapping cond
+        start1 > end2 ||  start2 > end1
+// overlapping cond
+        start1 <= end2 && start2 <= end1
+```
+- for question asked in google on this pattern and to understand condition of overlapping / nonoverlapping condition refer C:\nitin_office_data\learning\interview\google\dsa_coding_round.md
+### greedy(sorting required) + merge interval problems
+#### 56 merge intervals
+- https://leetcode.com/problems/merge-intervals/description/
+- https://takeuforward.org/data-structure/merge-overlapping-sub-intervals/
+```
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (i1 , i2) -> i1[0] - i2[0]);        
+        var len = intervals.length; 
+        List<List<Integer>> res = new ArrayList<>();
+        
+        for(int i = 0; i < len; i++){            
+            var start = intervals[i][0];
+            var end = intervals[i][1];
+            var last = !res.isEmpty() ? res.get(res.size() - 1) : null;
+            if(res.isEmpty() || start > last.get(1)){
+                res.add(Arrays.asList(start, end));
+            }else {
+                last.set(1, Math.max(end, last.get(1)));
+            }
+        }
+        var ans = new int[res.size()][2];
+        
+        for(int i = 0; i < res.size(); i++){
+            ans[i][0] = res.get(i).get(0);
+            ans[i][1] = res.get(i).get(1);            
+        }
+        return ans;
+    }
+}
+```
+
+#### 57. Insert Interval
+- https://leetcode.com/problems/insert-interval/description/
+- greedy( already sorting given) + merge interval pattern
+ 
+ ```
+ class Solution {
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        var len = intervals.length;    
+        List<List<Integer>> ans = new ArrayList<>();
+        var curr = newInterval;
+        var i = 0;
+        ///if(len == 0) ans.add(Arrays.asList(curr[0], curr[1]));        
+        for(; i < len; i++){
+            var start = intervals[i][0];
+            var end = intervals[i][1];
+            if(start <= curr[1] && end >= curr[0]){
+                curr[0] = Math.min(curr[0], start);
+                curr[1] = Math.max(curr[1], end);
+            }else if(curr[1] < start){
+                ans.add(Arrays.asList(curr[0], curr[1]));
+                for(; i < len; i++){
+                    ans.add(Arrays.asList(intervals[i][0], intervals[i][1]));
+                }
+                return convert(ans);                
+            }else if(end < curr[0]){
+                ans.add(Arrays.asList(start, end));    
+            }            
+        }
+        ans.add(Arrays.asList(curr[0], curr[1]));        
+        
+       return convert(ans);
+    }
+
+    private int[][] convert(List<List<Integer>> ans){
+         var res = new int[ans.size()][2];
+        
+        for(int k = 0; k < ans.size(); k++){
+            res[k][0] = ans.get(k).get(0);
+            res[k][1] = ans.get(k).get(1);            
+        }
+        return res;
+    }
+}
+ ```
+## 2 pointer with merge interval pattern problems
+
+### 986. Interval List Intersections
+- https://leetcode.com/problems/interval-list-intersections/solutions/3984596/java-sol-with-explanation-2-pointers-with-merge-interval-patterns-overlapping-intervals/
+
+- brute force approach used 2 loops checking each interval from both list with each other so TC O(m*n)
+- since one interval in one list can overlap with many on other list problem is to deceide whether to move forward in one list or another 
+- since both lists are already sorted we can use 2 pointer approach with overlapping condition to decide which pointer to move forward i.e i or j at a time based on their end times i.e whichever list's interval is ending first/early we will move pointer related to that list
+ 
+```
+class Solution {
+    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+        int i , j;
+        i = j = 0;
+        var len1 = firstList.length;
+        var len2 = secondList.length;
+        var ans = new ArrayList<int[]>();
+        while(i < len1 && j < len2){
+            var intv1 = firstList[i];
+            var intv2 = secondList[j];
+            if(isOverlap(intv1, intv2)){
+                int ostart = Math.max(intv1[0], intv2[0]);
+                int oend = Math.min(intv1[1], intv2[1]);
+                ans.add(new int[]{ostart, oend});                 
+            }
+            if(intv1[1] <= intv2[1])
+                i++;
+            else 
+                j++; 
+        }
+        
+         return ans.toArray(new int[ans.size()][2]);
+    }
+    private boolean isOverlap(int[] intv1, int[] intv2){
+        return (intv1[0] <= intv2[1] && intv1[1] >= intv2[0]);
+    }
+}
+```
+## greedy (sorting required) + 2 pointer with merge intervals pattern i.e overlapping conditions
+
+### 435. Non-overlapping Intervals
+```
+class Solution {
+    public int eraseOverlapIntervals(int[][] intervals) {
+        int len = intervals.length;
+        int i = 0, j = 1;
+        int count = 0;
+        Arrays.sort(intervals, (a,b) -> a[1] - b[1]);
+        while(j < len){
+            var first = intervals[i];
+            var second = intervals[j];
+            if(isOverlap(first, second)){
+                count++;
+                j++;
+            }else{
+                i = j;
+                j++;
+            }
+                                   
+        }                        
+        return count;
+    }     
+    
+    private boolean isOverlap(int[] first, int[] second){
+        return first[0] < second[1] && second[0] < first[1];
+    }
+}
+```
+
+### using len - non overlapping interval logic
+
+```
+class Solution {
+    public int eraseOverlapIntervals(int[][] intervals) {
+        int len = intervals.length;
+        Arrays.sort(intervals, (a,b) -> a[1] - b[1]);
+        int end = intervals[0][1];
+        int count = 1;
+       
+        for(int i = 1; i < len; i++){
+            if(intervals[i][0] >= end){
+                count++;
+                end = intervals[i][1];
+                }                         
+            }     
+        return len - count;  
+    }
+}
+```
